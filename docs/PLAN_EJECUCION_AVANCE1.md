@@ -602,7 +602,7 @@ git push -u origin chore/db-apply-schema
 1. Abrir DBeaver.
 2. Crear conexión con los datos del [`.env`](../.env) (o de la [memoria persistente](../../.claude/projects/c--Users-hlopez-medisuite/memory/neon_connection.md)):
    - Host: `ep-nameless-water-avvbs1vv-pooler.c-11.us-east-1.aws.neon.tech`
-   - Puerto: `5432` · BD: `clinica_dev` · Usuario: `clinica_app` · Password: `clinica_dev_2026`
+   - Puerto: `5432` · BD: `clinica_dev` · Usuario: `clinica_app` · Password: la del `.env` (variable `DB_PASSWORD`)
    - SSL Mode: `require`.
 3. Verificar que la conexión funciona con `SELECT 1;`.
 4. Abrir `database/schema.sql`, ejecutar completo (F5 o Alt+X).

@@ -1392,7 +1392,7 @@ Base de datos: **Neon Postgres** (BD compartida del equipo).
 - Puerto: `5432`
 - BD: `clinica_dev`
 - Usuario: `clinica_app`
-- Password: `clinica_dev_2026`
+- Password: la encuentras en el archivo `.env` de la raíz del repo (no versionado). Si no lo tienes, pídelo en el canal de Teams **📋 Avances del Proyecto**.
 - SSL Mode: `require`
 
 ### 🛠️ Herramientas que vas a usar
@@ -1409,7 +1409,7 @@ Base de datos: **Neon Postgres** (BD compartida del equipo).
    - **Port:** `5432`
    - **Database:** `clinica_dev`
    - **Username:** `clinica_app`
-   - **Password:** `clinica_dev_2026`
+   - **Password:** la del archivo `.env` (variable `DB_PASSWORD`)
 4. Pestaña **SSL** → marca **Use SSL** → SSL Mode: **require**.
 5. Click **Test Connection...** Si sale ok, click **Finish**.
 6. En el panel izquierdo, expande `clinica_dev → Schemas → public`.
@@ -1671,9 +1671,9 @@ Archivos a crear/modificar:
 3. Crea `backend/src/main/resources/application.yml` con el contenido del bloque de abajo.
 4. Verifica que exista `.env` en la raíz (si no, cópialo desde `.env.example`).
 5. Configura variables de entorno en tu IDE:
-   - **IntelliJ:** Run → Edit Configurations → MedisuiteApplication → Environment Variables → pega la línea:
+   - **IntelliJ:** Run → Edit Configurations → MedisuiteApplication → Environment Variables → pega la línea siguiente, **reemplazando cada `<...>` con el valor real de tu archivo `.env`**:
      ```
-     APP_ENV=development;DB_HOST=ep-nameless-water-avvbs1vv-pooler.c-11.us-east-1.aws.neon.tech;DB_PORT=5432;DB_NAME=clinica_dev;DB_USERNAME=clinica_app;DB_PASSWORD=clinica_dev_2026;DB_SSLMODE=require;JWT_SECRET=medisuite_super_secret_key_change_me_at_least_32_chars_long;JWT_EXPIRATION_MS=900000;APP_PORT=8080
+     APP_ENV=development;DB_HOST=<DB_HOST del .env>;DB_PORT=5432;DB_NAME=clinica_dev;DB_USERNAME=clinica_app;DB_PASSWORD=<DB_PASSWORD del .env>;DB_SSLMODE=require;JWT_SECRET=<JWT_SECRET del .env>;JWT_EXPIRATION_MS=900000;APP_PORT=8080
      ```
    - **VS Code:** crea `.vscode/launch.json` con la sección `env` (ver prompt IA #3).
 6. Ejecuta:

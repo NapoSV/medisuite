@@ -14,7 +14,7 @@ Sección: ""Portada (página inicial)""
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Consigue una foto tuya cuadrada, mínimo 300x300 px|Abre el Word del equipo (link en la guía, Tarea 1.1)|Baja a la sección Portada y ubica la fila con tu nombre|Inserta tu foto: Insertar → Imagen → Este dispositivo|Verifica tu nombre completo en MAYÚSCULAS|Verifica tu CIF (si no lo sabes escribe — y avisa a Héctor)|Marca SI en la celda ¿Participó?|Confirma que arriba en Word diga Guardado|Notifica en Teams: ✅ Terminé Tarea 1.1|Mueve esta tarjeta a Hecho en Planner","CRITERIOS DE ACEPTACIÓN: foto nítida y cuadrada (no aplastada); nombre en MAYÚSCULAS; CIF correcto; ¿Participó? = SI. La tabla con las 11 filas ya existe en el Word — solo completas la tuya. Esta tarea NO lleva commit en Git: Word Online guarda automático en OneDrive. Si la tabla se rompe al pegar la foto, usa Ctrl+Z y revisa los prompts de IA de la guía."
 2.1 Objetivo General,Documento,2026010132@cvirtualuees.edu.sv,2026-07-15,2026-07-16,3,"🎯 QUÉ ENTREGAR
 Redacción del objetivo general único del proyecto (se reusará en Avance 2 y 3).
 
@@ -30,7 +30,7 @@ Sección: ""Objetivo general""
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Abre el Word del equipo, sección Objetivo general|Borra cualquier texto placeholder|Copia el texto oficial del bloque Contenido a copiar de la guía (Tarea 2.1)|Pégalo tal cual, en un solo párrafo justificado|Revisa que no queden marcas rojas de ortografía|Confirma Guardado en Word|Teams: ✅ Terminé Tarea 2.1|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: la sección contiene exactamente el texto oficial de la guía (empieza con: Desarrollar una plataforma de gestión de citas médicas multi-empresa (SaaS)...). Un solo párrafo, justificado. Sin commit Git. Si al pegar sale con formato raro, usa pegar como texto sin formato (Ctrl+Shift+V)."
 3.1 Objetivo Específico Avance 1,Documento,2026010132@cvirtualuees.edu.sv,2026-07-15,2026-07-16,3,"🎯 QUÉ ENTREGAR
 Redacción del OE1 (módulo de autenticación y roles, HU-007).
 
@@ -46,7 +46,7 @@ Sección: ""Objetivos específicos""
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Abre el Word, sección Objetivos específicos|Deja únicamente el OE1 (el profesor pide 1 por avance)|Copia el texto del bloque Contenido a copiar de la guía (Tarea 3.1)|Pégalo tal cual (empieza con OE1:)|Pon OE1: en negrita|Confirma Guardado en Word|Teams: ✅ Terminé Tarea 3.1|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: la sección muestra únicamente el OE1 con el texto oficial de la guía (OE1: Diseñar e implementar el módulo de registro y autenticación de usuarios... con JWT... multi-tenant). Sin commit Git."
 4.1 Distribución del Equipo Scrum,Documento,2026010132@cvirtualuees.edu.sv,2026-07-15,2026-07-16,3,"🎯 QUÉ ENTREGAR
 Tabla con los 11 integrantes y su Rol Scrum + Rol Técnico.
 
@@ -62,7 +62,7 @@ Sección: ""Distribución del equipo""
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Abre el Word, sección Distribución del equipo|Inserta tabla de 4 columnas x 12 filas si no existe|Copia los datos de los 11 integrantes desde la guía (Tarea 4.1)|Aplica estilo de tabla con encabezado azul (Diseño de tabla)|Verifica 11 integrantes, nombres y roles Scrum en MAYÚSCULAS|Confirma Guardado en Word|Teams: ✅ Terminé Tarea 4.1|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: tabla con encabezado N° / Nombre completo / Rol Scrum / Rol Técnico y exactamente 11 filas de integrantes. Los datos completos (roles de cada quien) están en el bloque Contenido a copiar de la guía. Sin commit Git."
 5.1 Roles y funciones del sistema,Documento,2026010813@cvirtualuees.edu.sv,2026-07-17,2026-07-20,3,"🎯 QUÉ ENTREGAR
 Tabla con 5 roles del sistema (Médico, Paciente, Enfermera, Administrador, Recepcionista) y sus funciones.
 
@@ -78,7 +78,7 @@ Sección: ""Roles y fundamentos del sistema""
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Abre el Word, sección Roles y fundamentos del sistema|Inserta tabla de 3 columnas x 6 filas (encabezado + 5 roles)|Copia los 5 roles con descripción y funciones desde la guía (Tarea 5.1)|Usa viñetas dentro de cada celda para las funciones|Verifica que cada rol tenga mínimo 4 funciones|Corrige ortografía (marcas rojas)|Confirma Guardado en Word|Teams: ✅ Terminé Tarea 5.1|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: son los 5 roles DEL SOFTWARE (Médico, Paciente, Enfermera, Administrador, Recepcionista), NO los roles del equipo Scrum. Cada rol: 1 descripción + 4 o más funciones en viñetas. Todo el contenido listo para copiar está en la guía. Sin commit Git."
 6.1 Historias de Usuario,Documento,2026010813@cvirtualuees.edu.sv;2026010132@cvirtualuees.edu.sv,2026-07-17,2026-07-22,3,"🎯 QUÉ ENTREGAR
 Backlog de 6+ HU con formato Como/Quiero/Para y criterios detallados para HU-007.
 
@@ -94,7 +94,7 @@ Sección: ""Historias de usuario""
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Abre el Word, sección Historias de usuario|Inserta tabla de 4 columnas x 7 filas (encabezado + 6 HU)|Copia las 6 HU desde la guía (Tarea 6.1): HU-007, HU-001, HU-008, HU-003, HU-004, HU-002|Verifica HU-007 primera y con prioridad Alta|Verifica formato Como (rol), quiero (funcionalidad), para (propósito) en cada HU|Verifica criterios de aceptación en viñetas por HU|Agrega nota bajo la tabla: HU implementada en Avance 1 = HU-007|Confirma Guardado en Word|Teams: ✅ Terminé Tarea 6.1|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: 6 HU en tabla con encabezado Prioridad / HU / Historia de Usuario / Criterios de Aceptación. HU-007 (Login) va primera con sus 5 criterios (JWT 15 min, bloqueo tras 5 intentos, cambio de password en primer login, etc.). El texto completo de cada HU y sus criterios está listo para copiar en la guía. Sin commit Git."
 7.1 Alcances y límites,Documento,2026010132@cvirtualuees.edu.sv,2026-07-16,2026-07-18,5,"🎯 QUÉ ENTREGAR
 Sección con lo que NO hará el sistema (8+ exclusiones) y qué SÍ cubre el Avance 1.
 
@@ -110,7 +110,7 @@ Sección: ""Alcances y límites""
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Abre el Word, sección Alcances y límites|Crea subsección: El sistema NO incluirá|Copia las 8 exclusiones desde la guía (Tarea 7.1)|Crea subsección: Alcances del Avance 1|Copia los 4 alcances del Avance 1 desde la guía|Respeta el formato de viñetas|Confirma Guardado en Word|Teams: ✅ Terminé Tarea 7.1|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: mínimo 5 exclusiones (la guía trae 8: sin facturación, sin telemedicina, sin app móvil nativa, etc.) y la subsección Alcances del Avance 1 (solo HU-007, código base Spring Boot, pantalla login React, BD en Neon). Todo listo para copiar en la guía. Sin commit Git."
 8.1 Planificación (tabla),Documento,2026010132@cvirtualuees.edu.sv,2026-07-20,2026-07-23,3,"🎯 QUÉ ENTREGAR
 Tabla con las ~19 actividades del Avance 1 (Actividad, Responsable, Fecha inicio, Fecha fin).
 
@@ -126,7 +126,7 @@ Sección: ""Planificación""
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Abre el Word, sección Planificación|Inserta tabla de 4 columnas x 20 filas (encabezado + 19 actividades)|Copia las 19 actividades desde la guía (Tarea 8.1)|Verifica que toda actividad tenga responsable, fecha inicio y fecha fin|Confirma Guardado en Word|Teams: ✅ Terminé Tarea 8.1|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: 19 actividades con encabezado Actividad / Responsable / Fecha inicio / Fecha fin, desde la redacción de portada (15/07) hasta la entrega (10/08). La tabla completa con responsables y fechas está lista para copiar en la guía. Sin commit Git."
 9.1 Cronograma Gantt,Documento,2026010132@cvirtualuees.edu.sv,2026-07-21,2026-07-25,3,"🎯 QUÉ ENTREGAR
 Diagrama Gantt (código Mermaid + referencia al Planner del equipo).
 
@@ -142,7 +142,7 @@ Sección: ""Cronograma Gantt""
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Abre el Gantt en GitHub: docs/diagramas/gantt_avance1.md (se dibuja solo al cargar)|Espera el render del diagrama (barras de colores por sección)|Captura el diagrama completo con Win + Shift + S|Abre el Word, sección Cronograma Gantt, y pega la captura con Ctrl + V|Agrega la nota: el Gantt oficial vive en el Planner del equipo|Verifica las 5 secciones (Documento, BD, Backend, Frontend, QA) y el hito Entrega 10/08|Confirma Guardado en Word|Teams: ✅ Terminé Tarea 9.1|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: imagen del Gantt visible en el Word, con 5 secciones y el hito Entrega el 10/08, más la nota de respaldo académico bajo la imagen. El diagrama ya está publicado en el repo (docs/diagramas/gantt_avance1.md) y GitHub lo dibuja gratis al abrir la página — no se usa mermaid.live ni ninguna herramienta de pago. Si hay que modificarlo, se edita el bloque mermaid de ese archivo y GitHub lo re-dibuja. Sin commit Git para esta tarea."
 10.1 Entradas/Salidas por HU,Documento,2026011707@cvirtualuees.edu.sv;2026010813@cvirtualuees.edu.sv,2026-07-23,2026-07-28,5,"🎯 QUÉ ENTREGAR
 Tabla con entradas y salidas del sistema para las 6 HU (HU-007, HU-001, HU-008, HU-003, HU-004, HU-002).
 
@@ -158,7 +158,7 @@ Sección: ""Entradas y salidas por HU""
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Abre el Word, sección Entradas y salidas por HU|Inserta tabla de 3 columnas x 7 filas (encabezado + 6 HU)|Copia las 6 filas desde la guía (Tarea 10.1)|Verifica HU-007 primera (es la implementada en Avance 1)|Verifica que cada fila tenga entradas y salidas concretas|Confirma Guardado en Word|Teams: ✅ Terminé Tarea 10.1|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: encabezado HU / Entradas / Salidas con las 6 HU. Ejemplo HU-007: entradas tenantSlug, email, password; salidas accessToken (JWT), tokenType, expiresIn y datos del usuario, 401 en error. La tabla completa está lista para copiar en la guía. Sin commit Git."
 11.1 Declaración de Entidades,Documento,2026020122@cvirtualuees.edu.sv,2026-07-22,2026-07-28,3,"🎯 QUÉ ENTREGAR
 Tabla con las 9 entidades académicas del sistema (User, Patient, Doctor, Nurse, Administrator, Receptionist, Appointment, MedicalRecord, VitalSign) con descripción y atributos.
 
@@ -174,7 +174,7 @@ Sección: ""Declaración de entidades""
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Abre el Word, sección Declaración de entidades|Inserta tabla de 3 columnas x 11 filas (encabezado + 10 entidades)|Copia las 10 entidades desde la guía (Tarea 11.1)|Verifica que cada entidad tenga descripción + atributos principales|Verifica que los FK estén indicados como (FK→Entidad)|Agrega la nota final sobre las 17 tablas en database/schema.sql|Confirma Guardado en Word|Teams: ✅ Terminé Tarea 11.1|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: 10 entidades (Usuario, Paciente, Médico, Enfermera, Administrador, Recepcionista, Cita, Expediente, SignoVital, Receta) con encabezado Entidad / Descripción / Atributos principales, más la nota final del esquema completo de 17 tablas. La tabla completa con todos los atributos está lista para copiar en la guía. Sin commit Git."
 12.1 Ejecutar schema.sql en Neon,BD,2026020122@cvirtualuees.edu.sv,2026-07-22,2026-07-24,1,"🎯 QUÉ ENTREGAR
 BD Neon ""clinica_dev"" con las 17 tablas creadas y datos demo cargados (2 tenants).
 
@@ -190,7 +190,7 @@ Archivos que ejecutas en DBeaver: database/schema.sql y database/seed.sql
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Actualiza tu repo local (guía §2: git pull)|Abre DBeaver → New Database Connection → PostgreSQL|Rellena host Neon, puerto 5432, BD clinica_dev, usuario clinica_app y password del .env|Pestaña SSL → marca Use SSL → SSL Mode: require|Test Connection OK → Finish|Ejecuta SELECT 1; y confirma que responde 1|Copia TODO database/schema.sql, pégalo en SQL Editor y ejecuta con Alt+X|Copia TODO database/seed.sql y ejecútalo con Alt+X|Valida: 17 tablas, tenants con 2+ filas, users con 1+ (queries en la guía)|Crea rama chore/db-apply-schema desde develop y publícala|Opcional: actualiza database/README.md, commit y push|Abre PR base develop (guía §5)|Teams: ✅ Terminé 12.1, 17 tablas confirmadas|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public' devuelve 17; tenants tiene 2+ filas; users tiene 1+ (admin@demo.sv). DATOS DE CONEXIÓN: host y usuario están en la guía; la password está en el .env de la raíz del repo (NO versionado) — pídelo en el canal de Teams si no lo tienes. IMPORTANTE: si el schema falla a mitad, NO hagas commit; usa el prompt de rollback de la guía para limpiar y reintentar."
 12.2 Inicializar Spring Boot,Backend,2026011707@cvirtualuees.edu.sv,2026-07-23,2026-07-27,1,"🎯 QUÉ ENTREGAR
 Proyecto Spring Boot 3.3 con Java 21 generado y compilando en la carpeta backend/ del repo.
 
@@ -206,7 +206,7 @@ Archivos a crear: backend/pom.xml, backend/mvnw, backend/src/**, backend/.gitign
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Actualiza tu repo (guía §2) y crea rama chore/spring-boot-init desde develop|Abre https://start.spring.io|Configura: Maven, Java 21, Boot 3.3.4, Group com.sv.grupo, Package com.sv.grupo.hospital.citas|Dependencias: Web, Security, Data JPA, PostgreSQL, Validation, Lombok, DevTools, Flyway, Actuator|GENERATE y descomprime de forma que backend/pom.xml exista directo|Agrega al pom.xml las dependencias jjwt 0.12.6 y springdoc 2.6.0 (bloque en la guía)|Ejecuta .\mvnw.cmd clean install -DskipTests → BUILD SUCCESS|Ejecuta .\mvnw.cmd spring-boot:run → Started MedisuiteApplication|Commit: chore(backend): inicializar proyecto Spring Boot 3.3 con Java 21|Push y abre PR base develop (guía §5)|Teams: ✅ Terminé 12.2 con link del PR|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: backend/pom.xml existe, mvnw funciona con Java 21, clean install da BUILD SUCCESS y la app arranca. El bloque XML exacto de las 4 dependencias extra (jjwt-api, jjwt-impl, jjwt-jackson, springdoc) está en el bloque Contenido a copiar de la guía. Si el zip descomprime como backend/medisuite/pom.xml, mueve el contenido un nivel arriba (prompt IA #3)."
 12.3 Configurar Neon (application.yml),Backend,2026011707@cvirtualuees.edu.sv,2026-07-27,2026-07-28,1,"🎯 QUÉ ENTREGAR
 Backend arrancando y conectado a Neon. Endpoint /actuator/health retornando UP.
 
@@ -222,7 +222,7 @@ Archivos: backend/src/main/resources/application.yml
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","git checkout chore/spring-boot-init y git pull|Elimina backend/src/main/resources/application.properties|Crea application.yml con el bloque exacto de la guía (Tarea 12.3)|Verifica que exista .env en la raíz (cópialo de .env.example y pide valores en Teams)|Configura variables de entorno en tu IDE con los valores del .env (IntelliJ o launch.json)|Ejecuta .\mvnw.cmd spring-boot:run|Confirma en el log: HikariPool-1 - Start completed|GET http://localhost:8080/actuator/health → status UP y db UP|Verifica que .env NO aparece en git status|Commit: chore(backend): configurar conexión a Neon vía variables de entorno|Push (se agrega al PR de la 12.2)|Teams: ✅ Terminé 12.3, health UP|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: la app arranca sin errores, el log muestra HikariPool-1 - Start completed y /actuator/health responde status UP con db UP. El application.yml completo está en el bloque Contenido a copiar de la guía — usa variables ${DB_HOST}, ${DB_PASSWORD}, etc.; los valores reales van SOLO en tu .env local (nunca en Git ni en el yml). Si sale Schema-validation missing table, confirma que la Tarea 12.1 ya se ejecutó en Neon."
 12.4 Estructura de paquetes + Entidades,Backend,2026011707@cvirtualuees.edu.sv;2026011585@cvirtualuees.edu.sv,2026-07-28,2026-08-01,1,"🎯 QUÉ ENTREGAR
 Estructura de paquetes com.sv.grupo.hospital.citas.* + entidades JPA Tenant, User, Patient, Doctor, Specialty compilando y validando el esquema Neon.
 
@@ -238,7 +238,7 @@ Archivos: backend/src/main/java/com/sv/grupo/hospital/citas/model/**
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Actualiza el repo (guía §2)|Crea rama feature/HU-007-entities desde develop y publícala|Crea los paquetes model/tenant, model/users y model/clinical|Crea Tenant.java con el código exacto de la guía|Crea User.java con el código exacto de la guía|Crea Patient.java con el código exacto de la guía|Crea Specialty.java con el código exacto de la guía|Crea Doctor.java con el código exacto de la guía|Ejecuta .\mvnw.cmd compile → BUILD SUCCESS|Ejecuta .\mvnw.cmd spring-boot:run sin errores Schema-validation|Commit: feat(auth): agregar entidades User, Patient, Doctor, Tenant, Specialty|Push y abre PR base develop|Teams: ✅ Terminé 12.4 con link del PR|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: los 5 .java existen en las rutas indicadas, compile da BUILD SUCCESS y al arrancar NO aparece Schema-validation: missing table. El código completo de las 5 entidades (con @Table, @Column, uniqueConstraints, etc.) está listo para copiar en la guía — cópialo EXACTO, los nombres de columna deben coincidir con el schema de Neon. Trabajan: Bayron (Backend) + Carlos (Architect)."
 12.5 Repositories JPA,Backend,2026011707@cvirtualuees.edu.sv,2026-08-01,2026-08-03,1,"🎯 QUÉ ENTREGAR
 5 interfaces JpaRepository (UserRepository, TenantRepository, PatientRepository, DoctorRepository, SpecialtyRepository) compilando.
 
@@ -254,7 +254,7 @@ Archivos: backend/src/main/java/com/sv/grupo/hospital/citas/dao/*.java
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","git checkout feature/HU-007-entities y git pull|Crea la carpeta dao/ dentro de com/sv/grupo/hospital/citas|Crea UserRepository.java (con findByEmailAndTenantId) según la guía|Crea TenantRepository.java (con findBySlug) según la guía|Crea PatientRepository.java, DoctorRepository.java y SpecialtyRepository.java|Ejecuta .\mvnw.cmd compile → BUILD SUCCESS|Ejecuta .\mvnw.cmd spring-boot:run sin error de beans|Commit: feat(auth): agregar repositories JPA|Push (se agrega al PR de la 12.4)|Teams: ✅ Terminé 12.5|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: las 5 interfaces existen en dao/, compile da BUILD SUCCESS y la app arranca sin No bean of type UserRepository. El código exacto de cada interface está listo para copiar en la guía — son cortas, pero respeta paquetes e imports. UserRepository necesita el método findByEmailAndTenantId y TenantRepository el findBySlug (los usa AuthService en la 12.6)."
 12.6 DTOs + AuthService,Backend,2026011707@cvirtualuees.edu.sv,2026-08-02,2026-08-04,1,"🎯 QUÉ ENTREGAR
 Records LoginRequest y LoginResponse + BusinessException + GlobalExceptionHandler + AuthService.login() con bloqueo tras 5 intentos.
 
@@ -270,7 +270,7 @@ Archivos: backend/src/main/java/com/sv/grupo/hospital/citas/{dto,service,excepti
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","git checkout feature/HU-007-entities y git pull|Crea las carpetas dto/auth, exception y service|Crea LoginRequest.java (record con validaciones) según la guía|Crea LoginResponse.java (record con UserInfo) según la guía|Crea BusinessException.java y GlobalExceptionHandler.java según la guía|Crea AuthService.java con la lógica de login y bloqueo según la guía|Ejecuta .\mvnw.cmd compile|Commit: feat(auth): agregar DTOs, AuthService y excepciones globales|Push (mismo PR)|Teams: ✅ Terminé 12.6|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: los 5 archivos existen y compilan; AuthService valida tenant + email, verifica password con BCrypt, resetea intentos al éxito y bloquea 15 min tras 5 fallos (MAX_ATTEMPTS=5, LOCK_MINUTES=15). NOTA IMPORTANTE: AuthService importa JwtTokenProvider que se crea en la Tarea 12.7 — si tu IDE lo marca en rojo por ahora es normal, se resuelve al terminar la 12.7. Todo el código está listo para copiar en la guía."
 12.7 Spring Security + JWT + /api/auth/login,Backend,2026011707@cvirtualuees.edu.sv;2026011585@cvirtualuees.edu.sv,2026-08-04,2026-08-06,1,"🎯 QUÉ ENTREGAR
 Endpoint POST /api/auth/login funcional (retorna 200 con JWT, 401 con credenciales inválidas, 422 con cuenta bloqueada).
 
@@ -286,7 +286,7 @@ Archivos: backend/src/main/java/com/sv/grupo/hospital/citas/{security,config,con
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","git checkout feature/HU-007-entities y git pull|Crea las carpetas security, config y controller/api|Crea JwtTokenProvider.java según la guía|Crea SecurityConfig.java (stateless, CORS a :5173, BCrypt) según la guía|Crea AuthController.java según la guía|Ejecuta .\mvnw.cmd clean install -DskipTests y luego spring-boot:run|Postman: POST /api/auth/login con demo / admin@demo.sv / admin123 → 200 con accessToken|Prueba password mala → 401|Haz 5 intentos fallidos: el 6º debe dar 422 Cuenta bloqueada|Verifica en DBeaver failed_login_attempts y locked_until del usuario|Commit: feat(auth): agregar Spring Security, JWT y endpoint login|Push y abre el PR FINAL del backend (reviewer: NapoSV)|Teams: ✅ Terminé 12.7 con link del PR|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: login con credenciales seed responde 200 + accessToken; password mala 401; 6º intento tras 5 fallos 422; en BD el contador y locked_until se actualizan. Body de prueba: { tenantSlug: demo, email: admin@demo.sv, password: admin123 }. El código de los 3 archivos y el curl de prueba están en la guía. Este es el último push de la rama feature/HU-007-entities: título del PR = feat(auth): implementar módulo de autenticación HU-007. Trabajan: Bayron + Carlos."
 12.8 Init frontend Vite + React + TS + Tailwind + Zustand,Frontend,2026010796@cvirtualuees.edu.sv;2026011736@cvirtualuees.edu.sv,2026-07-25,2026-07-30,1,"🎯 QUÉ ENTREGAR
 Proyecto React + Vite + TS + Tailwind + Zustand corriendo en localhost:5173 con estilos MedCore Clay aplicados.
 
@@ -302,7 +302,7 @@ Archivos: frontend/package.json, frontend/tailwind.config.js, frontend/src/**
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Actualiza el repo (guía §2) y crea rama chore/frontend-init desde develop|Ejecuta: npm create vite@latest frontend -- --template react-ts|cd frontend y npm install|Instala: tailwindcss@^3 postcss autoprefixer (con -D)|Instala: zustand react-router-dom axios react-hook-form zod @hookform/resolvers lucide-react|Ejecuta npx tailwindcss init -p|Sobrescribe tailwind.config.js con el bloque de la guía (colores MedCore Clay)|Sobrescribe src/index.css con el bloque de la guía|npm run dev → abre http://localhost:5173|Prueba Tailwind con un div bg-blue-500 y elimínalo antes de commitear|Verifica que node_modules NO está en Git|Commit: chore(frontend): inicializar React + Vite + TS + Tailwind + Zustand|Push y abre PR base develop|Teams: ✅ Terminé 12.8 con link del PR|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: npm run dev levanta en http://localhost:5173, la pantalla de Vite se ve, y el div de prueba con bg-blue-500 se pinta azul (confirma que Tailwind funciona) antes de eliminarlo. Los bloques completos de tailwind.config.js (paleta primary #0077BE, sombras clay) y de index.css (fuente Inter) están listos para copiar en la guía. Trabajan: Zair + William — coordinen quién ejecuta y quién verifica."
 12.9 Pantalla LoginPage.tsx,Frontend,2026010796@cvirtualuees.edu.sv;2026011736@cvirtualuees.edu.sv,2026-08-04,2026-08-07,1,"🎯 QUÉ ENTREGAR
 Pantalla /login funcional consumiendo /api/auth/login. Login OK redirige a /dashboard; errores muestran mensaje.
 
@@ -318,7 +318,7 @@ Archivos: frontend/src/pages/LoginPage.tsx, frontend/src/store/authStore.ts, fro
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Verifica que el backend corre y el login responde 200 en Postman (Tarea 12.7)|Actualiza el repo y crea rama feature/HU-007-login-ui desde develop|Crea las carpetas store, api y pages dentro de frontend/src|Crea authStore.ts con el código de la guía|Crea authApi.ts con el código de la guía|Crea LoginPage.tsx con el código de la guía|Reemplaza App.tsx completo con el código de la guía|Crea frontend/.env.local con VITE_API_BASE_URL=http://localhost:8080 (NO commitear)|npm run dev → http://localhost:5173/login con estilos MedCore Clay|Login demo / admin@demo.sv / admin123 → redirige a /dashboard con Bienvenido|F12 → Application → Local Storage: existen accessToken y user|Password mala → mensaje rojo Credenciales inválidas|Verifica que .env.local NO aparece en git status|Commit: feat(ui): pantalla LoginPage con integración a /api/auth/login|Push y abre PR base develop|Teams: ✅ Terminé 12.9 con link del PR|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: /login se ve con estilos MedCore Clay; login exitoso guarda token en localStorage y redirige a /dashboard; login fallido muestra mensaje rojo sin salir de /login. El código completo de los 4 archivos (authStore, authApi, LoginPage, App) está listo para copiar en la guía. PREREQUISITO: backend de la 12.7 corriendo. Si sale error CORS, revisa el prompt IA #1. Trabajan: Zair + William."
 12.10 Casos de prueba QA,QA,2026011709@cvirtualuees.edu.sv;2026010068@cvirtualuees.edu.sv,2026-08-05,2026-08-07,1,"🎯 QUÉ ENTREGAR
 3 casos de prueba documentados y ejecutados en docs/qa/CP_LOGIN.md (CP-01 login OK, CP-02 login fail, CP-03 bloqueo).
 
@@ -334,7 +334,7 @@ Archivos: docs/qa/CP_LOGIN.md
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Confirma que las Tareas 12.7 y 12.9 están mergeadas a develop (si no, coordina)|Actualiza el repo y crea rama test/HU-007-login desde develop|Crea la carpeta docs/qa/ si no existe|Crea docs/qa/CP_LOGIN.md con la plantilla completa de la guía|Levanta backend (mvnw spring-boot:run) y frontend (npm run dev) en 2 terminales|Antes de CP-03: resetea en DBeaver failed_login_attempts=0 y locked_until=NULL|Ejecuta CP-01 login exitoso y registra PASS o FAIL|Ejecuta CP-02 credenciales inválidas y registra PASS o FAIL|Ejecuta CP-03 bloqueo tras 5 intentos y registra PASS o FAIL|Verifica en BD el contador y locked_until tras CP-03|Si algún caso es FAIL: documenta el bug y abre issue en GitHub al responsable|Commit: test(auth): agregar casos de prueba de login (HU-007)|Push y abre PR base develop con los resultados en el título|Teams: ✅ Terminé 12.10 con resultados por caso|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: CP_LOGIN.md existe con los 3 casos y ningún Resultado real queda [pendiente] — cada uno dice PASS o FAIL con detalle. La plantilla markdown completa (precondiciones, pasos, resultado esperado y las queries SQL de CP-03) está lista para copiar en la guía. Un FAIL no significa que su tarea esté mal: se documenta y se abre issue al responsable de backend o frontend. Trabajan: Erika + Walter V."
 13.1 Conclusiones individuales,Documento,2026010132@cvirtualuees.edu.sv;2026010204@cvirtualuees.edu.sv;2026011707@cvirtualuees.edu.sv;2026010796@cvirtualuees.edu.sv;2026011012@cvirtualuees.edu.sv;2026011736@cvirtualuees.edu.sv;2026020122@cvirtualuees.edu.sv;2026011709@cvirtualuees.edu.sv;2026010068@cvirtualuees.edu.sv;2026011585@cvirtualuees.edu.sv;2026010813@cvirtualuees.edu.sv,2026-08-03,2026-08-07,5,"🎯 QUÉ ENTREGAR
 2-3 líneas personales sobre lo aprendido en el Avance 1 (tecnologías, trabajo en equipo, proceso Scrum).
 
@@ -350,7 +350,7 @@ Sección: ""Conclusiones""
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Abre el Word, sección Conclusiones|Busca la viñeta con tu nombre|Reemplaza el placeholder [2-3 líneas] por tu conclusión personal|Escribe en primera persona: aprendí que, me tocó, lo más difícil fue|Mantén el formato de viñeta y tu nombre en negrita|Corrige ortografía (marcas rojas)|Confirma Guardado en Word|Teams: ✅ Terminé Tarea 13.1|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: tu bloque tiene 2-3 líneas propias en primera persona (no queda el placeholder), menciona algo concreto que aprendiste o te costó. Hay un ejemplo de referencia en la guía y un prompt de IA por si te bloqueas — pero la conclusión debe sonar a ti, no a plantilla. Fecha límite 07/08 a las 18:00 porque Héctor consolida después. Sin commit Git."
 14.1 Bibliografía APA,Documento,2026010813@cvirtualuees.edu.sv,2026-08-04,2026-08-06,5,"🎯 QUÉ ENTREGAR
 Bibliografía consolidada en formato APA (10+ referencias: Ingeniería SW, Scrum, Java, BD, Frontend, docs oficiales).
 
@@ -366,7 +366,7 @@ Sección: ""Bibliografía""
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Abre el Word, sección Bibliografía|Crea 6 subtítulos: Ing. de Software, Scrum, Java/Backend, BD, Frontend, Fuentes web|Copia las 14 referencias desde la guía (Tarea 14.1) bajo su subtítulo|Verifica formato APA: Apellido, Inicial. (Año). Título en cursiva. Editorial|Pon los títulos de libro en cursiva|Verifica que las URLs empiecen con https://|Confirma Guardado en Word|Teams: ✅ Terminé Tarea 14.1|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: 6 subtítulos con al menos 1 referencia cada uno, todas en APA 7ª ed. Las 14 referencias base (Sommerville, Pressman, Scrum Guide, Effective Java, Spring in Action, docs de PostgreSQL y Neon, etc.) están listas para copiar en la guía. Si quieres agregar más, usa el prompt de IA #2. Sin commit Git."
 Consolidar documento final + PDF,Documento,2026010132@cvirtualuees.edu.sv,2026-08-08,2026-08-09,1,"🎯 QUÉ ENTREGAR
 Documento Word revisado (14 puntos completos) exportado a PDF final listo para entrega.
 
@@ -381,7 +381,7 @@ Documento Word del equipo → exportar como PDF a OneDrive/MediSuite/Entregable/
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Abre el Word y revisa los 14 puntos del checklist de cobertura (guía, Tarea Consolidar)|Para el punto 12: menciona el repo y agrega screenshots del backend y frontend funcionando|Verifica portada con logo UEES|Genera el índice automático (Referencias → Tabla de contenido)|Verifica numeración de páginas y encabezado MediSuite · Avance 1|Corrige toda la ortografía (sin marcas rojas)|Descarga copia del .docx y ábrela en Word Escritorio|Exporta: Archivo → Exportar → PDF con nombre MediSuite_Avance1_Entrega_2026-08-10.pdf|Revisa el PDF completo: páginas, imágenes y tablas bien formateadas|Sube el PDF al canal de Teams 📋 Avances del Proyecto|Teams: ✅ Documento consolidado, 14 puntos cubiertos|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: los 14 puntos oficiales cubiertos (portada, objetivos, equipo, roles, HU, alcances, planificación, Gantt, entradas/salidas, entidades, código, conclusiones, bibliografía), índice automático, numeración y PDF con el nombre exacto MediSuite_Avance1_Entrega_2026-08-10.pdf subido a Teams. El checklist punto por punto está en la guía. Exportar desde Word Escritorio da mejor calidad que Online."
 Entrega Avance 1,Documento,2026010132@cvirtualuees.edu.sv,2026-08-10,2026-08-10,1,"🎯 QUÉ ENTREGAR
 PDF final subido al aula virtual antes de las 23:59 con captura de confirmación.
 
@@ -396,4 +396,4 @@ Aula virtual UEES (plataforma académica de Programación II)
 ⚠️ SI TE ATASCAS
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
-3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Confirma que el PDF final está en Teams (tarea Consolidar terminada)|Abre el aula virtual y ubica la tarea Avance 1 — Entrega|Sube MediSuite_Avance1_Entrega_2026-08-10.pdf|Agrega el comentario con equipo, repo GitHub y rama develop (texto en la guía)|Click en Enviar / Entregar|Toma captura de pantalla de la confirmación|Sube la captura al canal de Teams|Teams: 🎉 AVANCE 1 ENTREGADO|Planner → mover a Hecho todas las tarjetas restantes","CRITERIOS DE ACEPTACIÓN: PDF subido al aula virtual ANTES de las 23:59 del 10/08 (plan: subir entre 20:00 y 22:00), comentario del envío con datos del equipo y repo, y captura de confirmación en Teams. CONTINGENCIAS (en la guía): si el aula rechaza el archivo, comprimir el PDF; si el aula está caída, enviar por correo al profesor con CC a coordinadores; si se pasa la hora, correo con explicación breve y CC al equipo."

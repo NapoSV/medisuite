@@ -1135,22 +1135,23 @@ https://uees.sharepoint.com/:w:/s/ProyectoTareasProgramacinII/IQBmmLSsQ2fvTaLWS2
 **Sección a rellenar:** **"Cronograma Gantt"**.
 
 ### 🛠️ Herramientas
-- Navegador (para https://mermaid.live).
+- Navegador (GitHub renderiza el diagrama solo — no se instala ni se paga nada).
 - Microsoft Word Online.
 - Snipping Tool o "Recortes" de Windows (tecla `Win + Shift + S`).
 
 ### 📋 Paso a paso
 
-1. Abre https://mermaid.live en el navegador.
-2. Borra el código de ejemplo del editor de la izquierda.
-3. Pega el código del bloque "Contenido a copiar" siguiente.
-4. Espera a que el diagrama aparezca a la derecha.
-5. Click en el botón **"PNG"** (arriba a la derecha del preview) para descargar la imagen.
-6. Abre el Word → sección "Cronograma Gantt".
-7. Menú **Insertar → Imagen → Este dispositivo** y selecciona el PNG descargado.
-8. Debajo de la imagen agrega la nota: *"El diagrama de Gantt oficial vive en Microsoft Planner del equipo. Esta imagen es la versión de respaldo académico."*
+1. Abre en el navegador el archivo del Gantt en GitHub (el diagrama se dibuja automáticamente al cargar la página):
+   https://github.com/NapoSV/medisuite/blob/main/docs/diagramas/gantt_avance1.md
+2. Espera a que el diagrama aparezca renderizado (barras de colores por sección).
+3. Presiona `Win + Shift + S` y selecciona el área del diagrama completo (las 5 secciones y el hito Entrega). La captura queda en el portapapeles.
+4. Abre el Word → sección "Cronograma Gantt".
+5. Pega la captura con `Ctrl + V` (o guárdala primero como PNG desde la app Recortes y usa **Insertar → Imagen → Este dispositivo**).
+6. Debajo de la imagen agrega la nota: *"El diagrama de Gantt oficial vive en Microsoft Planner del equipo. Esta imagen es la versión de respaldo académico."*
 
-### 💻 Contenido a copiar (código Mermaid — pegar en mermaid.live)
+> **Si necesitas modificar el Gantt:** edita el bloque ```` ```mermaid ```` dentro de `docs/diagramas/gantt_avance1.md`, haz commit, y GitHub re-dibuja el diagrama actualizado al refrescar la página.
+
+### 💻 Contenido a copiar (código Mermaid — ya está en `docs/diagramas/gantt_avance1.md`; se deja aquí como referencia)
 
 ```
 gantt
@@ -1182,7 +1183,7 @@ gantt
 
 ### ✅ Verificaciones
 
-- [ ] Imagen PNG del Gantt visible en el Word.
+- [ ] Imagen del Gantt (captura desde GitHub) visible en el Word.
 - [ ] Se distinguen las 5 secciones (Documento, BD, Backend, Frontend, QA).
 - [ ] El hito "Entrega" aparece el 10/08.
 - [ ] Nota bajo la imagen agregada.
@@ -1199,11 +1200,11 @@ Word guarda automático.
    ```
 2. **Solucionar error render:**
    ```
-   Pegué este código Mermaid en https://mermaid.live y me da error "Parse error on line X". El código es: [pegar]. ¿Qué está mal?
+   GitHub no renderiza mi bloque mermaid en un archivo .md — muestra el código como texto o dice "Unable to render rich display". El código es: [pegar]. ¿Qué está mal?
    ```
 3. **Alternativa sin Mermaid:**
    ```
-   Necesito un diagrama de Gantt para presentación académica sin usar herramientas de pago. ¿Qué alternativa online gratis me recomiendas? Ordénalas por facilidad de uso.
+   Necesito un diagrama de Gantt para presentación académica sin usar herramientas de pago ni crear cuentas. ¿Qué alternativa online gratis me recomiendas? Ordénalas por facilidad de uso.
    ```
 
 ### 🎬 Cierre

@@ -1,26 +1,399 @@
-Title,Bucket,AssigneeEmails,StartDate,DueDate,Priority,Description,Checklist
-1.1 Portada individual,Documento,todos@medisuite.local,2026-07-15,2026-07-20,5,"Cada integrante llena su portada en docs/entregables/AVANCE1_documento.md sección Portada. Ver Tarea 1.1 en PLAN_EJECUCION_AVANCE1.md","Foto subida a portada/{apellido}.jpg|Fila propia completa|Push a docs/avance1"
-2.1 Objetivo General,Documento,hlopez@disna.com.sv,2026-07-15,2026-07-16,3,"Redactar objetivo general único del proyecto (se reusa Avance 2 y 3). Ver Tarea 2.1","Sección 2 completa en AVANCE1_documento.md"
-3.1 Objetivo Específico Avance 1,Documento,hlopez@disna.com.sv,2026-07-15,2026-07-16,3,"OE1 módulo autenticación y roles. Ver Tarea 3.1","Sección 3 con solo OE1"
-4.1 Distribución del Equipo Scrum,Documento,hlopez@disna.com.sv,2026-07-15,2026-07-16,3,"Tabla 11 filas Nombre-Rol Scrum-Rol Técnico. Ver Tarea 4.1","Sección 4 con 11 filas completas"
-5.1 Roles y funciones del sistema,Documento,sanchez@medisuite.local,2026-07-17,2026-07-20,3,"5 roles mínimo (Médico Paciente Enfermera Administrador Recepcionista) con 4+ funciones cada uno. Ver Tarea 5.1","Tabla con 5 roles|Cada rol con 4+ funciones"
-6.1 Historias de Usuario,Documento,sanchez@medisuite.local;hlopez@disna.com.sv,2026-07-17,2026-07-22,3,"HU-007 (login) obligatoria + backlog 5 HU con criterios aceptación. Formato Como/Quiero/Para. Ver Tarea 6.1","Tabla 6+ HU|HU-007 con criterios detallados"
-7.1 Alcances y límites,Documento,hlopez@disna.com.sv,2026-07-16,2026-07-18,5,"Qué NO hará el sistema mínimo 5 puntos + alcances específicos Avance 1. Ver Tarea 7.1","Sección 7 con 5+ exclusiones|Alcances Avance 1 delimitados"
-8.1 Planificación (tabla),Documento,hlopez@disna.com.sv,2026-07-20,2026-07-23,3,"Tabla Actividad-Responsable-Fecha con las ~14 actividades del Avance 1. Ver Tarea 8.1","Tabla con 14 filas mínimo|Fechas 15/07-10/08"
-9.1 Cronograma Gantt,Documento,hlopez@disna.com.sv,2026-07-21,2026-07-25,3,"Gantt oficial se genera en Planner tras carga masiva. Versión Mermaid como respaldo. Ver Tarea 9.1","Diagrama Mermaid gantt en documento|Referencia al Planner del equipo"
-10.1 Entradas/Salidas por HU,Documento,orellana@medisuite.local;sanchez@medisuite.local,2026-07-23,2026-07-28,5,"Tabla con entradas/salidas de las 6 HU listadas. Ver Tarea 10.1","Tabla con 6 HU|Entradas y Salidas por cada HU"
-11.1 Declaración de Entidades,Documento,merino@medisuite.local,2026-07-22,2026-07-28,3,"9 entidades académicas con descripción y atributos. Ver Tarea 11.1","Tabla con 9 entidades|Atributos por entidad|Link a ESQUEMA_BACKEND.md"
-12.1 Ejecutar schema.sql en Neon,BD,merino@medisuite.local,2026-07-22,2026-07-24,1,"Aplicar schema.sql (17 tablas) y seed.sql en Neon clinica_dev. Ver Tarea 12.1","17 tablas verificadas|Seed cargado (2+ tenants)|Sin errores en DBeaver"
-12.2 Inicializar Spring Boot,Backend,orellana@medisuite.local,2026-07-23,2026-07-27,1,"Generar proyecto Spring Boot 3.3 con Spring Initializr en backend/. Ver Tarea 12.2","backend/pom.xml presente|mvnw arranca en :8080|Dependencias jjwt agregadas"
-12.3 Configurar Neon (application.yml),Backend,orellana@medisuite.local,2026-07-27,2026-07-28,1,"application.yml leyendo variables .env para conectar a Neon. Ver Tarea 12.3","HikariCP Start completed|/actuator/health UP|db component UP"
-12.4 Estructura de paquetes + Entidades,Backend,orellana@medisuite.local;ventura@medisuite.local,2026-07-28,2026-08-01,1,"Estructura com.sv.grupo.hospital.citas.* + entidades Tenant User Patient Doctor Specialty. Ver Tarea 12.4","mvnw compile OK|Hibernate valida esquema sin discrepancias"
-12.5 Repositories JPA,Backend,orellana@medisuite.local,2026-08-01,2026-08-03,1,"5 repositories (User Tenant Patient Doctor Specialty). Ver Tarea 12.5","5 repositories creados|Test unitario de findByEmailAndTenantId pasa"
-12.6 DTOs + AuthService,Backend,orellana@medisuite.local,2026-08-02,2026-08-04,1,"DTOs LoginRequest/LoginResponse (records) + AuthService con bloqueo tras 5 intentos + GlobalExceptionHandler. Ver Tarea 12.6","AuthService.login() retorna token válido|Bloqueo tras 5 intentos verificable"
-12.7 Spring Security + JWT + /api/auth/login,Backend,orellana@medisuite.local;ventura@medisuite.local,2026-08-04,2026-08-06,1,"JwtTokenProvider + SecurityConfig + AuthController. Ver Tarea 12.7","POST /api/auth/login responde 200 con JWT|Credenciales inválidas 401|Bloqueo 422"
-12.8 Init frontend Vite + React + TS + Tailwind + Zustand,Frontend,diaz@medisuite.local;melgar@medisuite.local,2026-07-25,2026-07-30,1,"npm create vite@latest frontend + Tailwind + Zustand + react-router + axios + react-hook-form + zod + lucide. Ver Tarea 12.8","npm run dev en :5173|Tailwind aplica estilos|Font Inter cargando"
-12.9 Pantalla LoginPage.tsx,Frontend,diaz@medisuite.local;melgar@medisuite.local,2026-08-04,2026-08-07,1,"LoginPage con react-hook-form + zod + integración a /api/auth/login. Estilo MedCore Clay. Ver Tarea 12.9","/login carga con estilo Clay|Login exitoso redirige a /dashboard|Errores muestran mensaje"
-12.10 Casos de prueba QA,QA,fuentes@medisuite.local;vasquez@medisuite.local,2026-08-05,2026-08-07,1,"3 casos de prueba en docs/qa/CP_LOGIN.md: CP-01 login OK CP-02 login fail CP-03 bloqueo. Ver Tarea 12.10","3 casos documentados|3 casos ejecutados|Resultados registrados"
-13.1 Conclusiones individuales,Documento,todos@medisuite.local,2026-08-03,2026-08-07,5,"Cada integrante 2-3 líneas sobre lo aprendido. Enviar a PM antes del 07/08 18:00. Ver Tarea 13.1","11 conclusiones recibidas|Consolidadas en sección 13"
-14.1 Bibliografía APA,Documento,sanchez@medisuite.local,2026-08-04,2026-08-06,5,"Consolidar bibliografía en formato APA. Base: intruccionesProyecto.md sección 14. Ver Tarea 14.1","Sección 14 con 10+ referencias APA"
-Consolidar documento final + PDF,Documento,hlopez@disna.com.sv,2026-08-08,2026-08-09,1,"Ensamblar documento completo y generar PDF final. Revisar los 14 puntos del checklist","Documento revisado|PDF generado|Checklist 14 puntos ✅"
-Entrega Avance 1,Documento,hlopez@disna.com.sv,2026-08-10,2026-08-10,1,"Subir PDF al aula virtual antes de las 23:59","Entregado al aula|Confirmación de recibido"
+Title,Bucket,AssigneeEmails,StartDate,DueDate,Priority,Description,Checklist,Notes
+1.1 Portada individual,Documento,2026010132@cvirtualuees.edu.sv;2026010204@cvirtualuees.edu.sv;2026011707@cvirtualuees.edu.sv;2026010796@cvirtualuees.edu.sv;2026011012@cvirtualuees.edu.sv;2026011736@cvirtualuees.edu.sv;2026020122@cvirtualuees.edu.sv;2026011709@cvirtualuees.edu.sv;2026010068@cvirtualuees.edu.sv;2026011585@cvirtualuees.edu.sv;2026010813@cvirtualuees.edu.sv,2026-07-15,2026-07-20,5,"🎯 QUÉ ENTREGAR
+Tu fila de la Portada del documento (nombre completo en MAYÚSCULAS, CIF, marcar SI en Participó).
+
+📖 GUÍA COMPLETA (todo paso a paso: qué hacer, cómo hacerlo, dónde escribir)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-1-1
+
+📍 DÓNDE VA TU TRABAJO
+Documento del equipo (Word compartido en Teams canal 📋 Avances del Proyecto)
+Sección: ""Portada (página inicial)""
+
+📅 Fecha límite: 20/07/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+2.1 Objetivo General,Documento,2026010132@cvirtualuees.edu.sv,2026-07-15,2026-07-16,3,"🎯 QUÉ ENTREGAR
+Redacción del objetivo general único del proyecto (se reusará en Avance 2 y 3).
+
+📖 GUÍA COMPLETA (todo paso a paso: qué hacer, cómo hacerlo, dónde escribir)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-2-1
+
+📍 DÓNDE VA TU TRABAJO
+Documento del equipo (Word compartido en Teams canal 📋 Avances del Proyecto)
+Sección: ""Objetivo general""
+
+📅 Fecha límite: 16/07/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+3.1 Objetivo Específico Avance 1,Documento,2026010132@cvirtualuees.edu.sv,2026-07-15,2026-07-16,3,"🎯 QUÉ ENTREGAR
+Redacción del OE1 (módulo de autenticación y roles, HU-007).
+
+📖 GUÍA COMPLETA (todo paso a paso: qué hacer, cómo hacerlo, dónde escribir)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-3-1
+
+📍 DÓNDE VA TU TRABAJO
+Documento del equipo (Word compartido en Teams canal 📋 Avances del Proyecto)
+Sección: ""Objetivos específicos""
+
+📅 Fecha límite: 16/07/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+4.1 Distribución del Equipo Scrum,Documento,2026010132@cvirtualuees.edu.sv,2026-07-15,2026-07-16,3,"🎯 QUÉ ENTREGAR
+Tabla con los 11 integrantes y su Rol Scrum + Rol Técnico.
+
+📖 GUÍA COMPLETA (todo paso a paso: qué hacer, cómo hacerlo, dónde escribir)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-4-1
+
+📍 DÓNDE VA TU TRABAJO
+Documento del equipo (Word compartido en Teams canal 📋 Avances del Proyecto)
+Sección: ""Distribución del equipo""
+
+📅 Fecha límite: 16/07/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+5.1 Roles y funciones del sistema,Documento,2026010813@cvirtualuees.edu.sv,2026-07-17,2026-07-20,3,"🎯 QUÉ ENTREGAR
+Tabla con 5 roles del sistema (Médico, Paciente, Enfermera, Administrador, Recepcionista) y sus funciones.
+
+📖 GUÍA COMPLETA (todo paso a paso: qué hacer, cómo hacerlo, dónde escribir)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-5-1
+
+📍 DÓNDE VA TU TRABAJO
+Documento del equipo (Word compartido en Teams canal 📋 Avances del Proyecto)
+Sección: ""Roles y fundamentos del sistema""
+
+📅 Fecha límite: 20/07/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+6.1 Historias de Usuario,Documento,2026010813@cvirtualuees.edu.sv;2026010132@cvirtualuees.edu.sv,2026-07-17,2026-07-22,3,"🎯 QUÉ ENTREGAR
+Backlog de 6+ HU con formato Como/Quiero/Para y criterios detallados para HU-007.
+
+📖 GUÍA COMPLETA (todo paso a paso: qué hacer, cómo hacerlo, dónde escribir)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-6-1
+
+📍 DÓNDE VA TU TRABAJO
+Documento del equipo (Word compartido en Teams canal 📋 Avances del Proyecto)
+Sección: ""Historias de usuario""
+
+📅 Fecha límite: 22/07/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+7.1 Alcances y límites,Documento,2026010132@cvirtualuees.edu.sv,2026-07-16,2026-07-18,5,"🎯 QUÉ ENTREGAR
+Sección con lo que NO hará el sistema (8+ exclusiones) y qué SÍ cubre el Avance 1.
+
+📖 GUÍA COMPLETA (todo paso a paso: qué hacer, cómo hacerlo, dónde escribir)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-7-1
+
+📍 DÓNDE VA TU TRABAJO
+Documento del equipo (Word compartido en Teams canal 📋 Avances del Proyecto)
+Sección: ""Alcances y límites""
+
+📅 Fecha límite: 18/07/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+8.1 Planificación (tabla),Documento,2026010132@cvirtualuees.edu.sv,2026-07-20,2026-07-23,3,"🎯 QUÉ ENTREGAR
+Tabla con las ~19 actividades del Avance 1 (Actividad, Responsable, Fecha inicio, Fecha fin).
+
+📖 GUÍA COMPLETA (todo paso a paso: qué hacer, cómo hacerlo, dónde escribir)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-8-1
+
+📍 DÓNDE VA TU TRABAJO
+Documento del equipo (Word compartido en Teams canal 📋 Avances del Proyecto)
+Sección: ""Planificación""
+
+📅 Fecha límite: 23/07/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+9.1 Cronograma Gantt,Documento,2026010132@cvirtualuees.edu.sv,2026-07-21,2026-07-25,3,"🎯 QUÉ ENTREGAR
+Diagrama Gantt (código Mermaid + referencia al Planner del equipo).
+
+📖 GUÍA COMPLETA (todo paso a paso: qué hacer, cómo hacerlo, dónde escribir)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-9-1
+
+📍 DÓNDE VA TU TRABAJO
+Documento del equipo (Word compartido en Teams canal 📋 Avances del Proyecto)
+Sección: ""Cronograma Gantt""
+
+📅 Fecha límite: 25/07/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+10.1 Entradas/Salidas por HU,Documento,2026011707@cvirtualuees.edu.sv;2026010813@cvirtualuees.edu.sv,2026-07-23,2026-07-28,5,"🎯 QUÉ ENTREGAR
+Tabla con entradas y salidas del sistema para las 6 HU (HU-007, HU-001, HU-008, HU-003, HU-004, HU-002).
+
+📖 GUÍA COMPLETA (todo paso a paso: qué hacer, cómo hacerlo, dónde escribir)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-10-1
+
+📍 DÓNDE VA TU TRABAJO
+Documento del equipo (Word compartido en Teams canal 📋 Avances del Proyecto)
+Sección: ""Entradas y salidas por HU""
+
+📅 Fecha límite: 28/07/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+11.1 Declaración de Entidades,Documento,2026020122@cvirtualuees.edu.sv,2026-07-22,2026-07-28,3,"🎯 QUÉ ENTREGAR
+Tabla con las 9 entidades académicas del sistema (User, Patient, Doctor, Nurse, Administrator, Receptionist, Appointment, MedicalRecord, VitalSign) con descripción y atributos.
+
+📖 GUÍA COMPLETA (todo paso a paso: qué hacer, cómo hacerlo, dónde escribir)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-11-1
+
+📍 DÓNDE VA TU TRABAJO
+Documento del equipo (Word compartido en Teams canal 📋 Avances del Proyecto)
+Sección: ""Declaración de entidades""
+
+📅 Fecha límite: 28/07/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+12.1 Ejecutar schema.sql en Neon,BD,2026020122@cvirtualuees.edu.sv,2026-07-22,2026-07-24,1,"🎯 QUÉ ENTREGAR
+BD Neon ""clinica_dev"" con las 17 tablas creadas y datos demo cargados (2 tenants).
+
+📖 GUÍA COMPLETA (todo paso a paso: qué instalar, qué scripts correr, cómo verificar)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-12-1
+
+📍 DÓNDE VA TU TRABAJO
+Rama Git: chore/db-apply-schema (para actualizar notas en database/README.md)
+Archivos que ejecutas en DBeaver: database/schema.sql y database/seed.sql
+
+📅 Fecha límite: 24/07/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+12.2 Inicializar Spring Boot,Backend,2026011707@cvirtualuees.edu.sv,2026-07-23,2026-07-27,1,"🎯 QUÉ ENTREGAR
+Proyecto Spring Boot 3.3 con Java 21 generado y compilando en la carpeta backend/ del repo.
+
+📖 GUÍA COMPLETA (todo paso a paso: qué instalar, qué generar, cómo verificar)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-12-2
+
+📍 DÓNDE VA TU TRABAJO
+Rama Git: chore/spring-boot-init
+Archivos a crear: backend/pom.xml, backend/mvnw, backend/src/**, backend/.gitignore
+
+📅 Fecha límite: 27/07/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+12.3 Configurar Neon (application.yml),Backend,2026011707@cvirtualuees.edu.sv,2026-07-27,2026-07-28,1,"🎯 QUÉ ENTREGAR
+Backend arrancando y conectado a Neon. Endpoint /actuator/health retornando UP.
+
+📖 GUÍA COMPLETA (todo paso a paso: variables .env, application.yml, verificación)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-12-3
+
+📍 DÓNDE VA TU TRABAJO
+Rama Git: chore/spring-boot-init (misma rama de la tarea 12.2)
+Archivos: backend/src/main/resources/application.yml
+
+📅 Fecha límite: 28/07/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+12.4 Estructura de paquetes + Entidades,Backend,2026011707@cvirtualuees.edu.sv;2026011585@cvirtualuees.edu.sv,2026-07-28,2026-08-01,1,"🎯 QUÉ ENTREGAR
+Estructura de paquetes com.sv.grupo.hospital.citas.* + entidades JPA Tenant, User, Patient, Doctor, Specialty compilando y validando el esquema Neon.
+
+📖 GUÍA COMPLETA (todo paso a paso: qué carpetas, qué código pegar, cómo verificar)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-12-4
+
+📍 DÓNDE VA TU TRABAJO
+Rama Git: feature/HU-007-entities
+Archivos: backend/src/main/java/com/sv/grupo/hospital/citas/model/**
+
+📅 Fecha límite: 01/08/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+12.5 Repositories JPA,Backend,2026011707@cvirtualuees.edu.sv,2026-08-01,2026-08-03,1,"🎯 QUÉ ENTREGAR
+5 interfaces JpaRepository (UserRepository, TenantRepository, PatientRepository, DoctorRepository, SpecialtyRepository) compilando.
+
+📖 GUÍA COMPLETA (todo paso a paso: código de cada repo, cómo verificar)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-12-5
+
+📍 DÓNDE VA TU TRABAJO
+Rama Git: feature/HU-007-entities
+Archivos: backend/src/main/java/com/sv/grupo/hospital/citas/dao/*.java
+
+📅 Fecha límite: 03/08/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+12.6 DTOs + AuthService,Backend,2026011707@cvirtualuees.edu.sv,2026-08-02,2026-08-04,1,"🎯 QUÉ ENTREGAR
+Records LoginRequest y LoginResponse + BusinessException + GlobalExceptionHandler + AuthService.login() con bloqueo tras 5 intentos.
+
+📖 GUÍA COMPLETA (todo paso a paso: código completo de cada archivo)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-12-6
+
+📍 DÓNDE VA TU TRABAJO
+Rama Git: feature/HU-007-entities
+Archivos: backend/src/main/java/com/sv/grupo/hospital/citas/{dto,service,exception}/**
+
+📅 Fecha límite: 04/08/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+12.7 Spring Security + JWT + /api/auth/login,Backend,2026011707@cvirtualuees.edu.sv;2026011585@cvirtualuees.edu.sv,2026-08-04,2026-08-06,1,"🎯 QUÉ ENTREGAR
+Endpoint POST /api/auth/login funcional (retorna 200 con JWT, 401 con credenciales inválidas, 422 con cuenta bloqueada).
+
+📖 GUÍA COMPLETA (todo paso a paso: JwtTokenProvider, SecurityConfig, AuthController + pruebas)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-12-7
+
+📍 DÓNDE VA TU TRABAJO
+Rama Git: feature/HU-007-entities
+Archivos: backend/src/main/java/com/sv/grupo/hospital/citas/{security,config,controller}/**
+
+📅 Fecha límite: 06/08/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+12.8 Init frontend Vite + React + TS + Tailwind + Zustand,Frontend,2026010796@cvirtualuees.edu.sv;2026011736@cvirtualuees.edu.sv,2026-07-25,2026-07-30,1,"🎯 QUÉ ENTREGAR
+Proyecto React + Vite + TS + Tailwind + Zustand corriendo en localhost:5173 con estilos MedCore Clay aplicados.
+
+📖 GUÍA COMPLETA (todo paso a paso: npm create, dependencias, config Tailwind)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-12-8
+
+📍 DÓNDE VA TU TRABAJO
+Rama Git: chore/frontend-init
+Archivos: frontend/package.json, frontend/tailwind.config.js, frontend/src/**
+
+📅 Fecha límite: 30/07/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+12.9 Pantalla LoginPage.tsx,Frontend,2026010796@cvirtualuees.edu.sv;2026011736@cvirtualuees.edu.sv,2026-08-04,2026-08-07,1,"🎯 QUÉ ENTREGAR
+Pantalla /login funcional consumiendo /api/auth/login. Login OK redirige a /dashboard; errores muestran mensaje.
+
+📖 GUÍA COMPLETA (todo paso a paso: LoginPage.tsx, authStore, authApi, App.tsx)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-12-9
+
+📍 DÓNDE VA TU TRABAJO
+Rama Git: feature/HU-007-login-ui
+Archivos: frontend/src/pages/LoginPage.tsx, frontend/src/store/authStore.ts, frontend/src/api/authApi.ts, frontend/src/App.tsx
+
+📅 Fecha límite: 07/08/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+12.10 Casos de prueba QA,QA,2026011709@cvirtualuees.edu.sv;2026010068@cvirtualuees.edu.sv,2026-08-05,2026-08-07,1,"🎯 QUÉ ENTREGAR
+3 casos de prueba documentados y ejecutados en docs/qa/CP_LOGIN.md (CP-01 login OK, CP-02 login fail, CP-03 bloqueo).
+
+📖 GUÍA COMPLETA (todo paso a paso: plantilla del documento, cómo ejecutar cada CP)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-12-10
+
+📍 DÓNDE VA TU TRABAJO
+Rama Git: test/HU-007-login
+Archivos: docs/qa/CP_LOGIN.md
+
+📅 Fecha límite: 07/08/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+13.1 Conclusiones individuales,Documento,2026010132@cvirtualuees.edu.sv;2026010204@cvirtualuees.edu.sv;2026011707@cvirtualuees.edu.sv;2026010796@cvirtualuees.edu.sv;2026011012@cvirtualuees.edu.sv;2026011736@cvirtualuees.edu.sv;2026020122@cvirtualuees.edu.sv;2026011709@cvirtualuees.edu.sv;2026010068@cvirtualuees.edu.sv;2026011585@cvirtualuees.edu.sv;2026010813@cvirtualuees.edu.sv,2026-08-03,2026-08-07,5,"🎯 QUÉ ENTREGAR
+2-3 líneas personales sobre lo aprendido en el Avance 1 (tecnologías, trabajo en equipo, proceso Scrum).
+
+📖 GUÍA COMPLETA (todo paso a paso: qué escribir, dónde pegarlo)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-13-1
+
+📍 DÓNDE VA TU TRABAJO
+Documento del equipo (Word compartido en Teams canal 📋 Avances del Proyecto)
+Sección: ""Conclusiones""
+
+📅 Fecha límite: 07/08/2026 (18:00)
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+14.1 Bibliografía APA,Documento,2026010813@cvirtualuees.edu.sv,2026-08-04,2026-08-06,5,"🎯 QUÉ ENTREGAR
+Bibliografía consolidada en formato APA (10+ referencias: Ingeniería SW, Scrum, Java, BD, Frontend, docs oficiales).
+
+📖 GUÍA COMPLETA (todo paso a paso: 13 referencias base + cómo agregar más)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-14-1
+
+📍 DÓNDE VA TU TRABAJO
+Documento del equipo (Word compartido en Teams canal 📋 Avances del Proyecto)
+Sección: ""Bibliografía""
+
+📅 Fecha límite: 06/08/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+Consolidar documento final + PDF,Documento,2026010132@cvirtualuees.edu.sv,2026-08-08,2026-08-09,1,"🎯 QUÉ ENTREGAR
+Documento Word revisado (14 puntos completos) exportado a PDF final listo para entrega.
+
+📖 GUÍA COMPLETA (todo paso a paso: checklist de revisión, cómo exportar PDF)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-consolidar
+
+📍 DÓNDE VA TU TRABAJO
+Documento Word del equipo → exportar como PDF a OneDrive/MediSuite/Entregable/
+
+📅 Fecha límite: 09/08/2026
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,
+Entrega Avance 1,Documento,2026010132@cvirtualuees.edu.sv,2026-08-10,2026-08-10,1,"🎯 QUÉ ENTREGAR
+PDF final subido al aula virtual antes de las 23:59 con captura de confirmación.
+
+📖 GUÍA COMPLETA (todo paso a paso: cómo subir, cómo capturar confirmación)
+https://github.com/NapoSV/medisuite/blob/main/docs/GUIA_PASO_A_PASO.md#tarea-entrega
+
+📍 DÓNDE VA TU TRABAJO
+Aula virtual UEES (plataforma académica de Programación II)
+
+📅 Fecha límite: 10/08/2026 23:59 (INAMOVIBLE — subir entre 20:00 y 22:00)
+
+⚠️ SI TE ATASCAS
+1) Vuelve a leer la guía en el link de arriba.
+2) Usa los prompts de AI que están al final de esa sección.
+3) Escribe en el canal Teams ""📋 Avances del Proyecto"".",,

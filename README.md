@@ -13,12 +13,14 @@ multi-tenancy, seguridad OWASP, escalabilidad y valor de negocio.
 | Capa | Tecnología |
 |------|-----------|
 | **Backend** | Java 21 LTS + Spring Boot 3.3.x + Spring Security + JWT |
-| **Frontend** | React + shadcn/ui + Tailwind CSS + Vite |
-| **Base de datos** | MySQL 8.0 |
+| **Frontend** | React + shadcn/ui + Tailwind CSS + Vite (Angular en evaluación — ver nota) |
+| **Base de datos** | PostgreSQL 16 |
 | **Infraestructura** | Docker + Docker Compose |
 | **Testing backend** | JUnit 5 + Mockito + H2 |
 | **Testing frontend** | Vitest + React Testing Library |
 | **CI/CD** | GitHub Actions |
+
+> **Nota sobre el frontend:** el ingeniero de la materia recomienda Angular 20 para el stack productivo. La decisión de mantener React o migrar a Angular queda pendiente — no bloquea el Avance 1 (documento) y se resuelve antes de iniciar código de frontend en el Avance 2.
 
 ---
 
@@ -107,6 +109,9 @@ Ver [docs/INSTRUCTIVO_GIT.md](docs/INSTRUCTIVO_GIT.md) para el paso a paso compl
 - [Instructivo Git](docs/INSTRUCTIVO_GIT.md) — cómo trabajar con el repo
 - [Setup del entorno](docs/SETUP_ENTORNO.md) — instalación detallada
 - [Estándares de código](docs/ESTANDARES_CODIGO.md) — convenciones del equipo
+- [Manual de BD compartida (Avance 1)](docs/MANUAL_AVANCE1_EQUIPO.md) — DBeaver, conexión a Neon, y ejercicio de práctica del equipo
+- [Esquema de base de datos](docs/fases/ESQUEMA_BASE_DATOS.md) — las 17 tablas (v2 auditada), relaciones e índices
+- [Guía maestra de desarrollo](docs/fases/GUIA_DESARROLLO_BACKEND.md) — hoja de ruta completa del Avance 1 a la presentación final: todas las tareas con responsable y fecha, código de cada módulo, API REST, frontend mínimo, deploy y flujo Git
 
 ---
 

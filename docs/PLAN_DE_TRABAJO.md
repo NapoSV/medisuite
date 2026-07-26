@@ -228,12 +228,12 @@ Una tarea/HU se considera **Terminada** cuando cumple **todos** estos criterios:
 
 **Por qué:**
 - **Homologar entornos** entre los 10 miembros del equipo (nadie se pelea con "en mi máquina sí funciona").
-- **Levantar la base de datos** (MySQL/PostgreSQL) sin instalar nada localmente: un solo `docker compose up`.
+- **Levantar la base de datos** (PostgreSQL) sin instalar nada localmente: un solo `docker compose up`.
 - **CI/CD desde el día 1** — GitHub Actions usa imágenes Docker.
 - **Despliegue del SaaS** — cuando pase a producción, todo es Docker.
 
 **Qué se dockeriza:**
-- **Base de datos** (MySQL 8.0 o PostgreSQL 16) → `docker-compose.yml` en la raíz del repo.
+- **Base de datos** (PostgreSQL 16) → `docker-compose.yml` en la raíz del repo.
 - **Backend** (Spring Boot) → `backend/Dockerfile` con multi-stage build (Maven build + JRE 21 slim).
 - **Frontend** (React + Vite) → `frontend/Dockerfile` con multi-stage build (Node build + Nginx serve).
 - **(Futuro)** Redis para cache, MailHog para pruebas de correo.
@@ -242,17 +242,18 @@ Una tarea/HU se considera **Terminada** cuando cumple **todos** estos criterios:
 ```yaml
 services:
   db:
-    image: mysql:8.0
+    image: postgres:16
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: clinica_dev
-    ports: ["3306:3306"]
-    volumes: [db_data:/var/lib/mysql]
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: clinica_dev
+      POSTGRES_USER: ${DB_USERNAME:-clinica_app}
+    ports: ["5432:5432"]
+    volumes: [db_data:/var/lib/postgresql/data]
 volumes:
   db_data:
 ```
 
-**Regla mínima:** cada miembro debe poder correr `docker compose up -d db` y tener la BD lista sin instalar MySQL/Postgres localmente.
+**Regla mínima:** cada miembro debe poder correr `docker compose up -d db` y tener la BD lista sin instalar Postgres localmente.
 
 ### IDEs recomendados
 
@@ -266,8 +267,8 @@ volumes:
   - **VS Code** + extensiones ESLint, Prettier, Tailwind CSS IntelliSense — recomendado.
   - **WebStorm** (JetBrains, no gratis salvo licencia de estudiante).
 - **Base de Datos**:
-  - **DBeaver Community** (gratis, funciona con MySQL y PostgreSQL).
-  - **MySQL Workbench** (si se elige MySQL).
+  - **DBeaver Community** (gratis, funciona con PostgreSQL).
+  - **pgAdmin 4** (cliente oficial de PostgreSQL, alternativa a DBeaver).
 - **Diagramas**:
   - **draw.io** (gratis, web o desktop) — para DER, UML, arquitectura.
 
@@ -275,7 +276,22 @@ volumes:
 
 ### Motor de Base de Datos
 
-**Recomendación: MySQL 8.0** (más común en aulas académicas). Alternativa: PostgreSQL 16 si el equipo tiene experiencia. **Decidir junto con MERINO/VENTURA antes del 20/07.**
+**Decidido: PostgreSQL 16** — recomendación del ingeniero de la materia (stack: Java 21 + Spring Boot / Angular / PostgreSQL / REST API + JSON, la combinación más común en ambientes productivos). Reemplaza la recomendación anterior de MySQL.
+
+### Base de Datos Colaborativa Pública (para pruebas en equipo)
+
+> ✅ **Validado el 22/07/2026.** Se probó extremo a extremo antes de comprometer el desarrollo a esta opción: conexión, creación de rol/BD dedicados y una prueba de humo (tabla + datos ficticios + `SELECT`) tanto en local como en la instancia en la nube.
+
+**Decidido: Neon (free tier), región AWS US East 1 (N. Virginia)** — PostgreSQL administrado, elegido por ser la región con menor latencia esperada desde El Salvador (no hay región AWS en Centroamérica; N. Virginia es el hub con mejor conectividad hacia la región frente a Ohio/Oregon/São Paulo/Asia/Europa).
+
+**Cómo quedó organizado:**
+1. Proyecto creado en Neon por HECTOR. **`Neon Auth` quedó desactivado a propósito** — el módulo de autenticación (JWT + RBAC) lo construye el equipo en Spring Security, es parte del entregable académico (OE1), no algo para tercerizar.
+2. Rol dedicado `clinica_app` (no el rol dueño del proyecto `neondb_owner`) con su propia base `clinica_dev` — principio de mínimo privilegio, igual que en producción (Fase 4.3).
+3. **Host de conexión para la app: el *pooler* de Neon** (`...-pooler.c-11.us-east-1.aws.neon.tech`), no el host directo — mejor manejo de conexiones concurrentes desde Spring Boot (HikariCP) con varios miembros probando a la vez.
+4. **Credenciales:** se comparten **solo por Teams (canal `🗄️ Base de Datos`)**, nunca en el repo. Cada miembro las pega en su propio `.env` local (ya en `.gitignore`).
+5. El script de seed con datos ficticios (`database/seed.sql`) se corre una sola vez contra esta instancia; todos apuntan ahí durante desarrollo y pruebas — una sola fuente de verdad.
+6. Docker Compose local se mantiene documentado como alternativa offline (ver `SETUP_ENTORNO.md`), pero **no es obligatorio** — se confirmó que se puede trabajar solo con PostgreSQL nativo o directo contra Neon, sin Docker.
+7. **Dato ficticio, no real:** confirmado con esta prueba — nadie debe cargar información de pacientes reales en esta instancia pública.
 
 ### Verificación del setup
 
@@ -284,7 +300,7 @@ Cada miembro debe poder ejecutar en su máquina:
 java -version    # → 21.x
 node -v          # → 20.x
 git --version    # → cualquier reciente
-mysql --version  # o psql --version
+psql --version
 ```
 
 ---
@@ -310,7 +326,7 @@ mysql --version  # o psql --version
 | 3 | `📚 Retos Semanales` | Coordinación de los retos individuales de cada semana. Instrucciones, dudas y evidencias de cada miembro. | Estándar | No |
 | 4 | `🔧 Backend` | Discusión técnica de Spring Boot, APIs, entidades, autenticación. Miembros clave: Bayron, Flores, Vigil, Ventura. | Estándar | No |
 | 5 | `🎨 Frontend` | Discusión de React, componentes shadcn/Tailwind, integración con APIs. Miembros clave: Díaz, Melgar, Vigil. | Estándar | No |
-| 6 | `🗄️ Base de Datos` | Diseño de DER, scripts SQL, decisiones sobre el motor (MySQL/PostgreSQL). Miembros clave: Merino, Ventura. | Estándar | No |
+| 6 | `🗄️ Base de Datos` | Diseño de DER, scripts SQL sobre PostgreSQL. Miembros clave: Merino, Ventura. | Estándar | No |
 | 7 | `🧪 QA y Pruebas` | Casos de prueba, reporte de bugs, cobertura de unit tests, pruebas manuales. Miembros clave: Fuentes, Vásquez. | Estándar | No |
 | 8 | `📖 Investigación` | Bibliografía, entrevistas de campo con personal de clínica, glosario del dominio, análisis del rubro. Miembros clave: Nicole, Héctor. | Estándar | No |
 | 9 | `📌 Ceremonias Scrum` | Actas de sprint planning, sprint review, retrospectivas y sync semanales. Cada acta como una publicación fijada. | Estándar | No |
@@ -370,42 +386,676 @@ mysql --version  # o psql --version
   - `Semana 4 — ...` etc.
 - **Etiquetas simples:** `Individual`, `Coordinador (Héctor)`, `Entregado`.
 
-**Tareas del Avance 1 (Sprint 1 y 2):**
+### 1.3 Tareas del Proyecto — Planner Principal (Avance 1, Avance 2 y Entrega Final)
 
-| Tarea | Asignado | Deadline | Notas |
-|-------|----------|----------|-------|
-| Cerrar nombre del producto (MediSuite vs ClinicaOS) | HECTOR + NICOLE | 20/07 | Primera reunión de kickoff |
-| Decidir motor de BD (MySQL vs PostgreSQL) | MERINO + VENTURA | 20/07 | Recomendación: MySQL 8.0 |
-| Setup del repo GitHub + invitaciones | HECTOR | 18/07 | `.gitignore`, `.env.example`, README inicial |
-| Crear `docs/INSTRUCTIVO_GIT.md` y `SETUP_ENTORNO.md` | HECTOR | 18/07 | Compartir link en Teams |
-| Setup de Docker Compose para la BD | VENTURA + MERINO | 20/07 | `docker-compose.yml` en la raíz |
-| Investigar dominio: flujos de clínica (2 entrevistas) | NICOLE | 22/07 | Insumo para HU y casos de uso |
-| Diseñar DER completo (15 entidades) con `tenant_id` | MERINO (backup: VENTURA) | 24/07 | Herramienta: draw.io. Incluir Tenant y AuditLog |
-| Diseño de arquitectura multi-tenant | VENTURA | 24/07 | Documento en `docs/fases/MULTI_TENANT.md` |
-| Sección 12 documento (paquetes + 2 clases modelo) | VENTURA | 24/07 | Estructura `com.sv.grupo.hospital.citas.*` |
-| Setup del proyecto Spring Boot base | BAYRON + VENTURA | 22/07 | Estructura de paquetes vacíos + Dockerfile |
-| Setup del proyecto React + shadcn + Tailwind | DIAZ + MELGAR | 22/07 | Vite + config i18n inicial + Dockerfile |
-| Redactar Conclusiones (Sección 13) | TODOS | 25/07 | Cada uno 2–3 líneas |
-| Redactar Bibliografía (Sección 14) | NICOLE + HECTOR | 25/07 | Usar APA de este plan |
-| Módulo de autenticación (backend) con JWT y `tenant_id` en claims | BAYRON + VIGIL | 30/07 | Spring Security + JWT + RBAC |
-| Entidad `Tenant` + filtro Hibernate + `TenantContext` | VENTURA + BAYRON | 30/07 | Base multi-tenant funcional |
-| Scripts SQL (DDL + seed) con 2 tenants demo | MERINO (backup: BAYRON) | 30/07 | Cada tenant con usuarios base |
-| Pantalla de login + registro de pacientes | DIAZ + MELGAR | 03/08 | HU-001 con soporte i18n |
-| Setup JUnit 5 + Mockito + H2 en backend | BAYRON | 25/07 | Perfil `test` con H2 en memoria |
-| Setup Vitest + Testing Library en frontend | DIAZ | 30/07 | Config inicial + 1 test de ejemplo |
-| Configurar GitHub Actions (build + tests + audit) | HECTOR + VIGIL | 30/07 | Falla si tests o audit fallan |
-| Unit tests del módulo de autenticación | BAYRON + VIGIL | 30/07 | Cobertura ≥ 70% del service |
-| Test de aislamiento multi-tenant (crítico) | VENTURA + FUENTES | 03/08 | Un tenant no ve datos del otro |
-| Casos de prueba Auth + HU-001 (manual) | FUENTES + VASQUEZ | 05/08 | Formato tabla en `casos-de-prueba.md` |
-| Pruebas de humo del módulo de usuarios | FUENTES + VASQUEZ | 10/08 | Ejecución antes de entrega |
-| Consolidar documento del Avance 1 y exportar a PDF | HECTOR | 08/08 | Formato final para el aula virtual |
+> Estas son las tareas que se cargan al tablero `Proyecto Clínica — Prog II 2026` (el principal, no el de Retos Semanales). Cada fila = 1 tarjeta en Planner, con la etiqueta de avance correspondiente (`Avance 1`, `Avance 2`, `Avance 3`) más su etiqueta de área.
 
-**Tareas Avance 2 y Avance 3** — cargar en Planner con estado `🟡 Por Hacer`, activar en su sprint:
+> Formato de cada tarea: Prioridad, fechas, etiquetas, asignados, notas y **lista de comprobación** — listo para copiar directo a una tarjeta de Planner. Cada checklist se revisó para que sus ítems pertenezcan estrictamente a esa tarea (ej. "actualizar docker-compose.yml" vive en la tarea de Docker, no en la de "decidir motor de BD" — son cosas distintas).
 
-*Avance 2 (deadline 14/09):* Módulo de gestión de citas (backend + frontend), integración con calendario, pruebas funcionales.
-*Avance 3 (deadline 19/10):* Expediente clínico + triaje, reportes/estadísticas, pruebas integrales, documentación final.
+---
 
-### 1.3 Planner — Tablero "Retos Semanales"
+## AVANCE 1 — SOLO documento, sin código de MVP (Sprint 1 y 2, entrega ~10/08)
+
+> Reestructurado el 22/07/2026: el Avance 1 es únicamente el documento académico (formato del ingeniero). El código de autenticación, tenant, tests y frontend NO va aquí — se movió a Avance 2. Este es el error que se venía arrastrando en la versión anterior de este plan.
+
+#### Tarea — Cerrar nombre del producto (MediSuite vs ClinicaOS)
+- **Prioridad:** Alta
+- **Fecha de inicio:** 18/07
+- **Fecha de vencimiento:** 20/07
+- **Etiquetas:** `Avance 1`, `Investigación`
+- **Asignados:** HECTOR, NICOLE
+- **Estado:** Pendiente
+
+**Notas:** Decidir el nombre final del producto entre las dos opciones propuestas antes de seguir usándolo en documentos y repo.
+
+**Lista de comprobación:**
+- [ ] Revisar las dos opciones de nombre (MediSuite, ClinicaOS) con el equipo
+- [ ] Decidir en la reunión de kickoff
+- [ ] Confirmar el nombre elegido por escrito en el canal `📢 General`
+- [ ] Verificar que el nombre coincida en `README.md` y en el documento de Avance 1
+
+---
+
+#### Tarea — Motor de base de datos: PostgreSQL 16
+- **Prioridad:** Alta
+- **Fecha de inicio:** 20/07
+- **Fecha de vencimiento:** 22/07
+- **Etiquetas:** `Avance 1`, `Base de Datos`
+- **Asignados:** MERINO, VENTURA (validado por HECTOR)
+- **Estado:** ✅ Completado
+
+**Notas:** Decisión de motor de base de datos, siguiendo la recomendación del ingeniero. Esta tarea es solo la **decisión y validación de conectividad** — la actualización de `docker-compose.yml` y demás archivos de infraestructura tiene su propia tarea aparte (ver Avance 2).
+
+**Lista de comprobación:**
+- [x] Revisar la recomendación del ingeniero (Java + Spring Boot / Angular / PostgreSQL / REST+JSON)
+- [x] Validar PostgreSQL localmente (conexión + datos ficticios de prueba)
+- [x] Validar PostgreSQL en la base compartida (Neon)
+- [x] Documentar la decisión en este plan
+
+---
+
+#### Tarea — Setup del repositorio GitHub + invitaciones
+- **Prioridad:** Alta
+- **Fecha de inicio:** 17/07
+- **Fecha de vencimiento:** 18/07
+- **Etiquetas:** `Avance 1`, `Setup / Infra`
+- **Asignados:** HECTOR
+- **Estado:** ✅ Completado
+
+**Notas:** Repositorio base del proyecto, con protecciones mínimas desde el primer commit.
+
+**Lista de comprobación:**
+- [x] Crear repositorio privado en GitHub
+- [x] Invitar a los 10 integrantes restantes
+- [x] Agregar `.gitignore` y `.env.example`
+- [x] Subir README inicial
+
+---
+
+#### Tarea — Crear `docs/INSTRUCTIVO_GIT.md` y `SETUP_ENTORNO.md`
+- **Prioridad:** Media
+- **Fecha de inicio:** 17/07
+- **Fecha de vencimiento:** 18/07
+- **Etiquetas:** `Avance 1`, `Setup / Infra`
+- **Asignados:** HECTOR
+- **Estado:** ✅ Completado
+
+**Notas:** Documentación base para que todo el equipo tenga el mismo flujo de trabajo desde el día 1.
+
+**Lista de comprobación:**
+- [x] Redactar `INSTRUCTIVO_GIT.md` con el flujo de ramas y comandos básicos
+- [x] Redactar `SETUP_ENTORNO.md` con la instalación paso a paso
+- [x] Compartir el enlace de ambos documentos en Teams
+
+---
+
+#### Tarea — Investigar dominio: flujos de clínica (2 entrevistas)
+- **Prioridad:** Alta
+- **Fecha de inicio:** 20/07
+- **Fecha de vencimiento:** 22/07
+- **Etiquetas:** `Avance 1`, `Investigación`
+- **Asignados:** NICOLE
+- **Estado:** Pendiente
+
+**Notas:** Insumo real de negocio para las HU y la sección de requisitos — evita diseñar "a ciegas".
+
+**Lista de comprobación:**
+- [ ] Identificar 2 personas que trabajen en una clínica real (conocidos/familiares)
+- [ ] Aplicar las 5 preguntas guía (cómo agendan citas hoy, qué es lo más molesto, qué información necesitan a mano, si han perdido información de pacientes, si usarían una app gratuita)
+- [ ] Documentar las respuestas
+- [ ] Incorporar los hallazgos a la sección de Requisitos del documento
+
+---
+
+#### Tarea — Diagramar el DER (15 entidades) en draw.io
+- **Prioridad:** Alta
+- **Fecha de inicio:** 22/07
+- **Fecha de vencimiento:** 24/07
+- **Etiquetas:** `Avance 1`, `Base de Datos`
+- **Asignados:** MERINO (backup: VENTURA)
+- **Estado:** Pendiente (DDL ya existe)
+
+**Notas:** El DDL de las 17 tablas (v2 auditada) ya existe (`database/schema.sql`) — esta tarea es **solo el diagrama visual** para el documento, no el diseño desde cero.
+
+**Lista de comprobación:**
+- [ ] Usar `database/schema.sql` como referencia de las 17 tablas y sus relaciones
+- [ ] Diagramar las entidades y sus llaves foráneas en draw.io
+- [ ] Marcar explícitamente `tenant_id` en las tablas que lo llevan
+- [ ] Exportar el diagrama como `docs/diagramas/DER.png`
+- [ ] Revisar con el equipo el pendiente de `specialties` (ver `docs/fases/ESQUEMA_BASE_DATOS.md`) antes de darlo por final
+
+---
+
+#### Tarea — Diseño de arquitectura multi-tenant (documento)
+- **Prioridad:** Media
+- **Fecha de inicio:** 22/07
+- **Fecha de vencimiento:** 24/07
+- **Etiquetas:** `Avance 1`, `Seguridad`
+- **Asignados:** VENTURA
+- **Estado:** Pendiente
+
+**Notas:** Documento de diseño (texto/diagrama), no implementación — el código del filtro multi-tenant va en Avance 2.
+
+**Lista de comprobación:**
+- [ ] Redactar el enfoque de aislamiento elegido (discriminador por columna `tenant_id`)
+- [ ] Describir a nivel de diseño el flujo de `TenantContext` + filtro Hibernate
+- [ ] Guardar el documento en `docs/fases/MULTI_TENANT.md`
+- [ ] Compartir para revisión en el canal `🔒 Seguridad y Arquitectura`
+
+---
+
+#### Tarea — Sección 12 del documento (paquetes Java + 2 clases modelo)
+- **Prioridad:** Alta
+- **Fecha de inicio:** 22/07
+- **Fecha de vencimiento:** 24/07
+- **Etiquetas:** `Avance 1`, `Documento`
+- **Asignados:** HECTOR
+- **Estado:** ✅ Completado
+
+**Notas:** Ya redactada en `intruccionesProyecto.md` — estructura de paquetes, tabla de mapeo entidad→clase, y las 2 clases (`Patient.java`, `Doctor.java`).
+
+**Lista de comprobación:**
+- [x] Definir estructura de paquetes Java
+- [x] Redactar mapeo de entidades (español → inglés)
+- [x] Escribir las 2 clases mínimas requeridas
+- [x] Incluir la sección en `intruccionesProyecto.md`
+
+---
+
+#### Tarea — Redactar Conclusiones (Sección 13)
+- **Prioridad:** Media
+- **Fecha de inicio:** 22/07
+- **Fecha de vencimiento:** 25/07
+- **Etiquetas:** `Avance 1`, `Documento`
+- **Asignados:** TODOS (recopila HECTOR)
+- **Estado:** Plantilla lista, falta el aporte de cada quien
+
+**Notas:** Cada integrante aporta su reflexión personal — no se puede redactar por ellos.
+
+**Lista de comprobación:**
+- [ ] Cada integrante escribe 2–3 líneas sobre lo aprendido en el Avance 1
+- [ ] Enviar el texto a HECTOR por Teams
+- [ ] HECTOR consolida las 11 conclusiones en `intruccionesProyecto.md`
+
+---
+
+#### Tarea — Redactar Bibliografía (Sección 14)
+- **Prioridad:** Baja
+- **Fecha de inicio:** 22/07
+- **Fecha de vencimiento:** 25/07
+- **Etiquetas:** `Avance 1`, `Investigación`
+- **Asignados:** NICOLE, HECTOR
+- **Estado:** ✅ Completado
+
+**Notas:** Referencias APA ya incorporadas al documento.
+
+**Lista de comprobación:**
+- [x] Confirmar referencias de ingeniería de software, Scrum, Java y bases de datos
+- [x] Incluir fuentes web (Oracle, Spring, PostgreSQL)
+- [x] Incorporar la sección en `intruccionesProyecto.md`
+
+---
+
+#### Tarea — Validar motor de BD + BD colaborativa (Neon) + roles individuales
+- **Prioridad:** Alta
+- **Fecha de inicio:** 22/07
+- **Fecha de vencimiento:** 22/07
+- **Etiquetas:** `Avance 1`, `Base de Datos`, `Seguridad`
+- **Asignados:** HECTOR
+- **Estado:** ✅ Completado
+
+**Notas:** Validación de punta a punta antes de comprometer desarrollo — ver detalle completo en `docs/MANUAL_AVANCE1_EQUIPO.md`.
+
+**Lista de comprobación:**
+- [x] Probar PostgreSQL local (sin depender de Docker)
+- [x] Crear proyecto compartido en Neon (región us-east-1, más cercana a El Salvador)
+- [x] Crear roles individuales por integrante con privilegios mínimos (sin superusuario)
+- [x] Confirmar que un rol individual puede conectarse y leer datos reales
+
+---
+
+#### Tarea — Cada integrante configura DBeaver → Neon y crea su tabla de práctica
+- **Prioridad:** Alta
+- **Fecha de inicio:** 22/07
+- **Fecha de vencimiento:** 26/07
+- **Etiquetas:** `Avance 1`, `Base de Datos`, `Individual`
+- **Asignados:** TODOS (ver asignación nominal en `docs/MANUAL_AVANCE1_EQUIPO.md`)
+- **Estado:** Nueva
+
+**Notas:** Ejercicio práctico de `CREATE TABLE` con llaves foráneas reales, conectados con su propio usuario — instrucciones completas en `docs/MANUAL_AVANCE1_EQUIPO.md`.
+
+**Lista de comprobación:**
+- [ ] Instalar DBeaver
+- [ ] Configurar la conexión a Neon con tu usuario individual
+- [ ] Esperar tu turno según el orden de dependencias del ejercicio
+- [ ] Crear tu tabla asignada
+- [ ] Confirmar en el canal `🗄️ Base de Datos` que tu tabla quedó creada
+
+---
+
+#### Tarea — Consolidar documento del Avance 1 y exportar a PDF
+- **Prioridad:** Alta
+- **Fecha de inicio:** 05/08
+- **Fecha de vencimiento:** 08/08
+- **Etiquetas:** `Avance 1`, `Documento`
+- **Asignados:** HECTOR
+- **Estado:** Pendiente
+
+**Notas:** Cierre del entregable — con margen de 2 días antes de la fecha oficial del ingeniero (~10/08).
+
+**Lista de comprobación:**
+- [ ] Verificar que las 14 secciones del documento estén completas
+- [ ] Incluir las conclusiones de los 11 integrantes (Sección 13)
+- [ ] Revisar ortografía y formato general
+- [ ] Exportar `intruccionesProyecto.md` a PDF
+- [ ] Subir el PDF al aula virtual antes de la fecha del ingeniero
+
+---
+
+## AVANCE 2 — fecha aún no confirmada por el ingeniero (referencia interna: Sprint 3–4, ~17/08 a 13/09)
+
+#### Tarea — Setup de Docker Compose para la BD (opcional)
+- **Prioridad:** Baja
+- **Fecha de inicio:** 17/08
+- **Fecha de vencimiento:** 20/08
+- **Etiquetas:** `Avance 2`, `Setup / Infra`
+- **Asignados:** VENTURA, MERINO
+- **Estado:** Opcional, ya no bloqueante
+
+**Notas:** Se confirmó que se puede trabajar sin Docker (Postgres nativo o Neon directo) — esta tarea solo aplica si el equipo decide igual usarlo como entorno offline.
+
+**Lista de comprobación:**
+- [ ] Confirmar si el equipo realmente necesita Docker para desarrollo local
+- [ ] Si se decide usarlo: actualizar `docker-compose.yml` con la imagen elegida (PostgreSQL 16 — ya está hecho, falta validar en máquinas del equipo)
+- [ ] Probar `docker compose up -d db` en al menos 2 máquinas distintas del equipo
+
+---
+
+#### Tarea — Setup del proyecto Spring Boot base
+- **Prioridad:** Alta
+- **Fecha de inicio:** 17/08
+- **Fecha de vencimiento:** 21/08
+- **Etiquetas:** `Avance 2`, `Backend`, `Setup / Infra`
+- **Asignados:** BAYRON, VENTURA
+
+**Notas:** Proyecto base sobre el que se construye todo el backend del Avance 2.
+
+**Lista de comprobación:**
+- [ ] Crear el proyecto Spring Boot (Spring Initializr, Java 21)
+- [ ] Crear la estructura de paquetes definida en `ESTANDARES_CODIGO.md`
+- [ ] Configurar conexión a PostgreSQL (Neon) en `application.yml`
+- [ ] Crear `Dockerfile` multi-stage para el backend
+- [ ] Verificar que el proyecto compila y arranca (`./mvnw spring-boot:run`)
+
+---
+
+#### Tarea — Setup del proyecto Frontend (React o Angular — decisión pendiente)
+- **Prioridad:** Alta
+- **Fecha de inicio:** 17/08
+- **Fecha de vencimiento:** 21/08
+- **Etiquetas:** `Avance 2`, `Frontend`, `Setup / Infra`
+- **Asignados:** DIAZ, MELGAR
+
+**Notas:** Ver nota en `README.md` — la decisión final entre React y Angular debe cerrarse antes de iniciar esta tarea, no durante.
+
+**Lista de comprobación:**
+- [ ] Confirmar la decisión final: React o Angular
+- [ ] Inicializar el proyecto (Vite si es React, Angular CLI si es Angular)
+- [ ] Configurar el sistema de estilos (Tailwind/shadcn o Angular Material)
+- [ ] Configurar i18n inicial (es/en)
+- [ ] Crear `Dockerfile` multi-stage para el frontend
+
+---
+
+#### Tarea — Recrear/ajustar el esquema real en la BD compartida
+- **Prioridad:** Alta
+- **Fecha de inicio:** 17/08
+- **Fecha de vencimiento:** 22/08
+- **Etiquetas:** `Avance 2`, `Base de Datos`
+- **Asignados:** MERINO, VENTURA
+
+**Notas:** Se parte de `database/schema.sql` (probado en el ejercicio de práctica del Avance 1), incorporando las mejoras que el equipo decida en el DER oficial.
+
+**Lista de comprobación:**
+- [ ] Revisar `database/schema.sql` como punto de partida
+- [ ] Resolver el pendiente de `specialties` (tabla separada vs texto libre)
+- [ ] Aplicar los ajustes acordados por el equipo al esquema
+- [ ] Volver a aplicar `schema.sql` (ajustado) + `seed.sql` en la base compartida
+
+---
+
+#### Tarea — Módulo de autenticación (backend) con JWT y `tenant_id` en claims
+- **Prioridad:** Alta
+- **Fecha de inicio:** 22/08
+- **Fecha de vencimiento:** 30/08
+- **Etiquetas:** `Avance 2`, `Backend`, `Seguridad`
+- **Asignados:** BAYRON, VIGIL
+
+**Notas:** Corresponde al OE1 del proyecto académico — es una de las entregas que se evalúan directamente.
+
+**Lista de comprobación:**
+- [ ] Configurar Spring Security
+- [ ] Implementar generación y validación de JWT (incluyendo `tenant_id` en los claims)
+- [ ] Implementar hash de contraseñas con BCrypt
+- [ ] Implementar RBAC con `@PreAuthorize` por rol
+- [ ] Implementar bloqueo tras 5 intentos fallidos de login
+
+---
+
+#### Tarea — Entidad `Tenant` + filtro Hibernate + `TenantContext`
+- **Prioridad:** Alta
+- **Fecha de inicio:** 22/08
+- **Fecha de vencimiento:** 30/08
+- **Etiquetas:** `Avance 2`, `Backend`, `Seguridad`
+- **Asignados:** VENTURA, BAYRON
+
+**Notas:** Implementación del diseño ya documentado en `docs/fases/MULTI_TENANT.md` (Avance 1).
+
+**Lista de comprobación:**
+- [ ] Crear la entidad `Tenant`
+- [ ] Implementar `TenantContext` (ThreadLocal)
+- [ ] Implementar el filtro Hibernate `@Filter` para `tenant_id`
+- [ ] Crear la clase base `TenantAwareEntity`
+- [ ] Probar que las consultas filtran automáticamente por tenant
+
+---
+
+#### Tarea — Pantalla de login + registro de pacientes
+- **Prioridad:** Alta
+- **Fecha de inicio:** 25/08
+- **Fecha de vencimiento:** 03/09
+- **Etiquetas:** `Avance 2`, `Frontend`
+- **Asignados:** DIAZ, MELGAR
+
+**Notas:** HU-001 — depende de que el módulo de autenticación backend ya tenga los endpoints listos.
+
+**Lista de comprobación:**
+- [ ] Crear la pantalla de login (consumo del endpoint de autenticación)
+- [ ] Crear el formulario de registro de pacientes
+- [ ] Validar el formulario con `zod`
+- [ ] Agregar soporte i18n a los textos visibles
+
+---
+
+#### Tarea — Setup JUnit 5 + Mockito + H2 en backend
+- **Prioridad:** Media
+- **Fecha de inicio:** 17/08
+- **Fecha de vencimiento:** 22/08
+- **Etiquetas:** `Avance 2`, `QA / Pruebas`, `Backend`
+- **Asignados:** BAYRON
+
+**Notas:** Base de testing del backend, necesaria antes de escribir los unit tests de autenticación.
+
+**Lista de comprobación:**
+- [ ] Confirmar que `spring-boot-starter-test` está en el proyecto
+- [ ] Configurar el perfil `test` con H2 en memoria
+- [ ] Escribir un test de ejemplo que corra exitosamente
+- [ ] Verificar que `./mvnw test` pasa
+
+---
+
+#### Tarea — Setup Vitest + Testing Library en frontend
+- **Prioridad:** Media
+- **Fecha de inicio:** 17/08
+- **Fecha de vencimiento:** 22/08
+- **Etiquetas:** `Avance 2`, `QA / Pruebas`, `Frontend`
+- **Asignados:** DIAZ
+
+**Notas:** Base de testing del frontend.
+
+**Lista de comprobación:**
+- [ ] Instalar Vitest y React/Angular Testing Library según la decisión de stack
+- [ ] Configurar `msw` (u otro mock) para simular llamadas a la API
+- [ ] Escribir un test de ejemplo que corra exitosamente
+- [ ] Verificar que `npm test` pasa
+
+---
+
+#### Tarea — Configurar GitHub Actions (build + tests + audit)
+- **Prioridad:** Media
+- **Fecha de inicio:** 22/08
+- **Fecha de vencimiento:** 25/08
+- **Etiquetas:** `Avance 2`, `Setup / Infra`
+- **Asignados:** HECTOR, VIGIL
+
+**Notas:** El PR no se puede mergear si algún paso falla — rama `develop` protegida.
+
+**Lista de comprobación:**
+- [ ] Crear el workflow que corra `./mvnw test` en el backend
+- [ ] Agregar el paso `npm test` en el frontend
+- [ ] Agregar `npm audit --audit-level=high`
+- [ ] Confirmar que el PR se bloquea si algún paso falla
+
+---
+
+#### Tarea — Unit tests del módulo de autenticación
+- **Prioridad:** Alta
+- **Fecha de inicio:** 30/08
+- **Fecha de vencimiento:** 03/09
+- **Etiquetas:** `Avance 2`, `QA / Pruebas`, `Backend`
+- **Asignados:** BAYRON, VIGIL
+
+**Notas:** Parte de la Definición de Terminado del módulo de autenticación.
+
+**Lista de comprobación:**
+- [ ] Escribir tests del servicio de autenticación (login, hash, JWT)
+- [ ] Escribir tests de los validadores de entrada
+- [ ] Verificar cobertura ≥ 70% en el service de autenticación
+
+---
+
+#### Tarea — Test de aislamiento multi-tenant (crítico)
+- **Prioridad:** Alta
+- **Fecha de inicio:** 30/08
+- **Fecha de vencimiento:** 05/09
+- **Etiquetas:** `Avance 2`, `QA / Pruebas`, `Seguridad`
+- **Asignados:** VENTURA, FUENTES
+
+**Notas:** El error más grave posible en un SaaS multi-tenant es que un tenant vea datos de otro — esta prueba no es opcional.
+
+**Lista de comprobación:**
+- [ ] Crear 2 tenants de prueba con datos distintos
+- [ ] Escribir un test que confirme que el Tenant A no puede leer datos del Tenant B
+- [ ] Confirmar que la respuesta es 404 (no 403) para no revelar existencia
+- [ ] Documentar el resultado en `docs/fases/MULTI_TENANT.md`
+
+---
+
+#### Tarea — Casos de prueba Auth + HU-001 (manual)
+- **Prioridad:** Media
+- **Fecha de inicio:** 03/09
+- **Fecha de vencimiento:** 08/09
+- **Etiquetas:** `Avance 2`, `QA / Pruebas`
+- **Asignados:** FUENTES, VASQUEZ
+
+**Notas:** Pruebas manuales complementarias a los unit tests, no un reemplazo de ellos.
+
+**Lista de comprobación:**
+- [ ] Redactar casos de prueba a partir de los criterios de aceptación de HU-001
+- [ ] Ejecutar las pruebas manuales de registro/login
+- [ ] Documentar resultados en `casos-de-prueba.md`
+- [ ] Reportar bugs encontrados con pasos de reproducción
+
+---
+
+#### Tarea — Desarrollo del módulo de gestión de citas (backend + frontend)
+- **Prioridad:** Alta
+- **Fecha de inicio:** 05/09
+- **Fecha de vencimiento:** 13/09
+- **Etiquetas:** `Avance 2`, `Backend`, `Frontend`
+- **Asignados:** ORELLANA (Bayron), DIAZ, MELGAR
+
+**Notas:** HU-003 — el núcleo funcional del Avance 2.
+
+**Lista de comprobación:**
+- [ ] Implementar el backend de citas (crear, modificar, cancelar, consultar)
+- [ ] Implementar la vista de agenda por médico y fecha (frontend)
+- [ ] Validar disponibilidad de horario antes de confirmar una cita
+- [ ] Confirmar la cita con un código de reserva
+
+---
+
+#### Tarea — Integración con el calendario y disponibilidad
+- **Prioridad:** Media
+- **Fecha de inicio:** 08/09
+- **Fecha de vencimiento:** 13/09
+- **Etiquetas:** `Avance 2`, `Backend`
+- **Asignados:** VIGIL, MERINO
+
+**Notas:** Depende de que el módulo de citas ya tenga su modelo base implementado.
+
+**Lista de comprobación:**
+- [ ] Definir el modelo de horarios disponibles por médico
+- [ ] Implementar la consulta de disponibilidad en tiempo real
+- [ ] Validar que no se permitan dobles reservas
+
+---
+
+#### Tarea — Pruebas funcionales de citas
+- **Prioridad:** Media
+- **Fecha de inicio:** 10/09
+- **Fecha de vencimiento:** 13/09
+- **Etiquetas:** `Avance 2`, `QA / Pruebas`
+- **Asignados:** FUENTES, VASQUEZ
+
+**Notas:** Corresponde a la métrica de éxito "cero doble reserva" definida en este plan.
+
+**Lista de comprobación:**
+- [ ] Ejecutar pruebas de creación/cancelación/reprogramación de citas
+- [ ] Probar el caso de doble reserva (debe rechazarse)
+- [ ] Documentar resultados en `casos-de-prueba.md`
+
+---
+
+## ENTREGA FINAL / PRESENTACIÓN — MVP funcional (referencia interna: Sprint 5–7, ~14/09 a 26/10)
+
+#### Tarea — Módulo de expediente clínico y triaje
+- **Prioridad:** Alta
+- **Fecha de inicio:** 14/09
+- **Fecha de vencimiento:** 27/09
+- **Etiquetas:** `Avance 3`, `Backend`, `Frontend`
+- **Asignados:** FLORES, DIAZ
+
+**Notas:** HU-004.
+
+**Lista de comprobación:**
+- [ ] Implementar la entidad y CRUD de expediente clínico
+- [ ] Implementar el registro de signos vitales (triaje)
+- [ ] Implementar la clasificación de prioridad (bajo/medio/alto/crítico)
+- [ ] Implementar la búsqueda de expediente por CIF/nombre
+
+---
+
+#### Tarea — Recetas médicas
+- **Prioridad:** Alta
+- **Fecha de inicio:** 14/09
+- **Fecha de vencimiento:** 27/09
+- **Etiquetas:** `Avance 3`, `Backend`
+- **Asignados:** FLORES
+
+**Notas:** HU-002.
+
+**Lista de comprobación:**
+- [ ] Implementar el CRUD de recetas
+- [ ] Asociar la receta al paciente y al médico
+- [ ] Registrar fecha/hora de emisión
+- [ ] Incluir medicamentos, dosis y duración del tratamiento
+
+---
+
+#### Tarea — Generación de reportes y estadísticas
+- **Prioridad:** Media
+- **Fecha de inicio:** 28/09
+- **Fecha de vencimiento:** 11/10
+- **Etiquetas:** `Avance 3`, `Backend`, `Frontend`
+- **Asignados:** ORELLANA (Bayron), MELGAR
+
+**Notas:** Reportes de ocupación y atención para el administrador.
+
+**Lista de comprobación:**
+- [ ] Definir los reportes clave (ocupación, atención por médico)
+- [ ] Implementar los endpoints de reportes
+- [ ] Implementar las vistas de reportes en el frontend
+
+---
+
+#### Tarea — Módulo de inventario básico (deseable)
+- **Prioridad:** Baja
+- **Fecha de inicio:** 28/09
+- **Fecha de vencimiento:** 11/10
+- **Etiquetas:** `Avance 3`, `Backend`
+- **Asignados:** FLORES
+
+**Notas:** HU-007 — parte del "4º objetivo" de valor agregado, no bloquea el MVP crítico si falta tiempo.
+
+**Lista de comprobación:**
+- [ ] Implementar CRUD de productos
+- [ ] Implementar control de stock actual/mínimo
+- [ ] Implementar alerta de stock bajo (opcional)
+
+---
+
+#### Tarea — Dashboard "TOTAL ASSET VALUE" (deseable)
+- **Prioridad:** Baja
+- **Fecha de inicio:** 28/09
+- **Fecha de vencimiento:** 11/10
+- **Etiquetas:** `Avance 3`, `Frontend`
+- **Asignados:** MELGAR
+
+**Notas:** Depende de que existan datos de inventario y activos físicos.
+
+**Lista de comprobación:**
+- [ ] Diseñar la vista del dashboard
+- [ ] Conectar el dashboard a los datos de activos físicos e inventario
+- [ ] Mostrar el valor total consolidado
+
+---
+
+#### Tarea — i18n Español/Inglés funcional (deseable)
+- **Prioridad:** Baja
+- **Fecha de inicio:** 28/09
+- **Fecha de vencimiento:** 11/10
+- **Etiquetas:** `Avance 3`, `Backend`, `Frontend`
+- **Asignados:** DIAZ, MELGAR
+
+**Notas:** Deseable, no crítico — se corta primero si falta tiempo.
+
+**Lista de comprobación:**
+- [ ] Completar `messages_es.properties` y `messages_en.properties` (backend)
+- [ ] Completar los archivos de traducción del frontend (es/en)
+- [ ] Verificar el cambio de idioma en al menos 3 pantallas clave
+
+---
+
+#### Tarea — Deploy real: frontend en Vercel, backend en Render/Railway, BD en Neon
+- **Prioridad:** Alta
+- **Fecha de inicio:** 12/10
+- **Fecha de vencimiento:** 18/10
+- **Etiquetas:** `Avance 3`, `Setup / Infra`
+- **Asignados:** HECTOR, VIGIL
+
+**Notas:** Neon ya está validado — falta desplegar frontend y backend para la demo en vivo.
+
+**Lista de comprobación:**
+- [ ] Desplegar el frontend en Vercel
+- [ ] Desplegar el backend en Render o Railway
+- [ ] Confirmar que el backend desplegado se conecta a Neon
+- [ ] Probar el flujo completo en el ambiente desplegado (no solo local)
+
+---
+
+#### Tarea — Pruebas integrales y ajustes finales
+- **Prioridad:** Alta
+- **Fecha de inicio:** 12/10
+- **Fecha de vencimiento:** 23/10
+- **Etiquetas:** `Avance 3`, `QA / Pruebas`
+- **Asignados:** TODOS
+
+**Notas:** Última pasada antes de la presentación — prioridad a bugs críticos.
+
+**Lista de comprobación:**
+- [ ] Ejecutar pruebas de regresión de todos los módulos
+- [ ] Corregir los bugs críticos encontrados
+- [ ] Confirmar que las métricas de éxito definidas en este plan se cumplen
+
+---
+
+#### Tarea — Manual de usuario, manual técnico y presentación
+- **Prioridad:** Alta
+- **Fecha de inicio:** 18/10
+- **Fecha de vencimiento:** 26/10
+- **Etiquetas:** `Avance 3`, `Documento`
+- **Asignados:** TODOS
+
+**Notas:** Entregable final del ciclo.
+
+**Lista de comprobación:**
+- [ ] Redactar manual de usuario (PDF)
+- [ ] Redactar manual técnico (PDF)
+- [ ] Preparar la presentación (PowerPoint)
+- [ ] Ensayar la demo del MVP
+
+### 1.4 Planner — Tablero "Retos Semanales"
 
 Buckets por semana: `Semana 2 (actual)`, `Semana 3`, `Semana 4`...
 
@@ -1010,7 +1660,7 @@ Aunque no lleguemos a implementar todo esto en el ciclo, estas decisiones **sí*
 6. [ ] **Crear repositorio GitHub privado** e invitar a los 10 miembros — con `.gitignore` y `.env.example` desde el commit 1
 7. [ ] **Activar Dependabot** en el repo (Settings → Security → Dependabot alerts)
 8. [ ] **Crear `docs/INSTRUCTIVO_GIT.md`, `docs/SETUP_ENTORNO.md` y `docs/fases/SEGURIDAD.md`** y compartir enlaces en Teams
-9. [ ] **Cerrar decisiones pendientes:** tipo de clínica + motor de BD
+9. [x] **Motor de BD decidido:** PostgreSQL 16 (recomendación del ingeniero). Pendiente: cerrar tipo de clínica (nombre del producto)
 10. [ ] **Iniciar investigación de campo** (Nicole + Héctor): 2 entrevistas a personal de clínica antes del 25/07
 11. [ ] **Ultimátum a MERINO VENTURA** — confirmar antes del 25/07
 12. [ ] **Publicar la bibliografía APA + OWASP Top 10** en el canal `📖 Investigación`

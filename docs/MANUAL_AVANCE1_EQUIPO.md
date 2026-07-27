@@ -17,7 +17,7 @@
 
 1. Click en **"Nueva conexión"** (ícono de enchufe con `+`) → elegir **PostgreSQL**
 2. Pestaña **Main**, completar:
-   - **Host:** `ep-nameless-water-avvbs1vv-pooler.c-11.us-east-1.aws.neon.tech`
+   - **Host:** el host *pooler* de Neon que te compartió HECTOR **por mensaje directo (DM)** en Teams — no se publica en este documento ni en el repo por seguridad
    - **Port:** `5432`
    - **Database:** el nombre que te confirme HECTOR en Teams (ver sección 4 — la base se crea desde cero en este avance)
    - **Username:** tu usuario individual (ver tabla abajo)
@@ -77,7 +77,8 @@ Antes de que cada quien cree su tabla, tiene que existir una base de datos donde
 
 **Desde terminal (psql):**
 ```bash
-psql "host=ep-nameless-water-avvbs1vv-pooler.c-11.us-east-1.aws.neon.tech user=hector dbname=neondb sslmode=require" -f database/00_create_database.sql
+psql "host=<HOST_NEON> user=hector dbname=neondb sslmode=require" -f database/00_create_database.sql
+# <HOST_NEON> = el host pooler de Neon (lo tienes en tu .env como DB_HOST)
 ```
 
 **Desde DBeaver:** abre el archivo `database/00_create_database.sql` en un editor SQL conectado con el usuario `hector`, y ejecútalo línea por línea (el `\c clinica_dev` es un comando de `psql`, no funciona igual en el editor de DBeaver — ahí simplemente ejecuta primero `CREATE DATABASE clinica_dev;`, luego abre un nuevo editor SQL apuntando ya a la base `clinica_dev`, y corre el `GRANT` desde ahí).

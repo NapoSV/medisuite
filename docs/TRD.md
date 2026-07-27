@@ -17,7 +17,7 @@ Este documento define el stack, la arquitectura, los requisitos no funcionales y
 | **ORM** | Spring Data JPA + Hibernate | 3.x / 6.x | Repositorios sin boilerplate, migraciones controladas. |
 | **Migraciones** | Flyway | 10.x | Versionado del esquema BD, ejecución al arranque. |
 | **Base de datos** | PostgreSQL | 16 | Requisito del profesor; JSONB, índices parciales, extensiones. |
-| **Hosting BD** | Neon (serverless) | — | Pooler, ramificación, tier free suficiente para el ciclo. Ver [memoria de conexión](../.claude/projects/c--Users-hlopez-medisuite/memory/neon_connection.md). |
+| **Hosting BD** | Neon (serverless) | — | Pooler, ramificación, tier free suficiente para el ciclo. Datos de conexión: en el `.env` de cada quien (no versionado). |
 | **Frontend** | React | 18.x | Stack decidido por el equipo (ver PLAN_DE_TRABAJO nota 1). |
 | **Lenguaje frontend** | TypeScript | 5.x | Tipado estático para reducir bugs. |
 | **Estado global frontend** | Zustand | 4.x | Ligero, sin boilerplate, ideal para MVP. |

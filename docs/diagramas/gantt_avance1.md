@@ -8,6 +8,11 @@
 >
 > El Gantt **oficial** vive en Microsoft Planner del equipo; esta versión es el
 > respaldo académico para el documento.
+>
+> **⚠️ Actualización 27/07/2026:** el ingeniero aclaró que el Gantt del documento
+> debe cubrir **todo el proyecto** (hasta la entrega final). Para la sección 9 del
+> Word usa ahora [`gantt_proyecto_completo.md`](gantt_proyecto_completo.md);
+> este archivo queda como detalle interno del Avance 1.
 
 ```mermaid
 gantt

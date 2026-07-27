@@ -54,13 +54,12 @@ Definir baseline y meta para cada una. Se validan en la presentación final:
   5. Si les damos una app gratuita que resuelva X, ¿la usarían?
 - **Deadline: 25/07/2026.** Resultados van al Sección de Requisitos.
 
-**Fechas clave** (tomadas de la Sección 8 "Planificación" del documento `intruccionesProyecto.md` — sujetas a validación oficial con el profesor):
-- Avance 1 → entrega ~10/08/2026 (documento + código base del módulo de autenticación)
-- Avance 2 → entrega ~14/09/2026 (módulo de citas)
-- Avance 3 → entrega ~19/10/2026 (expediente clínico + reportes)
-- Presentación final → 26/10/2026
+**Fechas clave** (✅ confirmadas el 27/07/2026 — sustituyen a las estimadas originalmente de `intruccionesProyecto.md`):
+- Avance 1 → entrega 10/08/2026 (documento + código base del módulo de autenticación)
+- Avance 2 → entrega en la **semana del 21 al 26/09/2026** (módulo de citas + blindaje de seguridad)
+- Entrega final y defensa → **semana del 26 al 31/10/2026** (sistema completo desplegado)
 
-> **Nota:** estas fechas deben confirmarse en la primera reunión de kickoff y contrastarse con el calendario del aula virtual.
+> **Nota:** el plan operativo vigente de las etapas 2 y 3 es [PLAN_FASES_2_3.md](PLAN_FASES_2_3.md); las secciones de sprints de este documento con las fechas antiguas (~14/09, ~19/10) quedan como registro histórico.
 
 ---
 
@@ -287,7 +286,7 @@ volumes:
 **Cómo quedó organizado:**
 1. Proyecto creado en Neon por HECTOR. **`Neon Auth` quedó desactivado a propósito** — el módulo de autenticación (JWT + RBAC) lo construye el equipo en Spring Security, es parte del entregable académico (OE1), no algo para tercerizar.
 2. Rol dedicado `clinica_app` (no el rol dueño del proyecto `neondb_owner`) con su propia base `clinica_dev` — principio de mínimo privilegio, igual que en producción (Fase 4.3).
-3. **Host de conexión para la app: el *pooler* de Neon** (`...-pooler.c-11.us-east-1.aws.neon.tech`), no el host directo — mejor manejo de conexiones concurrentes desde Spring Boot (HikariCP) con varios miembros probando a la vez.
+3. **Host de conexión para la app: el *pooler* de Neon** (el host que termina en `-pooler`), no el host directo — mejor manejo de conexiones concurrentes desde Spring Boot (HikariCP) con varios miembros probando a la vez.
 4. **Credenciales:** se comparten **solo por Teams (canal `🗄️ Base de Datos`)**, nunca en el repo. Cada miembro las pega en su propio `.env` local (ya en `.gitignore`).
 5. El script de seed con datos ficticios (`database/seed.sql`) se corre una sola vez contra esta instancia; todos apuntan ahí durante desarrollo y pruebas — una sola fuente de verdad.
 6. Docker Compose local se mantiene documentado como alternativa offline (ver `SETUP_ENTORNO.md`), pero **no es obligatorio** — se confirmó que se puede trabajar solo con PostgreSQL nativo o directo contra Neon, sin Docker.

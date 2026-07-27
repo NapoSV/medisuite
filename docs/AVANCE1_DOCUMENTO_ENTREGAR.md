@@ -1,9 +1,16 @@
 # Documento por entregar debe contener:
 
+> **📌 Aclaraciones del ingeniero (consulta de Héctor, respondida el 27/07/2026):**
+> 1. **Portada con foto** → SÍ es obligatoria una foto de **cada integrante**; al ingeniero le facilita visualizar el rostro de cada uno al revisar.
+> 2. **Gantt y planificación** → deben cubrir **todo el proyecto hasta la entrega final**, no solo el Avance 1. Para las fases futuras se aceptan tareas genéricas (ej. "entregar avance 2", "entrega final").
+> 3. **Punto 12 (estructura base)** → no basta la planificación: ya deben existir las **entidades a utilizar y la base de datos** (una versión inicial, no necesariamente la final).
+
 ## 1. Portada con foto, nombre completo, CIF del estudiante, ¿participo? (SI/NO)
 
 > **EXPLICACION ADICIONAL**
 > La portada es la primera página del documento e identifica al estudiante. Debe incluir una fotografía, el nombre completo, el CIF (Carné de Identificación Fiscal o número de identificación del estudiante) y una indicación clara de si el estudiante participó (SI) o no (NO) en el avance.
+>
+> **Aclaración del ingeniero (27/07/2026):** la foto es **estrictamente obligatoria y de cada integrante** — le sirve para reconocer el rostro de cada quien al momento de revisar.
 
 ## 2. Objetivo general
 
@@ -92,6 +99,8 @@ Diagrama de Gantt
 
 > **EXPLICACION ADICIONAL**
 > El cronograma debe representarse mediante un Diagrama de Gantt, que es una herramienta visual (gráfico de barras horizontales) que muestra la duración de cada tarea o actividad del proyecto a lo largo del tiempo.
+>
+> **Aclaración del ingeniero (27/07/2026):** el Gantt y la planificación (punto 8) son para **todo el proyecto, hasta la entrega final**, no solo para el Avance 1. Las fases futuras pueden ir como tareas genéricas ("entregar avance 2", "entrega final", etc.). Versión completa del equipo: [`diagramas/gantt_proyecto_completo.md`](diagramas/gantt_proyecto_completo.md).
 
 ## 10. Entradas/salidas del sistema
 
@@ -155,6 +164,8 @@ Medico.java
 
 > **EXPLICACION ADICIONAL**
 > Se pide crear la estructura base del proyecto de software (paquetes/carpetas) siguiendo una arquitectura por capas: `model` (entidades), `dao`/`repository` (acceso a datos), `service` (lógica de negocio), `util` (utilidades), `exception` (manejo de errores), `test` (pruebas) y `main` (punto de entrada). Dentro del paquete `model` se deben crear las clases Java correspondientes a las entidades declaradas en el punto 11 (por ejemplo, `Paciente.java`, `Medico.java`).
+>
+> **Aclaración del ingeniero (27/07/2026):** este punto implica tener **más que la planificación**: las entidades a utilizar ya deben existir en código, y la **base de datos ya debe estar creada** — quizá no la versión final, pero sí una versión inicial de lo que se va a desarrollar. (El equipo ya cumple: `database/schema.sql` con 17 tablas aplicado en Neon + entidades JPA en el backend.)
 
 ## 13. Conclusiones
 

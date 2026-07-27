@@ -121,7 +121,7 @@ El `.env.example` del repo ya define todas. Para desarrollo local cada quien cre
 
 | Variable | Valor de desarrollo | Descripción |
 |----------|--------------------|-------------|
-| `DB_HOST` | `ep-nameless-water-avvbs1vv-pooler.c-11.us-east-1.aws.neon.tech` | Host pooler de Neon |
+| `DB_HOST` | el host *pooler* de Neon (compartido por Teams DM) | Host pooler de Neon |
 | `DB_PORT` | `5432` | Puerto PostgreSQL |
 | `DB_NAME` | `clinica_dev` | Base compartida |
 | `DB_USERNAME` | tu usuario individual (ej. `bayron`) | Rol PostgreSQL propio |
@@ -1040,7 +1040,7 @@ git push origin feature/HU-001-registro-pacientes
 
 ## 7. Hoja de ruta completa — del Avance 1 a la Presentación Final
 
-> Orden obligatorio: las etapas se construyen una sobre otra. Dentro de una etapa, las tareas SÍ pueden ir en paralelo. Fechas de referencia: **Avance 1 → 10/08** · **Avance 2 → ~14/09** · **Entrega final/presentación → semana del 19–23/10, cierre 26/10**.
+> Orden obligatorio: las etapas se construyen una sobre otra. Dentro de una etapa, las tareas SÍ pueden ir en paralelo. Fechas de referencia (✅ confirmadas 27/07/2026): **Avance 1 → 10/08** · **Avance 2 → semana del 21–26/09** · **Entrega final y defensa → semana del 26–31/10**. Plan vigente de las etapas 2 y 3: [PLAN_FASES_2_3.md](../PLAN_FASES_2_3.md).
 
 ### Etapa 0 — Avance 1 COMPLETO: armado del documento sección por sección · hasta el 08/08
 

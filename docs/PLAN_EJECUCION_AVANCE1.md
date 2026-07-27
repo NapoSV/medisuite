@@ -368,12 +368,12 @@ con la evolución del proyecto a SaaS comercial.
 
 - **Responsable(s):** Héctor López (PM).
 - **Fecha inicio:** 20/07 · **Fecha fin:** 23/07.
-- **Descripción:** tabla Actividad · Responsable · Fecha, alineada al cronograma real del Avance 1.
+- **Descripción:** tabla Actividad · Responsable · Fecha, alineada al cronograma real del Avance 1 **más las actividades genéricas de las fases 2 y 3** (aclaración del ingeniero 27/07/2026: la planificación cubre todo el proyecto; tareas genéricas aceptadas para fases futuras).
 
 **Contenido a copiar:**
 
 ```markdown
-## 8. Planificación del Avance 1
+## 8. Planificación del proyecto (por entrega de avances)
 
 | Actividad | Responsable | Fecha inicio | Fecha fin |
 |---|---|---|---|
@@ -396,7 +396,14 @@ con la evolución del proyecto a SaaS comercial.
 | Conclusiones individuales | Todos | 03/08 | 07/08 |
 | Consolidación final + generación de PDF | LOPEZ | 08/08 | 09/08 |
 | Entrega | LOPEZ | 10/08 | 10/08 |
+| Desarrollo Fase 2 — módulo de citas + blindaje de seguridad | Todos | 11/08 | 20/09 |
+| Entrega Avance 2 | LOPEZ | 21/09 | 26/09 |
+| Desarrollo Fase 3 — triaje, expediente, recetas, reportes e inventario | Todos | 21/09 | 18/10 |
+| Deploy, demo y documento final | Todos | 19/10 | 25/10 |
+| Entrega final y defensa | Todos | 26/10 | 31/10 |
 ```
+
+> Detalle de las fases 2 y 3: [PLAN_FASES_2_3.md](PLAN_FASES_2_3.md).
 
 ---
 
@@ -405,6 +412,7 @@ con la evolución del proyecto a SaaS comercial.
 - **Responsable(s):** Héctor López (PM).
 - **Fecha inicio:** 21/07 · **Fecha fin:** 25/07.
 - **Descripción:** el **Gantt oficial** se genera en Microsoft Planner tras la carga masiva (ver [Bloque C](#bloque-c--carga-masiva-a-planner)). En el documento se incluye una versión Mermaid como respaldo académico.
+- **⚠️ Aclaración del ingeniero (27/07/2026):** el Gantt del documento debe cubrir **todo el proyecto hasta la entrega final** (tareas genéricas para fases futuras). Usar la versión de [`diagramas/gantt_proyecto_completo.md`](diagramas/gantt_proyecto_completo.md) para el Word; el bloque siguiente queda como detalle interno del Avance 1.
 
 **Contenido a copiar:**
 
@@ -600,8 +608,8 @@ git push -u origin chore/db-apply-schema
 **Pasos operativos:**
 
 1. Abrir DBeaver.
-2. Crear conexión con los datos del [`.env`](../.env) (o de la [memoria persistente](../../.claude/projects/c--Users-hlopez-medisuite/memory/neon_connection.md)):
-   - Host: `ep-nameless-water-avvbs1vv-pooler.c-11.us-east-1.aws.neon.tech`
+2. Crear conexión con los datos del `.env` de la raíz del repo (no versionado):
+   - Host: el del `.env` (variable `DB_HOST`)
    - Puerto: `5432` · BD: `clinica_dev` · Usuario: `clinica_app` · Password: la del `.env` (variable `DB_PASSWORD`)
    - SSL Mode: `require`.
 3. Verificar que la conexión funciona con `SELECT 1;`.

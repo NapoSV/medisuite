@@ -154,9 +154,10 @@ Definidas para validar en la presentación final del 26/10/2026.
 | Fase | Objetivo Específico académico | Módulos | Fecha entrega |
 |---|---|---|---|
 | **Avance 1** | OE1 · Módulo de autenticación y roles | Auth, gestión de usuarios, gestión de pacientes básica | 10/08/2026 |
-| **Avance 2** | OE2 · Gestión de citas | Citas, calendario, disponibilidad, notificaciones | 14/09/2026 |
-| **Avance 3** | OE3 · Expediente clínico | Triaje, expediente, recetas, reportes | 19/10/2026 |
-| **Presentación final** | Consolidación + extensión SaaS | Inventario, compras, activos físicos, dashboard multi-tenant | 26/10/2026 |
+| **Avance 2** | OE2 · Gestión de citas + seguridad | Citas, calendario, disponibilidad, notificaciones, blindaje S1–S7 | semana del 21–26/09/2026 |
+| **Entrega final y defensa** | OE3 · Expediente clínico + extensión SaaS | Triaje, expediente, recetas, reportes, inventario, compras, dashboard multi-tenant | semana del 26–31/10/2026 |
+
+> Fechas confirmadas el 27/07/2026. Plan detallado de las etapas 2 y 3: [PLAN_FASES_2_3.md](PLAN_FASES_2_3.md).
 
 ---
 

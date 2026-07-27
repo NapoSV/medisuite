@@ -1040,7 +1040,7 @@ Re-lee → IA → Teams.
 **Bucket Planner:** Documento.
 
 ### 🎯 Qué vas a entregar
-Tabla Actividad · Responsable · Fecha inicio · Fecha fin con las 19 actividades del Avance 1.
+Tabla Actividad · Responsable · Fecha inicio · Fecha fin con las 19 actividades del Avance 1 **más 5 actividades genéricas de las fases 2 y 3** (aclaración del ingeniero 27/07: la planificación debe cubrir todo el proyecto hasta la entrega final; para fases futuras se aceptan tareas genéricas).
 
 ### 📍 Dónde va tu trabajo
 
@@ -1055,7 +1055,7 @@ https://uees.sharepoint.com/:w:/s/ProyectoTareasProgramacinII/IQBmmLSsQ2fvTaLWS2
 ### 📋 Paso a paso
 
 1. Abre el Word → sección "Planificación".
-2. Inserta tabla de 4 columnas × 20 filas (encabezado + 19 actividades).
+2. Inserta tabla de 4 columnas × 25 filas (encabezado + 19 actividades del Avance 1 + 5 genéricas de fases 2 y 3).
 3. Copia los datos del bloque siguiente.
 
 ### 💻 Contenido a copiar
@@ -1081,10 +1081,17 @@ https://uees.sharepoint.com/:w:/s/ProyectoTareasProgramacinII/IQBmmLSsQ2fvTaLWS2
 | Conclusiones individuales | Todos | 03/08 | 07/08 |
 | Consolidación final + generación de PDF | LOPEZ | 08/08 | 09/08 |
 | Entrega | LOPEZ | 10/08 | 10/08 |
+| Desarrollo Fase 2 — módulo de citas + blindaje de seguridad | Todos | 11/08 | 20/09 |
+| Entrega Avance 2 | LOPEZ | 21/09 | 26/09 |
+| Desarrollo Fase 3 — triaje, expediente, recetas, reportes e inventario | Todos | 21/09 | 18/10 |
+| Deploy, demo y documento final | Todos | 19/10 | 25/10 |
+| Entrega final y defensa | Todos | 26/10 | 31/10 |
+
+> Detalle de las fases 2 y 3: [PLAN_FASES_2_3.md](PLAN_FASES_2_3.md).
 
 ### ✅ Verificaciones
 
-- [ ] 19 actividades listadas.
+- [ ] 24 actividades listadas (19 del Avance 1 + 5 genéricas de fases 2 y 3).
 - [ ] Todas con responsable y fechas.
 - [ ] Word guardado.
 
@@ -1109,7 +1116,7 @@ Word guarda automático.
 ### 🎬 Cierre
 1. ✅ Verificaciones.
 2. Word guardado.
-3. Teams: `✅ Terminé Tarea 8.1 — Planificación (19 actividades).`
+3. Teams: `✅ Terminé Tarea 8.1 — Planificación (24 actividades, proyecto completo).`
 4. Planner → "Hecho".
 
 ### ⚠️ Si te trabas
@@ -1125,7 +1132,7 @@ Re-lee → IA → Teams.
 **Bucket Planner:** Documento.
 
 ### 🎯 Qué vas a entregar
-Imagen del diagrama de Gantt pegada en el Word (el Gantt oficial vive en Microsoft Planner; para el documento se genera una imagen a partir del código Mermaid).
+Imagen del diagrama de Gantt **del proyecto completo** pegada en el Word (aclaración del ingeniero 27/07: el Gantt debe cubrir hasta la entrega final, con tareas genéricas para las fases futuras). El Gantt oficial vive en Microsoft Planner; para el documento se genera una imagen a partir del código Mermaid.
 
 ### 📍 Dónde va tu trabajo
 
@@ -1142,16 +1149,16 @@ https://uees.sharepoint.com/:w:/s/ProyectoTareasProgramacinII/IQBmmLSsQ2fvTaLWS2
 ### 📋 Paso a paso
 
 1. Abre en el navegador el archivo del Gantt en GitHub (el diagrama se dibuja automáticamente al cargar la página):
-   https://github.com/NapoSV/medisuite/blob/main/docs/diagramas/gantt_avance1.md
+   https://github.com/NapoSV/medisuite/blob/main/docs/diagramas/gantt_proyecto_completo.md
 2. Espera a que el diagrama aparezca renderizado (barras de colores por sección).
-3. Presiona `Win + Shift + S` y selecciona el área del diagrama completo (las 5 secciones y el hito Entrega). La captura queda en el portapapeles.
+3. Presiona `Win + Shift + S` y selecciona el área del diagrama completo (las 3 fases y los 3 hitos de entrega). La captura queda en el portapapeles.
 4. Abre el Word → sección "Cronograma Gantt".
 5. Pega la captura con `Ctrl + V` (o guárdala primero como PNG desde la app Recortes y usa **Insertar → Imagen → Este dispositivo**).
 6. Debajo de la imagen agrega la nota: *"El diagrama de Gantt oficial vive en Microsoft Planner del equipo. Esta imagen es la versión de respaldo académico."*
 
-> **Si necesitas modificar el Gantt:** edita el bloque ```` ```mermaid ```` dentro de `docs/diagramas/gantt_avance1.md`, haz commit, y GitHub re-dibuja el diagrama actualizado al refrescar la página.
+> **Si necesitas modificar el Gantt:** edita el bloque ```` ```mermaid ```` dentro de `docs/diagramas/gantt_proyecto_completo.md`, haz commit, y GitHub re-dibuja el diagrama actualizado al refrescar la página. (El detalle interno del Avance 1 sigue en `docs/diagramas/gantt_avance1.md`.)
 
-### 💻 Contenido a copiar (código Mermaid — ya está en `docs/diagramas/gantt_avance1.md`; se deja aquí como referencia)
+### 💻 Contenido a copiar (código Mermaid del detalle Avance 1 — la versión del proyecto completo está en `docs/diagramas/gantt_proyecto_completo.md`, que es la que va en el Word)
 
 ```
 gantt
@@ -1389,11 +1396,11 @@ Archivos a crear/modificar:
 - (Opcional) `database/README.md` con nota "schema aplicado el DD/MM por Merino".
 
 Base de datos: **Neon Postgres** (BD compartida del equipo).
-- Host: `ep-nameless-water-avvbs1vv-pooler.c-11.us-east-1.aws.neon.tech`
+- Host: el host *pooler* de Neon — lo encuentras en tu archivo `.env` (variable `DB_HOST`)
 - Puerto: `5432`
 - BD: `clinica_dev`
 - Usuario: `clinica_app`
-- Password: la encuentras en el archivo `.env` de la raíz del repo (no versionado). Si no lo tienes, pídelo en el canal de Teams **📋 Avances del Proyecto**.
+- Password: la encuentras en el archivo `.env` de la raíz del repo (no versionado). Si no tienes el `.env`, pídelo en el canal de Teams **📋 Avances del Proyecto**.
 - SSL Mode: `require`
 
 ### 🛠️ Herramientas que vas a usar
@@ -1406,7 +1413,7 @@ Base de datos: **Neon Postgres** (BD compartida del equipo).
 1. Actualiza tu repo local ([§2](#seccion-2-actualizar)).
 2. Abre DBeaver.
 3. Menú **Database → New Database Connection → PostgreSQL**. Rellena:
-   - **Host:** `ep-nameless-water-avvbs1vv-pooler.c-11.us-east-1.aws.neon.tech`
+   - **Host:** el del archivo `.env` (variable `DB_HOST`)
    - **Port:** `5432`
    - **Database:** `clinica_dev`
    - **Username:** `clinica_app`

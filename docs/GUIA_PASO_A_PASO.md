@@ -1067,13 +1067,13 @@ https://uees.sharepoint.com/:w:/s/ProyectoTareasProgramacinII/IQBmmLSsQ2fvTaLWS2
 | Alcances / límites | LOPEZ | 16/07 | 18/07 |
 | Planificación y cronograma Gantt | LOPEZ | 20/07 | 25/07 |
 | Ejecución de `schema.sql` y `seed.sql` en Neon | MERINO VENTURA | 22/07 | 24/07 |
-| Setup del proyecto Spring Boot | ORELLANA + VENTURA | 23/07 | 27/07 |
-| Configuración de conexión a Neon (`application.yml`) | ORELLANA | 27/07 | 28/07 |
-| Entradas/salidas por HU + Declaración de entidades | ORELLANA + SANCHEZ + MERINO | 22/07 | 28/07 |
+| Setup del proyecto Spring Boot | VIGIL | 23/07 | 27/07 |
+| Configuración de conexión a Neon (`application.yml`) | FLORES | 27/07 | 28/07 |
+| Entradas/salidas por HU + Declaración de entidades | VIGIL + FLORES + SANCHEZ + MERINO | 22/07 | 28/07 |
 | Estructura de paquetes + entidades JPA | ORELLANA + VENTURA | 28/07 | 01/08 |
 | Init frontend Vite + React + TS + Tailwind + Zustand | DIAZ + MELGAR | 25/07 | 30/07 |
-| Repositories JPA | ORELLANA | 01/08 | 03/08 |
-| DTOs + AuthService | ORELLANA | 02/08 | 04/08 |
+| Repositories JPA | FUENTES | 01/08 | 03/08 |
+| DTOs + AuthService | ORELLANA + VASQUEZ | 02/08 | 04/08 |
 | Spring Security + JWT + endpoint `POST /api/auth/login` | ORELLANA + VENTURA | 04/08 | 06/08 |
 | Pantalla LoginPage.tsx + integración con backend | DIAZ + MELGAR | 04/08 | 07/08 |
 | Casos de prueba QA (login OK, login fail, bloqueo) | FUENTES + VASQUEZ | 05/08 | 07/08 |
@@ -1228,7 +1228,11 @@ Re-lee → IA → Teams.
 <a id="tarea-10-1"></a>
 ## Tarea 10.1 — Entradas / Salidas por HU
 
-**Responsable(s):** Bayron Orellana (Backend) + Nicole Sánchez (BA).
+**Responsable(s):** Alejandro Vigil (SM) + Walter Flores.
+**División de trabajo:**
+- **Alejandro Vigil:** completa las filas de HU-007 (Login), HU-001 (Registro paciente) y HU-008 (Alta usuario).
+- **Walter Flores:** completa las filas de HU-003 (Solicitud de cita), HU-004 (Triaje) y HU-002 (Receta).
+Nicole Sánchez revisa y da el OK final a la tabla completa.
 **Fecha inicio:** 23/07 · **Fecha fin:** 28/07.
 **Bucket Planner:** Documento.
 
@@ -1515,7 +1519,7 @@ Re-lee → IA → Teams.
 <a id="tarea-12-2"></a>
 ## Tarea 12.2 — Inicializar Spring Boot
 
-**Responsable(s):** Bayron Orellana (Backend).
+**Responsable(s):** Alejandro Vigil (SM).
 **Fecha inicio:** 23/07 · **Fecha fin:** 27/07.
 **Bucket Planner:** Backend.
 
@@ -1650,7 +1654,8 @@ Re-lee → IA → Teams.
 <a id="tarea-12-3"></a>
 ## Tarea 12.3 — Configurar Neon (application.yml)
 
-**Responsable(s):** Bayron Orellana (Backend).
+**Responsable(s):** Walter Flores.
+**Prerequisito:** esta tarea continúa en la misma rama que la 12.2. Espera a que Alejandro Vigil haga push de la 12.2 y avisa en Teams antes de empezar — luego haz `git pull` para tener la base.
 **Fecha inicio:** 27/07 · **Fecha fin:** 28/07.
 **Bucket Planner:** Backend.
 
@@ -2162,7 +2167,8 @@ Re-lee → IA → Teams.
 <a id="tarea-12-5"></a>
 ## Tarea 12.5 — Repositories JPA
 
-**Responsable(s):** Bayron Orellana (Backend).
+**Responsable(s):** Erika Fuentes (QA).
+**Prerequisito:** esta tarea está en la misma rama que la 12.4. Espera a que Bayron y Carlos hagan push de las entidades JPA (12.4) antes de empezar. Confirma en Teams y luego haz `git pull` para tener las clases `User`, `Tenant`, `Patient`, `Doctor` y `Specialty` disponibles.
 **Fecha inicio:** 01/08 · **Fecha fin:** 03/08.
 **Bucket Planner:** Backend.
 
@@ -2319,7 +2325,11 @@ Re-lee → IA → Teams.
 <a id="tarea-12-6"></a>
 ## Tarea 12.6 — DTOs + AuthService
 
-**Responsable(s):** Bayron Orellana (Backend).
+**Responsable(s):** Walter Vásquez (QA) + Bayron Orellana (Backend).
+**División de trabajo:**
+- **Walter Vásquez:** crea `LoginRequest.java` y `LoginResponse.java` en `dto/auth/` (ver bloque de código más abajo). Son records Java simples, sin lógica compleja.
+- **Bayron Orellana:** crea `BusinessException.java`, `GlobalExceptionHandler.java` y `AuthService.java` con la lógica de login y bloqueo.
+Coordinen en Teams: Vásquez hace commit primero de los 2 DTOs en la rama `feature/HU-007-entities`; Bayron continúa sobre esa misma rama.
 **Fecha inicio:** 02/08 · **Fecha fin:** 04/08.
 **Bucket Planner:** Backend.
 

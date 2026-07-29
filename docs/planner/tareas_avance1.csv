@@ -143,7 +143,7 @@ Sección: ""Cronograma Gantt""
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
 3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Abre el Gantt en GitHub: docs/diagramas/gantt_avance1.md (se dibuja solo al cargar)|Espera el render del diagrama (barras de colores por sección)|Captura el diagrama completo con Win + Shift + S|Abre el Word, sección Cronograma Gantt, y pega la captura con Ctrl + V|Agrega la nota: el Gantt oficial vive en el Planner del equipo|Verifica las 5 secciones (Documento, BD, Backend, Frontend, QA) y el hito Entrega 10/08|Confirma Guardado en Word|Teams: ✅ Terminé Tarea 9.1|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: imagen del Gantt visible en el Word, con 5 secciones y el hito Entrega el 10/08, más la nota de respaldo académico bajo la imagen. El diagrama ya está publicado en el repo (docs/diagramas/gantt_avance1.md) y GitHub lo dibuja gratis al abrir la página — no se usa mermaid.live ni ninguna herramienta de pago. Si hay que modificarlo, se edita el bloque mermaid de ese archivo y GitHub lo re-dibuja. Sin commit Git para esta tarea."
-10.1 Entradas/Salidas por HU,Documento,2026011707@cvirtualuees.edu.sv;2026010813@cvirtualuees.edu.sv,2026-07-23,2026-07-28,5,"🎯 QUÉ ENTREGAR
+10.1 Entradas/Salidas por HU,Documento,2026010204@cvirtualuees.edu.sv;2026011012@cvirtualuees.edu.sv;2026010813@cvirtualuees.edu.sv,2026-07-23,2026-07-28,5,"🎯 QUÉ ENTREGAR
 Tabla con entradas y salidas del sistema para las 6 HU (HU-007, HU-001, HU-008, HU-003, HU-004, HU-002).
 
 📖 GUÍA COMPLETA (todo paso a paso: qué hacer, cómo hacerlo, dónde escribir)
@@ -191,7 +191,7 @@ Archivos que ejecutas en DBeaver: database/schema.sql y database/seed.sql
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
 3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Actualiza tu repo local (guía §2: git pull)|Abre DBeaver → New Database Connection → PostgreSQL|Rellena host Neon, puerto 5432, BD clinica_dev, usuario clinica_app y password del .env|Pestaña SSL → marca Use SSL → SSL Mode: require|Test Connection OK → Finish|Ejecuta SELECT 1; y confirma que responde 1|Copia TODO database/schema.sql, pégalo en SQL Editor y ejecuta con Alt+X|Copia TODO database/seed.sql y ejecútalo con Alt+X|Valida: 17 tablas, tenants con 2+ filas, users con 1+ (queries en la guía)|Crea rama chore/db-apply-schema desde develop y publícala|Opcional: actualiza database/README.md, commit y push|Abre PR base develop (guía §5)|Teams: ✅ Terminé 12.1, 17 tablas confirmadas|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public' devuelve 17; tenants tiene 2+ filas; users tiene 1+ (admin@demo.sv). DATOS DE CONEXIÓN: host y usuario están en la guía; la password está en el .env de la raíz del repo (NO versionado) — pídelo en el canal de Teams si no lo tienes. IMPORTANTE: si el schema falla a mitad, NO hagas commit; usa el prompt de rollback de la guía para limpiar y reintentar."
-12.2 Inicializar Spring Boot,Backend,2026011707@cvirtualuees.edu.sv,2026-07-23,2026-07-27,1,"🎯 QUÉ ENTREGAR
+12.2 Inicializar Spring Boot,Backend,2026010204@cvirtualuees.edu.sv,2026-07-23,2026-07-27,1,"🎯 QUÉ ENTREGAR
 Proyecto Spring Boot 3.3 con Java 21 generado y compilando en la carpeta backend/ del repo.
 
 📖 GUÍA COMPLETA (todo paso a paso: qué instalar, qué generar, cómo verificar)
@@ -207,7 +207,7 @@ Archivos a crear: backend/pom.xml, backend/mvnw, backend/src/**, backend/.gitign
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
 3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Actualiza tu repo (guía §2) y crea rama chore/spring-boot-init desde develop|Abre https://start.spring.io|Configura: Maven, Java 21, Boot 3.3.4, Group com.sv.grupo, Package com.sv.grupo.hospital.citas|Dependencias: Web, Security, Data JPA, PostgreSQL, Validation, Lombok, DevTools, Flyway, Actuator|GENERATE y descomprime de forma que backend/pom.xml exista directo|Agrega al pom.xml las dependencias jjwt 0.12.6 y springdoc 2.6.0 (bloque en la guía)|Ejecuta .\mvnw.cmd clean install -DskipTests → BUILD SUCCESS|Ejecuta .\mvnw.cmd spring-boot:run → Started MedisuiteApplication|Commit: chore(backend): inicializar proyecto Spring Boot 3.3 con Java 21|Push y abre PR base develop (guía §5)|Teams: ✅ Terminé 12.2 con link del PR|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: backend/pom.xml existe, mvnw funciona con Java 21, clean install da BUILD SUCCESS y la app arranca. El bloque XML exacto de las 4 dependencias extra (jjwt-api, jjwt-impl, jjwt-jackson, springdoc) está en el bloque Contenido a copiar de la guía. Si el zip descomprime como backend/medisuite/pom.xml, mueve el contenido un nivel arriba (prompt IA #3)."
-12.3 Configurar Neon (application.yml),Backend,2026011707@cvirtualuees.edu.sv,2026-07-27,2026-07-28,1,"🎯 QUÉ ENTREGAR
+12.3 Configurar Neon (application.yml),Backend,2026011012@cvirtualuees.edu.sv,2026-07-27,2026-07-28,1,"🎯 QUÉ ENTREGAR
 Backend arrancando y conectado a Neon. Endpoint /actuator/health retornando UP.
 
 📖 GUÍA COMPLETA (todo paso a paso: variables .env, application.yml, verificación)
@@ -239,7 +239,7 @@ Archivos: backend/src/main/java/com/sv/grupo/hospital/citas/model/**
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
 3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","Actualiza el repo (guía §2)|Crea rama feature/HU-007-entities desde develop y publícala|Crea los paquetes model/tenant, model/users y model/clinical|Crea Tenant.java con el código exacto de la guía|Crea User.java con el código exacto de la guía|Crea Patient.java con el código exacto de la guía|Crea Specialty.java con el código exacto de la guía|Crea Doctor.java con el código exacto de la guía|Ejecuta .\mvnw.cmd compile → BUILD SUCCESS|Ejecuta .\mvnw.cmd spring-boot:run sin errores Schema-validation|Commit: feat(auth): agregar entidades User, Patient, Doctor, Tenant, Specialty|Push y abre PR base develop|Teams: ✅ Terminé 12.4 con link del PR|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: los 5 .java existen en las rutas indicadas, compile da BUILD SUCCESS y al arrancar NO aparece Schema-validation: missing table. El código completo de las 5 entidades (con @Table, @Column, uniqueConstraints, etc.) está listo para copiar en la guía — cópialo EXACTO, los nombres de columna deben coincidir con el schema de Neon. Trabajan: Bayron (Backend) + Carlos (Architect)."
-12.5 Repositories JPA,Backend,2026011707@cvirtualuees.edu.sv,2026-08-01,2026-08-03,1,"🎯 QUÉ ENTREGAR
+12.5 Repositories JPA,Backend,2026011709@cvirtualuees.edu.sv,2026-08-01,2026-08-03,1,"🎯 QUÉ ENTREGAR
 5 interfaces JpaRepository (UserRepository, TenantRepository, PatientRepository, DoctorRepository, SpecialtyRepository) compilando.
 
 📖 GUÍA COMPLETA (todo paso a paso: código de cada repo, cómo verificar)
@@ -255,7 +255,7 @@ Archivos: backend/src/main/java/com/sv/grupo/hospital/citas/dao/*.java
 1) Vuelve a leer la guía en el link de arriba.
 2) Usa los prompts de AI que están al final de esa sección.
 3) Escribe en el canal Teams ""📋 Avances del Proyecto"".","git checkout feature/HU-007-entities y git pull|Crea la carpeta dao/ dentro de com/sv/grupo/hospital/citas|Crea UserRepository.java (con findByEmailAndTenantId) según la guía|Crea TenantRepository.java (con findBySlug) según la guía|Crea PatientRepository.java, DoctorRepository.java y SpecialtyRepository.java|Ejecuta .\mvnw.cmd compile → BUILD SUCCESS|Ejecuta .\mvnw.cmd spring-boot:run sin error de beans|Commit: feat(auth): agregar repositories JPA|Push (se agrega al PR de la 12.4)|Teams: ✅ Terminé 12.5|Planner → Hecho","CRITERIOS DE ACEPTACIÓN: las 5 interfaces existen en dao/, compile da BUILD SUCCESS y la app arranca sin No bean of type UserRepository. El código exacto de cada interface está listo para copiar en la guía — son cortas, pero respeta paquetes e imports. UserRepository necesita el método findByEmailAndTenantId y TenantRepository el findBySlug (los usa AuthService en la 12.6)."
-12.6 DTOs + AuthService,Backend,2026011707@cvirtualuees.edu.sv,2026-08-02,2026-08-04,1,"🎯 QUÉ ENTREGAR
+12.6 DTOs + AuthService,Backend,2026011707@cvirtualuees.edu.sv;2026010068@cvirtualuees.edu.sv,2026-08-02,2026-08-04,1,"🎯 QUÉ ENTREGAR
 Records LoginRequest y LoginResponse + BusinessException + GlobalExceptionHandler + AuthService.login() con bloqueo tras 5 intentos.
 
 📖 GUÍA COMPLETA (todo paso a paso: código completo de cada archivo)

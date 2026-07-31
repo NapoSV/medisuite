@@ -17,17 +17,17 @@ INSERT INTO specialties (tenant_id, name) VALUES
 
 -- ─── Usuarios (tenant 1: Clínica San Rafael, id=1) ───────────────────────
 INSERT INTO users (tenant_id, first_name, last_name, cif, email, password_hash, role) VALUES
-    (1, 'Ana',    'Martínez', '04141201900101', 'ana.martinez.demo@medisuite.test',   '$2a$12$FICTITIOUSSEEDHASHDOCTOR0000000000000000000000000000', 'DOCTOR'),
-    (1, 'Carlos', 'Gómez',    '04141199001010', 'carlos.gomez.demo@medisuite.test',   '$2a$12$FICTITIOUSSEEDHASHNURSE00000000000000000000000000000', 'NURSE'),
-    (1, 'Beatriz','Reyes',    '04140198501234', 'beatriz.reyes.demo@medisuite.test',  '$2a$12$FICTITIOUSSEEDHASHADMIN00000000000000000000000000000', 'ADMIN'),
-    (1, 'Jorge',  'Alas',     '04141199505678', 'jorge.alas.demo@medisuite.test',     '$2a$12$FICTITIOUSSEEDHASHRECEP00000000000000000000000000000', 'RECEPTIONIST'),
-    (1, 'Maria',  'Lopez',    '04141199009999', 'maria.lopez.demo@medisuite.test',    '$2a$12$FICTITIOUSSEEDHASHPATIENT000000000000000000000000000', 'PATIENT'),
-    (1, 'Pedro',  'Hernandez','04141198512345', 'pedro.hernandez.demo@medisuite.test','$2a$12$FICTITIOUSSEEDHASHPATIENT200000000000000000000000000', 'PATIENT');
+    (1, 'Ana',    'Martínez', '04141201900101', 'ana.martinez.demo@medisuite.test',   '$2a$12$bDYB/iG64e7v8J1vqnT9g.RuF0G62xSyyFtFuaIP//IXLoZqn2MW2', 'DOCTOR'),
+    (1, 'Carlos', 'Gómez',    '04141199001010', 'carlos.gomez.demo@medisuite.test',   '$2a$12$bDYB/iG64e7v8J1vqnT9g.RuF0G62xSyyFtFuaIP//IXLoZqn2MW2', 'NURSE'),
+    (1, 'Beatriz','Reyes',    '04140198501234', 'beatriz.reyes.demo@medisuite.test',  '$2a$12$bDYB/iG64e7v8J1vqnT9g.RuF0G62xSyyFtFuaIP//IXLoZqn2MW2', 'ADMIN'),
+    (1, 'Jorge',  'Alas',     '04141199505678', 'jorge.alas.demo@medisuite.test',     '$2a$12$bDYB/iG64e7v8J1vqnT9g.RuF0G62xSyyFtFuaIP//IXLoZqn2MW2', 'RECEPTIONIST'),
+    (1, 'Maria',  'Lopez',    '04141199009999', 'maria.lopez.demo@medisuite.test',    '$2a$12$bDYB/iG64e7v8J1vqnT9g.RuF0G62xSyyFtFuaIP//IXLoZqn2MW2', 'PATIENT'),
+    (1, 'Pedro',  'Hernandez','04141198512345', 'pedro.hernandez.demo@medisuite.test','$2a$12$bDYB/iG64e7v8J1vqnT9g.RuF0G62xSyyFtFuaIP//IXLoZqn2MW2', 'PATIENT');
 
 -- ─── Usuarios (tenant 2: Clínica Santa Lucía, id=2 — para prueba de aislamiento) ──
 INSERT INTO users (tenant_id, first_name, last_name, cif, email, password_hash, role) VALUES
-    (2, 'Roberto', 'Cruz',    '06140199003456', 'roberto.cruz.demo@medisuite.test',   '$2a$12$FICTITIOUSSEEDHASHDOCTOR200000000000000000000000000', 'DOCTOR'),
-    (2, 'Silvia',  'Portillo','06141199907890', 'silvia.portillo.demo@medisuite.test','$2a$12$FICTITIOUSSEEDHASHPATIENT300000000000000000000000000', 'PATIENT');
+    (2, 'Roberto', 'Cruz',    '06140199003456', 'roberto.cruz.demo@medisuite.test',   '$2a$12$bDYB/iG64e7v8J1vqnT9g.RuF0G62xSyyFtFuaIP//IXLoZqn2MW2', 'DOCTOR'),
+    (2, 'Silvia',  'Portillo','06141199907890', 'silvia.portillo.demo@medisuite.test','$2a$12$bDYB/iG64e7v8J1vqnT9g.RuF0G62xSyyFtFuaIP//IXLoZqn2MW2', 'PATIENT');
 
 -- ─── Roles específicos (tenant 1) ────────────────────────────────────────
 INSERT INTO doctors (tenant_id, user_id, specialty_id, license_number, available_schedule) VALUES

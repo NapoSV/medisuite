@@ -85,7 +85,7 @@
 
 ### Base de datos
 - **DBeaver Community** (gratis): https://dbeaver.io/download/
-  - Conectar a MySQL en localhost:3306 con usuario `clinica_app`
+  - Conectar a PostgreSQL en localhost:5432 con usuario `clinica_app`
 
 ---
 
@@ -101,7 +101,6 @@ cp .env.example .env
 ```
 
 Abrir `.env` y completar:
-- `DB_ROOT_PASSWORD` — cualquier contraseña para el root de MySQL local
 - `DB_PASSWORD` — contraseña para el usuario `clinica_app`
 - `JWT_SECRET` — cadena aleatoria de mínimo 32 caracteres
 
@@ -120,7 +119,7 @@ docker ps
 ```
 
 Conectar con DBeaver:
-- Host: `localhost`, Puerto: `3306`
+- Host: `localhost`, Puerto: `5432`
 - Usuario: el valor de `DB_USERNAME` en tu `.env`
 - Contraseña: el valor de `DB_PASSWORD`
 
@@ -169,8 +168,8 @@ docker compose up -d db && docker ps   # → medisuite_db Up
 **`./mvnw: Permission denied`** (Mac/Linux)  
 → `chmod +x mvnw` y volver a intentar.
 
-**Puerto 3306 ya en uso**  
-→ Hay un MySQL local corriendo. Detenerlo o cambiar el puerto en `docker-compose.yml` a `3307:3306`.
+**Puerto 5432 ya en uso**  
+→ Hay un PostgreSQL local corriendo. Detenerlo o cambiar el puerto en `docker-compose.yml` a `5433:5432`.
 
 **Docker no inicia en Windows**  
 → Verificar que WSL 2 está instalado y que la virtualización está habilitada en la BIOS.

@@ -1,19 +1,18 @@
 services:
   db:
-    image: mysql:8.0
+    image: postgres:16
     container_name: medisuite_db
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME:-clinica_dev}
-      MYSQL_USER: ${DB_USERNAME:-clinica_app}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME:-clinica_dev}
+      POSTGRES_USER: ${DB_USERNAME:-clinica_app}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - db_data:/var/lib/mysql
+      - db_data:/var/lib/postgresql/data
       - ./database:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-clinica_app}"]
       interval: 10s
       timeout: 5s
       retries: 5

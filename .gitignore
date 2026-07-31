@@ -81,3 +81,10 @@ docker-compose.override.yml
 coverage/
 .nyc_output/
 htmlReport/
+
+# ─── Archivos temporales de Office ───────────────────────
+~$*
+
+# ─── Políticas de seguridad (borrador interno) ──────────
+# Quitar esta línea cuando el PM apruebe publicarlas al repo.
+docs/politicas/

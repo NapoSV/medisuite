@@ -53,7 +53,7 @@ CREATE TABLE users (
     email           VARCHAR(150) NOT NULL,
     password_hash   VARCHAR(255) NOT NULL,
     role            VARCHAR(20) NOT NULL
-                        CHECK (role IN ('DOCTOR','PATIENT','NURSE','ADMIN','RECEPTIONIST')),
+                        CHECK (role IN ('DOCTOR','NURSE','ADMIN','RECEPTIONIST')),
     active          BOOLEAN NOT NULL DEFAULT true,
     failed_login_attempts INT NOT NULL DEFAULT 0,
     locked_until    TIMESTAMPTZ,
@@ -81,10 +81,16 @@ CREATE TRIGGER trg_specialties_updated_at BEFORE UPDATE ON specialties
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 -- ─── 4. patients (Paciente) ──────────────────────────────────────────────
+-- El paciente NO tiene acceso al sistema (MVP). Es una entidad de datos
+-- gestionada por el personal clínico (enfermera / recepcionista).
+-- user_id es nullable: reservado para una fase futura si se habilita portal.
 CREATE TABLE patients (
     id                  BIGSERIAL PRIMARY KEY,
     tenant_id           BIGINT NOT NULL REFERENCES tenants(id),
-    user_id             BIGINT NOT NULL UNIQUE REFERENCES users(id),
+    first_name          VARCHAR(80) NOT NULL,
+    last_name           VARCHAR(80) NOT NULL,
+    cif                 VARCHAR(20) NOT NULL,
+    user_id             BIGINT UNIQUE REFERENCES users(id),
     birth_date          DATE NOT NULL,
     phone               VARCHAR(20),
     address             VARCHAR(200),
@@ -92,7 +98,8 @@ CREATE TABLE patients (
     blood_type          VARCHAR(5),
     allergies           TEXT,
     created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+    updated_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (tenant_id, cif)
 );
 CREATE INDEX idx_patients_tenant ON patients(tenant_id);
 CREATE TRIGGER trg_patients_updated_at BEFORE UPDATE ON patients

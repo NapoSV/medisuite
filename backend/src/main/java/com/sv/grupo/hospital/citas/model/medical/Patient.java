@@ -21,8 +21,17 @@ public class Patient {
     @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;
 
+    @Column(name = "first_name", nullable = false, length = 80)
+    private String firstName;
+
+    @Column(name = "last_name", nullable = false, length = 80)
+    private String lastName;
+
+    @Column(nullable = false, length = 20)
+    private String cif;
+
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @JoinColumn(name = "user_id", nullable = true, unique = true)
     private User user;
 
     @Column(name = "birth_date", nullable = false)

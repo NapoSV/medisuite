@@ -77,7 +77,7 @@ Los siguientes son los roles de **usuario dentro del sistema MediSuite** (no los
 | Rol | Descripción | Funciones en el sistema |
 |-----|-------------|-------------------------|
 | **Médico** | Profesional de la salud encargado del diagnóstico, tratamiento y seguimiento clínico del paciente. | Ver agenda de citas asignadas · Acceder al expediente clínico · Registrar diagnóstico, recetas y evolución · Modificar o cancelar citas con justificación · Generar reportes de atención |
-| **Paciente** | Persona que recibe atención médica y es el centro del sistema clínico. | Registrarse y gestionar su perfil · Solicitar y cancelar citas · Visualizar historial clínico y recetas · Recibir notificaciones y recordatorios de citas |
+| **Paciente** | Persona que recibe atención médica. Es una entidad de datos del sistema — **no tiene acceso directo a la plataforma**. Su información es gestionada por la enfermera o el recepcionista. | (Sin acceso al sistema — entidad de datos gestionada por personal clínico) |
 | **Enfermera** | Profesional que realiza triaje, toma signos vitales y apoya directamente al médico durante la atención. | Registrar signos vitales (peso, talla, presión, temperatura, frecuencia cardíaca) · Completar datos de pacientes en espera · Clasificar prioridad de atención (triaje) · Consultar agenda y estado de citas |
 | **Administrador** | Encargado de la gestión general del sistema, los usuarios y la configuración de la clínica. | Crear, modificar y eliminar usuarios (médicos, enfermeras, etc.) · Configurar horarios y disponibilidad de consultorios · Generar reportes administrativos · Gestionar auditoría de accesos y cambios |
 | **Recepcionista** | Personal de recepción que gestiona la entrada y salida de pacientes y el agendamiento de citas. | Registrar pacientes nuevos · Asignar citas según disponibilidad médica · Confirmar asistencia de pacientes · Buscar pacientes por nombre o CIF |
@@ -93,11 +93,11 @@ Las siguientes Historias de Usuario (HU) siguen el formato Scrum:
 |-----------|-----|---------------------|--------------------------|
 | Alta | **HU-001** | Como **enfermera / recepcionista**, quiero un formulario para registrar pacientes y consultar su expediente, para atenderlos rápidamente. | El paciente queda registrado con nombre, CIF, fecha de nacimiento y contacto · Se puede buscar por nombre o CIF · El expediente muestra historial de citas, diagnósticos y signos vitales |
 | Alta | **HU-002** | Como **médico**, quiero registrar una receta electrónica, para llevar el control del tratamiento del paciente. | Receta almacenada en el expediente · Asociada a paciente y médico · Muestra fecha y hora · Incluye medicamentos, dosis y duración del tratamiento |
-| Alta | **HU-003** | Como **paciente**, quiero solicitar una cita médica en línea y elegir horario disponible, para evitar llamar por teléfono. | Muestra horarios disponibles del médico · Confirma con código de reserva único · Notifica a paciente y médico · Permite cancelar/reprogramar con 24 h de anticipación |
+| Alta | **HU-003** | Como **recepcionista**, quiero agendar una cita para un paciente eligiendo médico y horario disponible, para gestionar la agenda de la clínica sin doble reserva. | Búsqueda de paciente por nombre o CIF · Selección de médico, especialidad, fecha y hora disponible · El sistema impide doble reserva en el mismo bloque horario · Genera código de reserva único (ej. COD-0001) · Registro del motivo de consulta |
 | Media | **HU-004** | Como **enfermera**, quiero realizar el triaje de pacientes en espera y registrar sus signos vitales, para que el médico los reciba preparado. | Búsqueda por CIF o nombre · Registro de peso, talla, presión, temperatura, FC y síntomas · Asignación de prioridad (bajo / medio / alto / crítico) · Se guarda en el expediente clínico |
 | Media | **HU-005** | Como **administrador**, quiero gestionar los horarios de los médicos y la disponibilidad de consultorios, para optimizar la ocupación de la clínica. | Crear, modificar y eliminar bloques horarios · Asignar consultorios a médicos · Visualizar ocupación en tiempo real |
 | Alta | **HU-007** | Como **usuario del sistema**, quiero iniciar sesión de forma segura con mi rol y el código de mi clínica, para acceder únicamente a las funciones que me corresponden. | Login con correo electrónico, contraseña y código de clínica · JWT emitido al autenticar · Redirección según rol (médico → agenda, admin → dashboard, etc.) · Bloqueo tras 5 intentos fallidos en 15 minutos |
-| Alta | **HU-008** | Como **administrador de clínica**, quiero crear usuarios (médicos, enfermeras, recepcionistas) con su rol asignado, para controlar quién accede al sistema. | Alta con nombre, correo, rol y clínica · Contraseña temporal asignada · Usuario obligado a cambiar contraseña en el primer inicio de sesión |
+| Alta | **HU-008** | Como **administrador de clínica**, quiero crear usuarios del sistema (médicos, enfermeras, recepcionistas, otros administradores) con su rol asignado, para controlar quién accede al sistema. | Alta con nombre, correo, rol (DOCTOR / NURSE / RECEPTIONIST / ADMIN) y clínica · Contraseña temporal asignada · Usuario obligado a cambiar contraseña en el primer inicio de sesión |
 
 > **HU obligatoria del Avance 1:** HU-007 — cubre el OE1 "Módulo de autenticación y roles". Esta HU está **implementada y funcionando** (ver sección 12).
 
@@ -205,10 +205,10 @@ Las siguientes Historias de Usuario (HU) siguen el formato Scrum:
 
 ---
 
-**HU-003 — Solicitud de cita en línea**
+**HU-003 — Agendamiento de cita por recepcionista**
 
-- **Entradas:** selección de médico, especialidad, fecha y hora disponible, motivo de consulta.
-- **Salidas:** código de reserva único (ej. RSV-0001), notificación al paciente (email/SMS simulado), notificación al médico, estado de cita = "SCHEDULED".
+- **Entradas:** búsqueda de paciente (nombre o CIF), médico seleccionado, especialidad, fecha y hora disponible, motivo de consulta.
+- **Salidas:** código de reserva único (ej. COD-0001), cita registrada con estado "SCHEDULED", actualización de la agenda del médico, confirmación visible en el dashboard de recepción.
 
 ---
 
@@ -228,7 +228,7 @@ Las siguientes Historias de Usuario (HU) siguen el formato Scrum:
 
 **HU-008 — Alta de usuarios por el administrador**
 
-- **Entradas:** nombre completo, correo electrónico, rol asignado (DOCTOR, NURSE, ADMIN, RECEPTIONIST, PATIENT), clínica asociada.
+- **Entradas:** nombre completo, correo electrónico, rol asignado (DOCTOR / NURSE / ADMIN / RECEPTIONIST), clínica asociada.
 - **Salidas:** usuario creado y activo en el sistema, contraseña temporal asignada, confirmación de registro al administrador.
 
 ---

@@ -11,7 +11,7 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.sv.grupo</groupId>
+    <groupId>com.sv.grupo7</groupId>
     <artifactId>medisuite-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>medisuite-backend</name>

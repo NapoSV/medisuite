@@ -1384,6 +1384,9 @@ Re-lee → IA → Teams.
 ---
 
 <a id="tarea-12-1"></a>
+
+> <span style="color:red">🔴 **COMPLETADA** — El esquema de 17 tablas ya fue aplicado en Neon por Merino (rama `chore/db-apply-schema`). Ir a Microsoft Planner y mover esta tarjeta al bucket **"Hecho"**. No tocar nada.</span>
+
 ## Tarea 12.1 — Ejecutar `schema.sql` en Neon
 
 **Responsable(s):** Alejandro Merino Ventura (BD).
@@ -1517,6 +1520,9 @@ Re-lee → IA → Teams.
 ---
 
 <a id="tarea-12-2"></a>
+
+> <span style="color:red">🔴 **COMPLETADA** — `pom.xml` y `MediSuiteApplication.java` ya existen en `backend/`. Compilación verificada: BUILD SUCCESS (43 archivos, Java 21). Ir a Planner → **"Hecho"**.</span>
+
 ## Tarea 12.2 — Inicializar Spring Boot
 
 **Responsable(s):** Alejandro Vigil (SM).
@@ -1652,6 +1658,9 @@ Re-lee → IA → Teams.
 ---
 
 <a id="tarea-12-3"></a>
+
+> <span style="color:red">🔴 **COMPLETADA** — `backend/src/main/resources/application.yml` configurado con variables de entorno para Neon. Conexión a BD verificada en corrida local (HikariPool conectado). Ir a Planner → **"Hecho"**.</span>
+
 ## Tarea 12.3 — Configurar Neon (application.yml)
 
 **Responsable(s):** Walter Flores.
@@ -1801,6 +1810,9 @@ Re-lee → IA → Teams.
 ---
 
 <a id="tarea-12-4"></a>
+
+> <span style="color:red">🔴 **COMPLETADA** — 17 entidades JPA creadas y mergeadas en `develop` (paquete `com.sv.grupo.hospital.citas.model`): Tenant, User, Specialty, Patient, Doctor, Nurse, Administrator, Receptionist, Appointment, MedicalRecord, VitalSign, Prescription, Product, PurchaseOrder, PurchaseOrderItem, PhysicalAsset, AuditLog. Ir a Planner → **"Hecho"**.</span>
+
 ## Tarea 12.4 — Estructura de paquetes + Entidades
 
 **Responsable(s):** Bayron Orellana (Backend) + Carlos Ventura (Architect).
@@ -2165,6 +2177,9 @@ Re-lee → IA → Teams.
 ---
 
 <a id="tarea-12-5"></a>
+
+> <span style="color:red">🔴 **COMPLETADA** — 17 repositorios JPA creados en `com.sv.grupo.hospital.citas.dao` y mergeados en `develop`. Spring Data los registró correctamente (log: "Found 17 JPA repository interfaces"). Ir a Planner → **"Hecho"**.</span>
+
 ## Tarea 12.5 — Repositories JPA
 
 **Responsable(s):** Erika Fuentes (QA).
@@ -2323,6 +2338,9 @@ Re-lee → IA → Teams.
 ---
 
 <a id="tarea-12-6"></a>
+
+> <span style="color:red">🔴 **COMPLETADA** — `LoginRequest.java`, `LoginResponse.java` y `AuthService.java` creados y mergeados en `develop`. Incluye validación de tenant, BCrypt, bloqueo tras 5 intentos y emisión de JWT. Ir a Planner → **"Hecho"**.</span>
+
 ## Tarea 12.6 — DTOs + AuthService
 
 **Responsable(s):** Walter Vásquez (QA) + Bayron Orellana (Backend).
@@ -2577,6 +2595,9 @@ Re-lee → IA → Teams.
 ---
 
 <a id="tarea-12-7"></a>
+
+> <span style="color:red">🔴 **COMPLETADA** — `SecurityConfig.java`, `JwtTokenProvider.java` y `AuthController.java` en `develop`. Endpoint `POST /api/auth/login` verificado: devuelve JWT válido con usuario `beatriz.reyes.demo@medisuite.test` / `Demo2026!`. Ir a Planner → **"Hecho"**.</span>
+
 ## Tarea 12.7 — Spring Security + JWT + /api/auth/login
 
 **Responsable(s):** Bayron Orellana (Backend) + Carlos Ventura (Architect).
@@ -2828,6 +2849,9 @@ Re-lee → IA → Teams.
 ---
 
 <a id="tarea-12-8"></a>
+
+> <span style="color:red">🔴 **COMPLETADA** — Frontend inicializado en `frontend/` con Vite 8, React 19, TypeScript, Tailwind CSS 3 (tokens MedCore Clay), Zustand, React Router, Lucide React, React Hook Form y Zod. Corre en `localhost:5173`. Ir a Planner → **"Hecho"**.</span>
+
 ## Tarea 12.8 — Init frontend Vite + React + TS + Tailwind + Zustand
 
 **Responsable(s):** Zair Diaz + William Melgar (Frontend).
@@ -2992,6 +3016,9 @@ Re-lee → IA → Teams.
 ---
 
 <a id="tarea-12-9"></a>
+
+> <span style="color:red">🔴 **COMPLETADA** — `LoginPage.tsx` implementada siguiendo el Design System MedCore Clay (Tailwind, Lucide icons, fondo `#F8FAFC`, azul `#0077BE`, sombras clay). Flujo completo: 3 campos → JWT → pantalla de bienvenida. Probado en `localhost:5173`. Ir a Planner → **"Hecho"**.</span>
+
 ## Tarea 12.9 — Pantalla LoginPage.tsx
 
 **Responsable(s):** Zair Diaz + William Melgar (Frontend).

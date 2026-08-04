@@ -29,7 +29,6 @@ flowchart TD
     Redirect --> DashMedico[Dashboard Médico]
     Redirect --> DashEnf[Cola de triaje]
     Redirect --> DashRecep[Agenda del día]
-    Redirect --> DashPac[Mis citas]
 ```
 
 Notas de implementación:

@@ -54,8 +54,8 @@ Desarrollar una plataforma de gestión de citas médicas multi-empresa (SaaS) qu
 | N° | Nombre completo | Rol Scrum | Rol Técnico |
 |----|-----------------|-----------|-------------|
 | 1 | LOPEZ RUIZ HECTOR NAPOLEON | PRODUCT OWNER | Analista de Negocio / Project Manager |
-| 2 | VIGIL RAMIREZ ALEJANDRO ANTONIO | SCRUM MASTER | Desarrollador Fullstack |
-| 3 | ORELLANA ROJAS BAYRON ALEXANDER | DEVELOPER | Desarrollador Backend |
+| 2 | ORELLANA ROJAS BAYRON ALEXANDER | SCRUM MASTER | Desarrollador Fullstack |
+| 3 | VIGIL RAMIREZ ALEJANDRO ANTONIO | DEVELOPER | Desarrollador Backend |
 | 4 | DIAZ SANTOS ZAIR BENETT | DEVELOPER | Desarrollador Frontend |
 | 5 | FLORES HERNANDEZ WALTER ALEJANDRO | DEVELOPER | Desarrollador Backend |
 | 6 | MELGAR RIVAS WILLIAM ARIEL | DEVELOPER | Desarrollador Frontend |
@@ -65,7 +65,7 @@ Desarrollar una plataforma de gestión de citas médicas multi-empresa (SaaS) qu
 | 10 | VENTURA VELASQUEZ CARLOS MARIO | ARCHITECT | Arquitecto de Software |
 | 11 | SANCHEZ MENJIVAR NICOLE NOHEMY | BUSINESS ANALYST | Analista de Negocio |
 
-**Scrum Master:** Alejandro Vigil Ramírez
+**Scrum Master:** Bayron Alexander Orellana Rojas
 **Product Owner:** Héctor Napoleón López Ruiz
 
 ---

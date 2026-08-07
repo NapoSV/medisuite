@@ -1,6 +1,4 @@
--- MediSuite — Datos ficticios de demostración (v2, alineado a schema.sql v2)
--- 2 tenants (para probar aislamiento multi-tenant) con datos de ejemplo en cada tabla.
--- NINGÚN dato aquí es real. password_hash es un placeholder de formato, no un hash válido.
+-- MediSuite — Datos de demostración
 
 -- ─── Tenants demo ────────────────────────────────────────────────────────
 INSERT INTO tenants (slug, commercial_name, legal_name, tax_id, country, plan, status, max_users, max_patients, max_doctors)
@@ -68,23 +66,6 @@ INSERT INTO vital_signs (tenant_id, medical_record_id, weight_kg, height_cm, blo
 -- ─── Recetas (tenant 1) ───────────────────────────────────────────────────
 INSERT INTO prescriptions (tenant_id, medical_record_id, doctor_id, medications, dosage, duration, instructions) VALUES
     (1, 2, 1, 'Butilhioscina 10mg', '1 tableta cada 8 horas', '3 días', 'Tomar con alimentos.');
-
--- ─── Inventario / Compras / Activos (tenant 1) ───────────────────────────
-INSERT INTO products (tenant_id, name, category, unit_of_measure, current_stock, min_stock, unit_price) VALUES
-    (1, 'Guantes de nitrilo (caja 100u)', 'Insumos médicos', 'caja', 45, 10, 8.50),
-    (1, 'Butilhioscina 10mg (blíster 20u)', 'Medicamentos', 'blíster', 120, 20, 3.25);
-
-INSERT INTO purchase_orders (tenant_id, supplier, status, total_amount) VALUES
-    (1, 'Distribuidora Médica S.A.', 'PENDING', 450.00);
-
--- v2: líneas de detalle de la orden de compra
-INSERT INTO purchase_order_items (tenant_id, purchase_order_id, product_id, quantity, unit_price, received_quantity) VALUES
-    (1, 1, 1, 40, 8.50, 0),
-    (1, 1, 2, 34, 3.25, 0);
-
-INSERT INTO physical_assets (tenant_id, name, category, acquisition_value, acquired_on, status, location) VALUES
-    (1, 'Tensiómetro digital', 'Equipo médico', 65.00, '2025-03-15', 'ACTIVE', 'Consultorio 1'),
-    (1, 'Camilla de exploración', 'Mobiliario clínico', 180.00, '2024-09-01', 'ACTIVE', 'Consultorio 1');
 
 -- ─── Auditoría (ejemplo de registro automático) ──────────────────────────
 INSERT INTO audit_logs (tenant_id, user_id, action, entity_name, entity_id, data_after, ip_address) VALUES

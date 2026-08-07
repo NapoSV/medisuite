@@ -1,22 +1,27 @@
 services:
-  db:
-    image: postgres:16
-    container_name: medisuite_db
-    environment:
-      POSTGRES_DB: ${DB_NAME:-clinica_dev}
-      POSTGRES_USER: ${DB_USERNAME:-clinica_app}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+  backend:
+    build: ./backend
     ports:
-      - "5432:5432"
-    volumes:
-      - db_data:/var/lib/postgresql/data
-      - ./database:/docker-entrypoint-initdb.d
+      - "8080:8080"
+    env_file:
+      - .env
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-clinica_app}"]
-      interval: 10s
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/actuator/health || exit 1"]
+      interval: 15s
       timeout: 5s
       retries: 5
+      start_period: 30s
     restart: unless-stopped
 
-volumes:
-  db_data:
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: http://localhost:8080
+        VITE_TENANT_SLUG: clinica-san-rafael
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped

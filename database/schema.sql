@@ -1,12 +1,4 @@
--- MediSuite — Esquema PostgreSQL 16 (v2 — auditado y optimizado, 23/07/2026)
--- 17 tablas: 9 del alcance académico oficial + 8 de la extensión SaaS.
--- Cambios v2 respecto a v1:
---   * NUEVA tabla `specialties` (normaliza doctors.specialty, antes texto libre)
---   * NUEVA tabla `purchase_order_items` (líneas de detalle de órdenes de compra)
---   * `appointments.reservation_code` (HU-003: la cita se confirma con código de reserva)
---   * Índice único parcial anti doble-reserva en `appointments`
---   * Índices adicionales de rendimiento (tenant_id, timelines, búsquedas frecuentes)
--- Convención: tablas/columnas en snake_case inglés (ver docs/ESTANDARES_CODIGO.md)
+-- MediSuite — Esquema PostgreSQL 16 — 17 tablas
 
 -- ─── Función genérica para mantener updated_at ──────────────────────────
 CREATE OR REPLACE FUNCTION set_updated_at()
@@ -246,78 +238,7 @@ CREATE INDEX idx_prescriptions_tenant ON prescriptions(tenant_id);
 CREATE TRIGGER trg_prescriptions_updated_at BEFORE UPDATE ON prescriptions
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
--- ─── 13. products (Producto — inventario) ────────────────────────────────
-CREATE TABLE products (
-    id                  BIGSERIAL PRIMARY KEY,
-    tenant_id           BIGINT NOT NULL REFERENCES tenants(id),
-    name                VARCHAR(150) NOT NULL,
-    category            VARCHAR(80),
-    unit_of_measure     VARCHAR(20),
-    current_stock       INT NOT NULL DEFAULT 0 CHECK (current_stock >= 0),
-    min_stock           INT NOT NULL DEFAULT 0,
-    unit_price          NUMERIC(10,2),
-    created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
-    UNIQUE (tenant_id, name)
-);
-CREATE TRIGGER trg_products_updated_at BEFORE UPDATE ON products
-    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
-
--- ─── 14. purchase_orders (OrdenCompra) ───────────────────────────────────
-CREATE TABLE purchase_orders (
-    id              BIGSERIAL PRIMARY KEY,
-    tenant_id       BIGINT NOT NULL REFERENCES tenants(id),
-    supplier        VARCHAR(150),
-    ordered_on      DATE NOT NULL DEFAULT current_date,
-    status          VARCHAR(25) NOT NULL DEFAULT 'PENDING'
-                        CHECK (status IN ('PENDING','PARTIALLY_RECEIVED','COMPLETE','CANCELLED')),
-    total_amount    NUMERIC(12,2),
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-CREATE INDEX idx_purchase_orders_tenant_status ON purchase_orders(tenant_id, status);
-CREATE TRIGGER trg_purchase_orders_updated_at BEFORE UPDATE ON purchase_orders
-    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
-
--- ─── 15. purchase_order_items (Detalle de OrdenCompra — NUEVA en v2) ─────
--- Sin esta tabla una orden de compra no puede decir QUÉ productos pide,
--- ni actualizar stock al recibir mercadería.
-CREATE TABLE purchase_order_items (
-    id                  BIGSERIAL PRIMARY KEY,
-    tenant_id           BIGINT NOT NULL REFERENCES tenants(id),
-    purchase_order_id   BIGINT NOT NULL REFERENCES purchase_orders(id),
-    product_id          BIGINT NOT NULL REFERENCES products(id),
-    quantity            INT NOT NULL CHECK (quantity > 0),
-    unit_price          NUMERIC(10,2) NOT NULL,
-    received_quantity   INT NOT NULL DEFAULT 0 CHECK (received_quantity >= 0),
-    created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
-    UNIQUE (purchase_order_id, product_id)
-);
-CREATE INDEX idx_po_items_product ON purchase_order_items(product_id);
-CREATE INDEX idx_po_items_tenant ON purchase_order_items(tenant_id);
-CREATE TRIGGER trg_po_items_updated_at BEFORE UPDATE ON purchase_order_items
-    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
-
--- ─── 16. physical_assets (ActivoFisico) ──────────────────────────────────
-CREATE TABLE physical_assets (
-    id                  BIGSERIAL PRIMARY KEY,
-    tenant_id           BIGINT NOT NULL REFERENCES tenants(id),
-    name                VARCHAR(150) NOT NULL,
-    category            VARCHAR(80),
-    acquisition_value   NUMERIC(12,2),
-    acquired_on         DATE,
-    status              VARCHAR(20) NOT NULL DEFAULT 'ACTIVE'
-                            CHECK (status IN ('ACTIVE','MAINTENANCE','DECOMMISSIONED')),
-    location            VARCHAR(100),
-    created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-CREATE INDEX idx_physical_assets_tenant ON physical_assets(tenant_id);
-CREATE TRIGGER trg_physical_assets_updated_at BEFORE UPDATE ON physical_assets
-    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
-
--- ─── 17. audit_logs (AuditLog) ───────────────────────────────────────────
+-- ─── 13. audit_logs (AuditLog) ───────────────────────────────────────────
 -- Tabla de solo escritura (append-only): no lleva updated_at ni trigger,
 -- un registro de auditoría no debe modificarse después de creado.
 CREATE TABLE audit_logs (

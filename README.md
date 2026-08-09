@@ -33,8 +33,8 @@ Una vez levantado:
 | Servicio | URL |
 |---------|-----|
 | Frontend | http://localhost:5173 |
-| Backend API | http://localhost:8080 |
-| Swagger UI | http://localhost:8080/swagger-ui/index.html |
+| Backend API | http://localhost:8097 |
+| Swagger UI | http://localhost:8097/swagger-ui/index.html |
 
 ---
 
@@ -55,21 +55,3 @@ medisuite/
 ├── .env.example      ← Plantilla de variables de entorno
 └── CUENTAS_DEMO.md   ← Instrucciones de ejecución y credenciales
 ```
-
----
-
-## Equipo — Grupo 7
-
-| Nombre | Rol Técnico |
-|--------|-------------|
-| LOPEZ RUIZ HECTOR NAPOLEON | Analista / PM |
-| ORELLANA BAYRON | Backend |
-| VIGIL | Fullstack |
-| FLORES | Backend |
-| DIAZ | Frontend |
-| MELGAR | Frontend |
-| MERINO VENTURA ALEJANDRO SEBASTIAN | Base de Datos |
-| VENTURA VELASQUEZ CARLOS MARIO | Arquitecto |
-| FUENTES | QA |
-| VASQUEZ | QA |
-| SANCHEZ MENJIVAR NICOLE NOHEMY | Analista de Negocio |

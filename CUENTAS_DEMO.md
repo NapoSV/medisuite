@@ -46,8 +46,8 @@ docker compose up --build
 | Componente | URL |
 |-----------|-----|
 | Aplicación (frontend) | http://localhost:5173 |
-| API REST (backend) | http://localhost:8080 |
-| Documentación API (Swagger) | http://localhost:8080/swagger-ui/index.html |
+| API REST (backend) | http://localhost:8097 |
+| Documentación API (Swagger) | http://localhost:8097/swagger-ui/index.html |
 
 **Para detener el proyecto**, presionar `Ctrl + C` en la terminal donde se ejecuta.
 

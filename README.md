@@ -33,8 +33,8 @@ Una vez levantado:
 | Servicio | URL |
 |---------|-----|
 | Frontend | http://localhost:5173 |
-| Backend API | http://localhost:8080 |
-| Swagger UI | http://localhost:8080/swagger-ui/index.html |
+| Backend API | http://localhost:8097 |
+| Swagger UI | http://localhost:8097/swagger-ui/index.html |
 
 ---
 

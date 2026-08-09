@@ -2,11 +2,11 @@ services:
   backend:
     build: ./backend
     ports:
-      - "8080:8080"
+      - "8097:8097"
     env_file:
       - .env
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:8080/actuator/health || exit 1"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:8097/actuator/health || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 5
@@ -17,7 +17,7 @@ services:
     build:
       context: ./frontend
       args:
-        VITE_API_BASE_URL: http://localhost:8080
+        VITE_API_BASE_URL: http://localhost:8097
         VITE_TENANT_SLUG: clinica-san-rafael
     ports:
       - "5173:80"

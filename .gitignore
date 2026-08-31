@@ -86,6 +86,10 @@ htmlReport/
 # ─── Archivos temporales de Office ───────────────────────
 ~$*
 
+# ─── Backups de draw.io ───────────────────────────────────
+*.drawio.bkp
+.$*.drawio.bkp
+
 # ─── Políticas de seguridad (borrador interno) ──────────
 # Quitar esta línea cuando el PM apruebe publicarlas al repo.
 docs/politicas/

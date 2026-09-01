@@ -2,7 +2,7 @@
 
 > **Fecha del plan:** 30/08/2026 · **Entrega oficial:** 27/09/2026 13:00
 > **Deadline interno:** 21/09/2026 23:59 (6 días de buffer para QA y defensa)
-> **Repo:** `https://github.com/HectorLopez-Grupo7/medisuite` (ajustar al remoto real)
+> **Repo:** `https://github.com/NapoSV/medisuite`
 >
 > Este documento es **imperativo**. Cada integrante ejecuta sus tareas por semana,
 > copia el código provisto, corre los comandos de verificación y avisa al Scrum
@@ -56,7 +56,7 @@ git config --global user.email "TU_CIF@cvirtualuees.edu.sv"
 cd ~/Proyectos          # o la que uses
 
 # Clonar (usa HTTPS; si tienes SSH configurado, cambia por el remoto SSH)
-git clone https://github.com/HectorLopez-Grupo7/medisuite.git
+git clone https://github.com/NapoSV/medisuite.git
 cd medisuite
 
 # Confirmar que estás en main y con lo más nuevo

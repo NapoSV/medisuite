@@ -55,3 +55,4 @@ medisuite/
 ├── .env.example      ← Plantilla de variables de entorno
 └── CUENTAS_DEMO.md   ← Instrucciones de ejecución y credenciales
 ```
+#Equipo Avance 2"

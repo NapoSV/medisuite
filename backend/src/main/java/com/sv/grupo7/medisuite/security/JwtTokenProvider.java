@@ -1,5 +1,6 @@
 package com.sv.grupo7.medisuite.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +34,14 @@ public class JwtTokenProvider {
                 .expiration(expiry)
                 .signWith(signingKey)
                 .compact();
+    }
+
+    public Claims parse(String token) {
+        return Jwts.parser()
+                .verifyWith(signingKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     public long getExpirationSeconds() {

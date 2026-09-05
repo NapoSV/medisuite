@@ -44,12 +44,14 @@ public class AuthService {
         }
 
         if (!passwordEncoder.matches(req.password(), user.getPasswordHash())) {
-            registerFailedAttempt(user);
+            userRepository.incrementFailedAttempts(
+                    user.getId(),
+                    MAX_ATTEMPTS,
+                    OffsetDateTime.now().plusMinutes(LOCK_MINUTES));
             throw new BadCredentialsException("Credenciales inválidas");
         }
 
-        user.setFailedLoginAttempts(0);
-        user.setLockedUntil(null);
+        userRepository.resetFailedAttempts(user.getId());
 
         String token = jwtTokenProvider.generateToken(user.getId(), user.getRole(), user.getTenantId());
         long expiresIn = jwtTokenProvider.getExpirationSeconds();
@@ -57,13 +59,5 @@ public class AuthService {
 
         return new LoginResponse(token, "Bearer", expiresIn,
                 new LoginResponse.UserInfo(user.getId(), fullName, user.getRole(), user.getTenantId()));
-    }
-
-    private void registerFailedAttempt(User user) {
-        int attempts = user.getFailedLoginAttempts() + 1;
-        user.setFailedLoginAttempts(attempts);
-        if (attempts >= MAX_ATTEMPTS) {
-            user.setLockedUntil(OffsetDateTime.now().plusMinutes(LOCK_MINUTES));
-        }
     }
 }

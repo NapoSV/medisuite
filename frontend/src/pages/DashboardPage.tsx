@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Users, CalendarCheck, Clock, Stethoscope, LogOut, RefreshCw, AlertCircle } from 'lucide-react'
+import { Users, CalendarCheck, Bell, FileText, LogOut, RefreshCw, AlertCircle } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
 import { fetchDashboardMetrics, type DashboardMetrics } from '../api/dashboard'
 import Logo from '../components/Logo'
@@ -105,30 +105,30 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <KpiCard
-            label="Pacientes registrados"
-            value={metrics?.totalPatients ?? null}
-            icon={<Users className="w-5 h-5 text-primary" />}
+            label="Citas hoy"
+            value={metrics?.appointmentsToday ?? null}
+            icon={<CalendarCheck className="w-5 h-5 text-primary" />}
             accent="bg-primary-light"
             loading={loading}
           />
           <KpiCard
-            label="Citas de hoy"
-            value={metrics?.appointmentsToday ?? null}
-            icon={<CalendarCheck className="w-5 h-5 text-[#16A34A]" />}
+            label="Pacientes activos"
+            value={metrics?.activePatients ?? null}
+            icon={<Users className="w-5 h-5 text-[#16A34A]" />}
             accent="bg-[#DCFCE7]"
             loading={loading}
           />
           <KpiCard
-            label="Citas pendientes"
-            value={metrics?.pendingAppointments ?? null}
-            icon={<Clock className="w-5 h-5 text-[#D97706]" />}
+            label="Alertas"
+            value={metrics?.alerts ?? null}
+            icon={<Bell className="w-5 h-5 text-[#D97706]" />}
             accent="bg-[#FEF3C7]"
             loading={loading}
           />
           <KpiCard
-            label="Doctores activos"
-            value={metrics?.activeDoctors ?? null}
-            icon={<Stethoscope className="w-5 h-5 text-[#7C3AED]" />}
+            label="Recetas emitidas"
+            value={metrics?.prescriptionsIssued ?? null}
+            icon={<FileText className="w-5 h-5 text-[#7C3AED]" />}
             accent="bg-[#EDE9FE]"
             loading={loading}
           />

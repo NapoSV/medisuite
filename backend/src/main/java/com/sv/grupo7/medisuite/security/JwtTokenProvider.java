@@ -6,10 +6,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
+
+    private static final int MIN_SECRET_BYTES = 32;
 
     private final SecretKey signingKey;
     private final long expirationMs;
@@ -17,7 +20,16 @@ public class JwtTokenProvider {
     public JwtTokenProvider(
             @Value("${app.jwt.secret}") String secret,
             @Value("${app.jwt.expiration-ms}") long expirationMs) {
-        this.signingKey = Keys.hmacShaKeyFor(secret.getBytes());
+        if (secret == null) {
+            throw new IllegalStateException("app.jwt.secret no está configurado");
+        }
+        byte[] secretBytes = secret.getBytes(StandardCharsets.UTF_8);
+        if (secretBytes.length < MIN_SECRET_BYTES) {
+            throw new IllegalStateException(
+                    "app.jwt.secret debe tener al menos " + MIN_SECRET_BYTES
+                            + " bytes UTF-8 para HS256 (actual: " + secretBytes.length + ")");
+        }
+        this.signingKey = Keys.hmacShaKeyFor(secretBytes);
         this.expirationMs = expirationMs;
     }
 

@@ -2,6 +2,7 @@ package com.sv.grupo7.medisuite.service;
 
 import com.sv.grupo7.medisuite.dao.TenantRepository;
 import com.sv.grupo7.medisuite.dao.UserRepository;
+import com.sv.grupo7.medisuite.dto.auth.ChangePasswordRequest;
 import com.sv.grupo7.medisuite.dto.auth.LoginRequest;
 import com.sv.grupo7.medisuite.dto.auth.LoginResponse;
 import com.sv.grupo7.medisuite.exception.BusinessException;
@@ -59,5 +60,20 @@ public class AuthService {
 
         return new LoginResponse(token, "Bearer", expiresIn,
                 new LoginResponse.UserInfo(user.getId(), fullName, user.getRole(), user.getTenantId()));
+    }
+
+    @Transactional
+    public void changePassword(Long userId, ChangePasswordRequest req) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException("Usuario no encontrado"));
+
+        if (!passwordEncoder.matches(req.currentPassword(), user.getPasswordHash())) {
+            throw new BadCredentialsException("La contraseña actual es incorrecta");
+        }
+        if (passwordEncoder.matches(req.newPassword(), user.getPasswordHash())) {
+            throw new BusinessException("La nueva contraseña debe ser distinta a la actual");
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(req.newPassword()));
     }
 }

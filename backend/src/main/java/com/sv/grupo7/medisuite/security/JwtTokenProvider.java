@@ -52,17 +52,11 @@ public class JwtTokenProvider {
         return expirationMs / 1000;
     }
 
-    public ParsedToken parse(String token) {
-        Claims claims = Jwts.parser()
+    public Claims parse(String token) {
+        return Jwts.parser()
                 .verifyWith(signingKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-        Long userId = Long.parseLong(claims.getSubject());
-        String role = claims.get("role", String.class);
-        Long tenantId = claims.get("tenant_id", Long.class);
-        return new ParsedToken(userId, role, tenantId);
     }
-
-    public record ParsedToken(Long userId, String role, Long tenantId) {}
 }

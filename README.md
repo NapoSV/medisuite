@@ -56,3 +56,5 @@ medisuite/
 └── CUENTAS_DEMO.md   ← Instrucciones de ejecución y credenciales
 ```
 #Equipo Avance 2"
+
+# Tarea H-06 · Verificar Docker levanta todo el sistema

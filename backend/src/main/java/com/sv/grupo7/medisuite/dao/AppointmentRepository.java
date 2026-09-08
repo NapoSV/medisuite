@@ -11,4 +11,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findByPatientIdAndTenantId(Long patientId, Long tenantId);
     List<Appointment> findByDoctorIdAndTenantId(Long doctorId, Long tenantId);
     Optional<Appointment> findByReservationCodeAndTenantId(String reservationCode, Long tenantId);
+
+    // En AppointmentRepository.java — agregar:
+    @Query("SELECT COUNT(a) FROM Appointment a WHERE DATE(a.scheduledAt) = CURRENT_DATE AND a.tenantId = :tid")
+    long countTodayByTenant(@Param("tid") Long tid);
+
+
 }

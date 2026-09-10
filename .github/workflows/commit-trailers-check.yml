@@ -1,0 +1,46 @@
+name: commit-trailers-check
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+jobs:
+  check-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine commit range
+        id: range
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "range=origin/${{ github.base_ref }}..HEAD" >> "$GITHUB_OUTPUT"
+            git fetch origin "${{ github.base_ref }}"
+          else
+            before="${{ github.event.before }}"
+            after="${{ github.sha }}"
+            if [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ]; then
+              echo "range=$after~1..$after" >> "$GITHUB_OUTPUT"
+            else
+              echo "range=$before..$after" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+      - name: Reject AI co-author trailers
+        run: |
+          range="${{ steps.range.outputs.range }}"
+          echo "Scanning commits in range: $range"
+          bad=$(git log "$range" --format='%H%n%B%n---END---' \
+            | grep -iE '^Co-authored-by:.*(claude|anthropic|copilot|gpt|openai|codex|cursor|gemini|bard|windsurf)' \
+            || true)
+          if [ -n "$bad" ]; then
+            echo "::error::Se detectaron trailers Co-authored-by de IA. No estan permitidos."
+            echo "$bad"
+            exit 1
+          fi
+          echo "OK: sin co-autores de IA."

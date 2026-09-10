@@ -238,6 +238,38 @@ copy-paste**, y al final del bloque semanal, los **comandos git** para subirlo.
 
 **Apellido rama:** `lopez` · **CIF:** `2026010132` · **Correo M365:** `2026010132@cvirtualuees.edu.sv`
 
+#### ¿Puedo avanzar? — checklist antes de arrancar cualquier tarea
+
+**Paso 1 — Actualiza tu rama con lo último de `develop` (siempre, antes de cada tarea):**
+
+```bash
+cd ~/Proyectos/medisuite
+git fetch origin
+git checkout develop && git pull origin develop
+git checkout feature/avance2-lopez
+git merge develop
+```
+
+**Paso 2 — Ubica tu próxima tarea en la tabla. Corre el comando y decide:**
+
+- ✅ Sale la línea esperada → **arranca sin preguntar a nadie.**
+- ❌ Sale vacío → **NO arranques.** Escribe por WhatsApp DIRECTAMENTE al responsable de la columna (no al Scrum Master, en este caso tú mismo) con capture del comando fallido.
+
+| Tu tarea | Depende de | Responsable a contactar | Comando de verificación (desde raíz `medisuite/`) |
+|---|---|---|---|
+| H-01, H-02, H-03, H-05, O-05, PIC-01, V-01, V-02, V-03 | — (ninguno) | — | Arranca directo |
+| H-04 (mergear PRs, continuo) | Llega un PR de compañero | Autor del PR | `gh pr list --state open` |
+| U-01 (`/me` + change-password) | VG-08 | Vigil | `git ls-files backend \| grep JwtAuthenticationFilter` |
+| D-04 (Dashboard KPIs) | M-06 (endpoint dashboard) | Merino | `git grep -l "dashboard/metrics" backend/src/main/java` |
+| V-04..V-13 (secciones documento) | — | — | Arranca directo |
+| V-14 (PDF final) | V-01..V-13 completas | Tú mismo | `ls docs/DOCUMENTO_AVANCE2_MEDISUITE.md` |
+| M-07 (doc arquitectura .dat + dashboard) | M-01..M-06 | Merino | `git ls-files backend \| grep -E "DatFileDao\|DashboardController"` |
+| M-08 (speech técnico) | M-07 | Tú mismo | Después de escribir M-07 |
+| H-06 (verificar Docker) | Todo el código mergeado a develop | — | `docker compose up -d && curl -sf http://localhost:8097/actuator/health` |
+| H-07 (tag `v2.0.0-avance2`) | H-06 verde | Tú mismo | Después de H-06 sin errores |
+| H-08 (ensayo defensa) | H-06 + M-08 listos | Todo el equipo | 25/09 según cronograma |
+
+
 #### Semana 1 (31/08 – 06/09)
 
 **Tarea H-01 · GitHub Action que bloquea commits con IA co-author**
@@ -478,6 +510,33 @@ git push origin feature/avance2-lopez
 ### 5.2 VIGIL RAMÍREZ ALEJANDRO ANTONIO — Backend / Seguridad
 
 **Apellido rama:** `vigil` · **CIF:** `2026010204` · **Correo M365:** `2026010204@cvirtualuees.edu.sv`
+
+#### ¿Puedo avanzar? — checklist antes de arrancar cualquier tarea
+
+**Paso 1 — Actualiza tu rama con lo último de `develop` (siempre, antes de cada tarea):**
+
+```bash
+cd ~/Proyectos/medisuite
+git fetch origin
+git checkout develop && git pull origin develop
+git checkout feature/avance2-vigil
+git merge develop
+```
+
+**Paso 2 — Ubica tu próxima tarea. Corre el comando y decide:**
+
+- ✅ Sale la línea esperada → **arranca sin preguntar.**
+- ❌ Sale vacío → **NO arranques.** Escribe por WhatsApp DIRECTAMENTE al responsable (no a Héctor) con capture del comando fallido.
+
+| Tu tarea | Depende de | Responsable a contactar | Comando de verificación (desde raíz `medisuite/`) |
+|---|---|---|---|
+| VG-08 (JwtFilter + TenantContext) | — (raíz, ya hecha) | — | Arranca directo |
+| VG-04 (GlobalExceptionHandler) | — | — | Arranca directo |
+| VG-03 (CORS por env var) | — | — | Arranca directo |
+| VG-05 (headers OWASP HSTS, XFO...) | — | — | Arranca directo |
+| VG-01 (rate limiting login) | VG-08 (tú) | Tú mismo | `git ls-files backend \| grep JwtAuthenticationFilter` |
+| VG-06 (logout + blacklist JWT) | VG-08 (tú) | Tú mismo | `git ls-files backend \| grep JwtBlacklist` |
+
 
 #### Semana 1 (31/08 – 06/09)
 
@@ -836,6 +895,33 @@ git push origin feature/avance2-vigil
 ### 5.3 ORELLANA ROJAS BAYRON ALEXANDER — Backend / Módulo Citas
 
 **Apellido rama:** `orellana` · **CIF:** `2026011707` · **Correo M365:** `2026011707@cvirtualuees.edu.sv`
+
+#### ¿Puedo avanzar? — checklist antes de arrancar cualquier tarea
+
+**Paso 1 — Actualiza tu rama con lo último de `develop` (siempre, antes de cada tarea):**
+
+```bash
+cd ~/Proyectos/medisuite
+git fetch origin
+git checkout develop && git pull origin develop
+git checkout feature/avance2-orellana
+git merge develop
+```
+
+**Paso 2 — Ubica tu próxima tarea. Corre el comando y decide:**
+
+- ✅ Sale la línea esperada → **arranca sin preguntar.**
+- ❌ Sale vacío → **NO arranques.** Escribe por WhatsApp DIRECTAMENTE al responsable (no a Héctor) con capture del comando fallido.
+
+| Tu tarea | Depende de | Responsable a contactar | Comando de verificación (desde raíz `medisuite/`) |
+|---|---|---|---|
+| P-02 (PatientService + búsqueda DUI) | VG-08 (Vigil) + P-01 (Flores) | Vigil, Flores | `git ls-files backend \| grep JwtAuthenticationFilter` y `git grep -l "dui" backend/src/main/resources/db/migration` |
+| O-01 (Appointment extends BaseEntity) | VT-01 (Ventura) + F-02 (Flores) | Ventura, Flores | `git ls-files backend \| grep BaseEntity.java` y `git ls-files \| grep -E "V5__\|V6__"` |
+| O-02 (AppointmentRepository) | O-01 (tú) | Tú mismo | `git ls-files backend \| grep "Appointment.java"` |
+| O-03 (AppointmentService) | O-02 (tú) | Tú mismo | `git ls-files backend \| grep AppointmentRepository` |
+| O-04 (endpoints REST /api/appointments) | O-03 (tú) + VG-08 (Vigil) | Tú, Vigil | `git ls-files backend \| grep AppointmentService` |
+| O-06 (slots disponibles) | O-04 (tú) | Tú mismo | `git ls-files backend \| grep AppointmentController` |
+
 
 #### Semana 2 (07/09 – 13/09)
 
@@ -1208,6 +1294,33 @@ git push origin feature/avance2-orellana
 
 **Apellido rama:** `diaz` · **CIF:** `2026010796` · **Correo M365:** `2026010796@cvirtualuees.edu.sv`
 
+#### ¿Puedo avanzar? — checklist antes de arrancar cualquier tarea
+
+**Paso 1 — Actualiza tu rama con lo último de `develop` (siempre, antes de cada tarea):**
+
+```bash
+cd ~/Proyectos/medisuite
+git fetch origin
+git checkout develop && git pull origin develop
+git checkout feature/avance2-diaz
+git merge develop
+```
+
+**Paso 2 — Ubica tu próxima tarea. Corre el comando y decide:**
+
+- ✅ Sale la línea esperada → **arranca sin preguntar.**
+- ❌ Sale vacío → **NO arranques.** Escribe por WhatsApp DIRECTAMENTE al responsable (no a Héctor) con capture del comando fallido.
+
+| Tu tarea | Depende de | Responsable a contactar | Comando de verificación (desde raíz `medisuite/`) |
+|---|---|---|---|
+| D-00 (login) | — | — | Arranca directo |
+| D-01 (React Router + rutas protegidas) | — | — | Arranca directo |
+| D-02 (Layout navbar + sidebar) | — | — | Arranca directo |
+| D-03 (useAuth + persistencia JWT) | — | — | Arranca directo |
+| D-05 (Pantalla Pacientes) | D-00..D-03 (tú) + MR-01 (Melgar) + P-02 (Orellana) | Melgar, Orellana | `git ls-files frontend \| grep -E "LoginPage\|useAuth\|MainLayout\|DataTable.tsx"` y `git ls-files backend \| grep PatientController` |
+| D-07 (Doctores CRUD, solo ADMIN) | D-00..D-03 (tú) + MR-01 (Melgar) + DR-01 (Vásquez) | Melgar, Vásquez | `git ls-files frontend \| grep DataTable.tsx` y `git ls-files backend \| grep DoctorController` |
+
+
 #### Semana 1 (31/08 – 06/09)
 
 **Tarea D-00 · Pantalla `/login` con formulario**
@@ -1547,6 +1660,33 @@ git push origin feature/avance2-diaz
 
 **Apellido rama:** `flores` · **CIF:** `2026011012` · **Correo M365:** `2026011012@cvirtualuees.edu.sv`
 
+#### ¿Puedo avanzar? — checklist antes de arrancar cualquier tarea
+
+**Paso 1 — Actualiza tu rama con lo último de `develop` (siempre, antes de cada tarea):**
+
+```bash
+cd ~/Proyectos/medisuite
+git fetch origin
+git checkout develop && git pull origin develop
+git checkout feature/avance2-floreshernandez
+git merge develop
+```
+
+**Paso 2 — Ubica tu próxima tarea. Corre el comando y decide:**
+
+- ✅ Sale la línea esperada → **arranca sin preguntar.**
+- ❌ Sale vacío → **NO arranques.** Escribe por WhatsApp DIRECTAMENTE al responsable (no a Héctor) con capture del comando fallido.
+
+| Tu tarea | Depende de | Responsable a contactar | Comando de verificación (desde raíz `medisuite/`) |
+|---|---|---|---|
+| F-01 (Flyway enabled + validate) | — (raíz) | — | Arranca directo |
+| P-01 (rename `cif`→`dui` + migración) | F-01 (tú) | Tú mismo | `grep -R "spring.flyway.enabled=true" backend/src/main/resources` |
+| F-07 (migración `must_change_password`) | F-01 (tú) | Tú mismo | idem |
+| F-02 (migraciones V5-V7) | F-01 (tú) | Tú mismo | idem |
+| F-03 (constraints multi-tenant) | F-02 (tú) | Tú mismo | `git ls-files \| grep -E "V5__\|V6__\|V7__"` |
+| F-04 (seed demo) | F-02 (tú) + F-03 (tú) | Tú mismo | idem |
+
+
 #### Semana 1 (31/08 – 06/09)
 
 **Tarea P-01 · Renombrar `Patient.cif` → `Patient.dui` + migración**
@@ -1797,6 +1937,33 @@ git push origin feature/avance2-flores
 
 **Apellido rama:** `melgar` · **CIF:** `2026011736` · **Correo M365:** `2026011736@cvirtualuees.edu.sv`
 
+#### ¿Puedo avanzar? — checklist antes de arrancar cualquier tarea
+
+**Paso 1 — Actualiza tu rama con lo último de `develop` (siempre, antes de cada tarea):**
+
+```bash
+cd ~/Proyectos/medisuite
+git fetch origin
+git checkout develop && git pull origin develop
+git checkout feature/avance2-melgar
+git merge develop
+```
+
+**Paso 2 — Ubica tu próxima tarea. Corre el comando y decide:**
+
+- ✅ Sale la línea esperada → **arranca sin preguntar.**
+- ❌ Sale vacío → **NO arranques.** Escribe por WhatsApp DIRECTAMENTE al responsable (no a Héctor) con capture del comando fallido.
+
+| Tu tarea | Depende de | Responsable a contactar | Comando de verificación (desde raíz `medisuite/`) |
+|---|---|---|---|
+| MR-01 (DataTable reutilizable) | — (raíz) | — | Arranca directo |
+| MR-02 (Pantalla Citas) | MR-01 (tú) + D-00..D-03 (Díaz) + O-04 (Orellana) | Díaz, Orellana | `git ls-files frontend \| grep -E "DataTable.tsx\|MainLayout"` y `git ls-files backend \| grep AppointmentController` |
+| MR-03 (Modal Nueva Cita con slots) | MR-02 (tú) + O-06 (Orellana) | Orellana | `git grep -l "slots" backend/src/main/java` |
+| MR-04 (acciones cancelar/reprogramar/completar) | MR-02 (tú) + O-04 (Orellana) | Orellana | `git ls-files backend \| grep AppointmentController` |
+| MR-05 (Expediente + timeline) | MR-01 (tú) + D-00..D-03 (Díaz) + VT-03 (Ventura) | Díaz, Ventura | `git ls-files backend \| grep MedicalRecordController` |
+| MR-06 (Recetas con items dinámicos) | MR-01 (tú) + D-00..D-03 (Díaz) + VT-04b (Ventura) | Díaz, Ventura | `git ls-files backend \| grep PrescriptionController` |
+
+
 #### Semana 1 (31/08 – 06/09)
 
 **Tarea MR-01 · Componente reutilizable DataTable**
@@ -2032,6 +2199,33 @@ git push origin feature/avance2-melgar
 ### 5.7 MERINO VENTURA ALEJANDRO SEBASTIÁN — **FEATURE CRÍTICO (2.40 pts)**
 
 **Apellido rama:** `merino` · **CIF:** `2026020122` · **Correo M365:** `2026020122@cvirtualuees.edu.sv`
+
+#### ¿Puedo avanzar? — checklist antes de arrancar cualquier tarea
+
+**Paso 1 — Actualiza tu rama con lo último de `develop` (siempre, antes de cada tarea):**
+
+```bash
+cd ~/Proyectos/medisuite
+git fetch origin
+git checkout develop && git pull origin develop
+git checkout feature/avance2-merino
+git merge develop
+```
+
+**Paso 2 — Ubica tu próxima tarea. Corre el comando y decide:**
+
+- ✅ Sale la línea esperada → **arranca sin preguntar.**
+- ❌ Sale vacío → **NO arranques.** Escribe por WhatsApp DIRECTAMENTE al responsable (no a Héctor) con capture del comando fallido.
+
+| Tu tarea | Depende de | Responsable a contactar | Comando de verificación (desde raíz `medisuite/`) |
+|---|---|---|---|
+| M-01 (POCs backup/dashboard) | — | — | Arranca directo |
+| M-02 (DatFileDao<T> genérico thread-safe) | VT-01 (Ventura) | Ventura | `git ls-files backend \| grep BaseEntity.java` |
+| M-03 (AuditBackupScheduler cada 60s) | M-02 (tú) | Tú mismo | `git ls-files backend \| grep DatFileDao` |
+| M-04 (backup diario expedientes .dat) | M-02 (tú) + VT-03 (Ventura) | Ventura | `git ls-files backend \| grep MedicalRecord.java` |
+| M-05 (DashboardMetricsService paralelo) | F-04 (Flores, seed útil) | Flores | `git ls-files \| grep V8__seed` |
+| M-06 (DashboardController REST) | M-05 (tú) + VG-08 (Vigil) | Vigil | `git ls-files backend \| grep JwtAuthenticationFilter` |
+
 
 Concurrencia B (backup async a `.dat`) + C (dashboard paralelo).
 
@@ -2334,6 +2528,33 @@ git push origin feature/avance2-merino
 
 **Apellido rama:** `fuentes` · **CIF:** `2026011709` · **Correo M365:** `2026011709@cvirtualuees.edu.sv`
 
+#### ¿Puedo avanzar? — checklist antes de arrancar cualquier tarea
+
+**Paso 1 — Actualiza tu rama con lo último de `develop` (siempre, antes de cada tarea):**
+
+```bash
+cd ~/Proyectos/medisuite
+git fetch origin
+git checkout develop && git pull origin develop
+git checkout feature/avance2-fuentes
+git merge develop
+```
+
+**Paso 2 — Ubica tu próxima tarea. Corre el comando y decide:**
+
+- ✅ Sale la línea esperada → **arranca sin preguntar.**
+- ❌ Sale vacío → **NO arranques.** Escribe por WhatsApp DIRECTAMENTE al responsable (no a Héctor) con capture del comando fallido.
+
+| Tu tarea | Depende de | Responsable a contactar | Comando de verificación (desde raíz `medisuite/`) |
+|---|---|---|---|
+| EK-01 (smoke test QA en Chrome/Firefox) | D-00..D-03 (Díaz) + backend levantado | Díaz | `git ls-files frontend \| grep -E "LoginPage\|MainLayout"` |
+| D-08 (Perfil + cambio password) | D-00..D-03 (Díaz) + U-01 (López) | Díaz, Héctor | `git grep -l "change-password" backend/src/main/java` |
+| D-09 (loading/error states consistentes) | Pantallas D-04..D-07 y MR-02..MR-06 en desarrollo | Díaz, Melgar | `git ls-files frontend/src/pages \| wc -l` (esperar ≥ 6) |
+| VT-05 (JavaDoc List vs Set en Prescription) | VT-04 (Ventura) | Ventura | `git ls-files backend \| grep Prescription.java` |
+| VT-07 (Serializable MedicalRecord + Prescription) | VT-03 y VT-04 (Ventura) | Ventura | `git ls-files backend \| grep -E "MedicalRecord.java\|Prescription.java"` |
+| MR-08 (responsive Tailwind mobile) | Pantallas listas del equipo frontend | Melgar, Díaz | `git ls-files frontend/src/pages \| wc -l` (esperar ≥ 6) |
+
+
 #### Semana 2 (07/09 – 13/09)
 
 **Tarea EK-01 · Verificacion QA pantallas frontend (smoke test manual)**
@@ -2527,6 +2748,33 @@ git push origin feature/avance2-fuentes
 ### 5.9 VÁSQUEZ AMAYA WALTER AMÍLCAR — Backend + Frontend redistributed
 
 **Apellido rama:** `vasquez` · **CIF:** `2026010068` · **Correo M365:** `2026010068@cvirtualuees.edu.sv`
+
+#### ¿Puedo avanzar? — checklist antes de arrancar cualquier tarea
+
+**Paso 1 — Actualiza tu rama con lo último de `develop` (siempre, antes de cada tarea):**
+
+```bash
+cd ~/Proyectos/medisuite
+git fetch origin
+git checkout develop && git pull origin develop
+git checkout feature/avance2-vasquez
+git merge develop
+```
+
+**Paso 2 — Ubica tu próxima tarea. Corre el comando y decide:**
+
+- ✅ Sale la línea esperada → **arranca sin preguntar.**
+- ❌ Sale vacío → **NO arranques.** Escribe por WhatsApp DIRECTAMENTE al responsable (no a Héctor) con capture del comando fallido.
+
+| Tu tarea | Depende de | Responsable a contactar | Comando de verificación (desde raíz `medisuite/`) |
+|---|---|---|---|
+| DR-01 (DoctorService + DoctorController CRUD) | VG-08 (Vigil) | Vigil | `git ls-files backend \| grep JwtAuthenticationFilter` |
+| D-06 (modal crear/editar paciente) | D-05 (Díaz) + P-02 (Orellana) | Díaz, Orellana | `git ls-files frontend \| grep PatientsPage` y `git ls-files backend \| grep PatientController` |
+| VG-07 (2 queries paralelas para dashboard) | M-05 (Merino) | Merino | `git ls-files backend \| grep DashboardMetricsService` |
+| F-05 (Tests integración Testcontainers) | F-02 (Flores) + S-01 (Sánchez) | Flores, Sánchez | `git ls-files \| grep -E "V5__\|V6__\|V7__"` y `git ls-files backend/src/test \| grep SmokeTest` |
+| F-06 (verificar generación .dat) | M-04 (Merino) | Merino | `git ls-files backend \| grep -E "AuditBackupScheduler\|MedicalRecordBackup"` |
+| MR-07 (vista imprimible receta @media print) | MR-06 (Melgar) | Melgar | `git ls-files frontend \| grep -i prescription` |
+
 
 Vásquez recibió tareas reasignadas de otros integrantes. Todas son de código.
 
@@ -2910,6 +3158,33 @@ git push origin feature/avance2-vasquez
 ### 5.10 VENTURA VELÁSQUEZ CARLOS MARIO — Backend / BaseEntity + Expediente + Recetas
 
 **Apellido rama:** `ventura` · **CIF:** `2026011585` · **Correo M365:** `2026011585@cvirtualuees.edu.sv`
+
+#### ¿Puedo avanzar? — checklist antes de arrancar cualquier tarea
+
+**Paso 1 — Actualiza tu rama con lo último de `develop` (siempre, antes de cada tarea):**
+
+```bash
+cd ~/Proyectos/medisuite
+git fetch origin
+git checkout develop && git pull origin develop
+git checkout feature/avance2-ventura
+git merge develop
+```
+
+**Paso 2 — Ubica tu próxima tarea. Corre el comando y decide:**
+
+- ✅ Sale la línea esperada → **arranca sin preguntar.**
+- ❌ Sale vacío → **NO arranques.** Escribe por WhatsApp DIRECTAMENTE al responsable (no a Héctor) con capture del comando fallido.
+
+| Tu tarea | Depende de | Responsable a contactar | Comando de verificación (desde raíz `medisuite/`) |
+|---|---|---|---|
+| VT-01 (BaseEntity abstracta) | — (RAÍZ — todo el equipo te espera) | — | Arranca YA |
+| VT-02 (refactorizar 8+ entidades) | VT-01 (tú) | Tú mismo | `git ls-files backend \| grep BaseEntity.java` |
+| VT-03 (MedicalRecord entity+repo+service+ctrl) | VT-01 (tú) + F-02 (Flores) + VG-08 (Vigil) | Flores, Vigil | `git ls-files backend \| grep BaseEntity.java` y `git ls-files \| grep V6__` y `git ls-files backend \| grep JwtAuthenticationFilter` |
+| VT-04 (Prescription + PrescriptionItem) | VT-01 (tú) + F-02 (Flores) | Flores | `git ls-files \| grep V7__` |
+| VT-04b (PrescriptionController REST) | VT-04 (tú) + VG-08 (Vigil) | Vigil | `git ls-files backend \| grep Prescription.java` |
+| VT-06 (fix audit_log null user/tenant) | — | — | Arranca directo |
+
 
 #### Semana 1 (31/08 – 06/09)
 
@@ -3318,6 +3593,33 @@ git push origin feature/avance2-ventura
 ### 5.11 SÁNCHEZ MENJIVAR NICOLE NOHEMY — QA / Tests backend
 
 **Apellido rama:** `sanchez` · **CIF:** `2026010813` · **Correo M365:** `2026010813@cvirtualuees.edu.sv`
+
+#### ¿Puedo avanzar? — checklist antes de arrancar cualquier tarea
+
+**Paso 1 — Actualiza tu rama con lo último de `develop` (siempre, antes de cada tarea):**
+
+```bash
+cd ~/Proyectos/medisuite
+git fetch origin
+git checkout develop && git pull origin develop
+git checkout feature/avance2-sanchez
+git merge develop
+```
+
+**Paso 2 — Ubica tu próxima tarea. Corre el comando y decide:**
+
+- ✅ Sale la línea esperada → **arranca sin preguntar.**
+- ❌ Sale vacío → **NO arranques.** Escribe por WhatsApp DIRECTAMENTE al responsable (no a Héctor) con capture del comando fallido.
+
+| Tu tarea | Depende de | Responsable a contactar | Comando de verificación (desde raíz `medisuite/`) |
+|---|---|---|---|
+| S-01 (setup JUnit 5 + Mockito) | — (raíz, ya hecha) | — | Arranca directo |
+| S-02 (tests AuthService, 5 casos) | S-01 (tú) | Tú mismo | `git ls-files backend/src/test \| grep SmokeTest` |
+| S-03 (tests Appointment/Patient/MedicalRecord Service) | S-01 (tú) + O-03 (Orellana) + VT-03 (Ventura) | Orellana, Ventura | `git ls-files backend \| grep -E "AppointmentService\|MedicalRecordService"` |
+| S-04 (test integración backup .dat) | S-01 (tú) + M-04 (Merino) | Merino | `git ls-files backend \| grep -E "DatFileDao\|MedicalRecordBackup"` |
+| S-05 (casos manuales HU-001..HU-010, ≥20) | Pantallas D-04..D-07 y MR-02..MR-06 disponibles | Díaz, Melgar | `git ls-files frontend/src/pages \| wc -l` (esperar ≥ 6) |
+| S-06 (reporte de bugs con priorización) | S-05 (tú) | Tú mismo | Después de completar los casos manuales |
+
 
 #### Semana 1 (31/08 – 06/09)
 

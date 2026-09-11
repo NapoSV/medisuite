@@ -93,3 +93,26 @@ htmlReport/
 # ─── Políticas de seguridad (borrador interno) ──────────
 # Quitar esta línea cuando el PM apruebe publicarlas al repo.
 docs/politicas/
+# Added by code-review-graph
+.code-review-graph/
+
+# Claude Code — per-user local settings (permissions cache pueden traer secretos)
+.claude/settings.local.json
+
+# ─── Configs de agentes de IA no usados por el equipo ────
+.codebuddy/
+.cursor/
+.gemini/
+.kiro/
+.qoder/
+.cursorrules
+.windsurfrules
+AGENTS.md
+CODEBUDDY.md
+GEMINI.md
+QODER.md
+opencode.jsonc
+
+# ─── Backups temporales de draw.io ──────────────────────
+*.drawio.bkp
+.$*.drawio.bkp

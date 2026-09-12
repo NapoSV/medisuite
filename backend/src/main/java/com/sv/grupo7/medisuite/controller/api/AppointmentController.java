@@ -10,6 +10,8 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/api/appointments")
 @RequiredArgsConstructor
@@ -37,5 +39,11 @@ public class AppointmentController {
     public ResponseEntity<Map<String,String>> cancel(@PathVariable Long id) {
         service.cancel(id);
         return ResponseEntity.ok(Map.of("status", "CANCELLED"));
+    }
+
+        @GetMapping("/doctors/{doctorId}/slots")
+    public ResponseEntity<List<OffsetDateTime>> slots(@PathVariable Long doctorId,
+                                                      @RequestParam String date) {
+        return ResponseEntity.ok(service.availableSlots(doctorId, LocalDate.parse(date)));
     }
 }

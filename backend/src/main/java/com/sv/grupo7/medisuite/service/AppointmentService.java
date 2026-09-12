@@ -13,6 +13,10 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Random;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+
 @Service
 @RequiredArgsConstructor
 public class AppointmentService {
@@ -63,4 +67,17 @@ public class AppointmentService {
         }
         a.setStatus("CANCELLED");
     }
+
+    public List<OffsetDateTime> availableSlots(Long doctorId, LocalDate date) {
+        List<OffsetDateTime> all = new ArrayList<>();
+        for (int h = 8; h < 17; h++) {
+            all.add(date.atTime(h, 0).atOffset(ZoneOffset.of("-06:00")));
+        }
+        return all.stream().filter(s ->
+            !appointmentRepo.existsByDoctorIdAndScheduledAtAndStatusNot(doctorId, s, "CANCELLED")
+        ).toList();
+    }
+
+
+
 }

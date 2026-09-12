@@ -169,6 +169,59 @@ git push origin feature/avance2-<apellido>
 
 ---
 
+## 3.2 Cómo abrir tu Pull Request (PR) — paso a paso
+
+> Abrís UN solo PR por bloque de tareas, cuando terminás todo lo de tu semana
+> (o cuando Héctor te lo pida). **No abrir PR por cada commit.**
+
+### ⚠️ Regla crítica: el PR SIEMPRE va hacia `develop`, NUNCA hacia `main`
+
+`main` es el branch de releases. Todo el trabajo del equipo se integra en `develop`.
+Héctor es el único que mergea PRs.
+
+### Opción A — por línea de comandos (recomendada)
+
+```bash
+# Desde tu rama, con todo pusheado y §2 en verde:
+gh pr create \
+  --base develop \
+  --head feature/avance2-<apellido> \
+  --title "feat(<tu-área>): <resumen de lo que hiciste>" \
+  --body "Tareas completadas: <lista de IDs, ej. O-01, O-02, O-03>"
+```
+
+Ejemplo real para Orellana:
+```bash
+gh pr create \
+  --base develop \
+  --head feature/avance2-orellana \
+  --title "feat(citas): módulo Appointments O-01 a O-04" \
+  --body "Tareas completadas: O-01, O-02, O-03, O-04"
+```
+
+### Opción B — por la web de GitHub
+
+1. Ir a `github.com/NapoSV/medisuite`
+2. Hacer clic en **"Compare & pull request"** (aparece automáticamente tras tu push)
+3. Verificar que los campos digan exactamente esto:
+
+   | Campo | Valor CORRECTO | ❌ Error común |
+   |-------|---------------|---------------|
+   | **base** | `develop` | `main` ← **INCORRECTO** |
+   | **compare** | `feature/avance2-<apellido>` | cualquier otra cosa |
+
+4. Poner un título descriptivo y hacer clic en **"Create pull request"**
+5. Avisar a Héctor en el grupo: `🔔 PR abierta — <apellido> — <IDs de tareas>`
+
+### Checklist antes de abrir el PR
+
+- [ ] `git push` hecho y §2 en verde
+- [ ] `base` apunta a `develop` (no a `main`)
+- [ ] El título menciona qué módulo y qué tareas cubre
+- [ ] Avisaste a Héctor por WhatsApp
+
+---
+
 ## 3.1 Grafo de dependencias (ORDEN CRÍTICO)
 
 ```

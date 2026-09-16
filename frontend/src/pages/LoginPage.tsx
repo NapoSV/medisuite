@@ -1,21 +1,31 @@
 import { useState, type FormEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
-import { useAuthStore } from '../store/authStore'
+import { useAuth } from '../auth/useAuth'
 import { getTenantSlug } from '../lib/tenant'
 import Logo from '../components/Logo'
 
 export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const [showPass, setShowPass] = useState(false)
-  const { login, loading } = useAuthStore()
+  const { login } = useAuth()
+  const navigate = useNavigate()
 
-  const handle = (e: FormEvent) => {
+  const handle = async (e: FormEvent) => {
     e.preventDefault()
     setError('')
-    login(getTenantSlug(), form.email.trim(), form.password).catch((err: Error) =>
-      setError(err.message)
-    )
+    setLoading(true)
+    try {
+      await login(getTenantSlug(), form.email.trim(), form.password)
+      navigate('/dashboard', { replace: true })
+    } catch (err: unknown) {
+      const msg = (err as any)?.response?.data?.message ?? (err as Error)?.message ?? 'Error al iniciar sesión'
+      setError(msg)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

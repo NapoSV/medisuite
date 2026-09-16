@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './auth/useAuth';
 import ProtectedRoute from './routes/ProtectedRoute';
 import Login from './pages/LoginPage';
 import Dashboard from './pages/DashboardPage';
@@ -9,6 +10,7 @@ import Forbidden from './pages/Forbidden';
 
 export default function App() {
   return (
+    <AuthProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
@@ -24,5 +26,6 @@ export default function App() {
           </Route>
         </Routes>
       </BrowserRouter>
+    </AuthProvider>
   );
 }

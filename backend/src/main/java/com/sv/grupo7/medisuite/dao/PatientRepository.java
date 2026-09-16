@@ -9,4 +9,8 @@ import java.util.Optional;
 public interface PatientRepository extends JpaRepository<Patient, Long> {
     List<Patient> findByTenantId(Long tenantId);
     Optional<Patient> findByUserIdAndTenantId(Long userId, Long tenantId);
+
+    // En PatientRepository.java — agregar:
+    @Query("SELECT COUNT(p) FROM Patient p WHERE p.tenantId = :tid")
+    long countActiveByTenant(@Param("tid") Long tid);
 }

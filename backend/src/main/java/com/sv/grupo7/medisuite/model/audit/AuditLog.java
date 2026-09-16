@@ -13,7 +13,9 @@ import java.time.OffsetDateTime;
 @Entity
 @Table(name = "audit_logs")
 @Getter @Setter
-public class AuditLog {
+public class AuditLog implements java.io.Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

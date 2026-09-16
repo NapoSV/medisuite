@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './routes/ProtectedRoute';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
+import Login from './pages/LoginPage';
+import Dashboard from './pages/DashboardPage';
 import Pacientes from './pages/Pacientes';
 import Doctores from './pages/Doctores';
 import Perfil from './pages/Perfil';

@@ -27,3 +27,17 @@ export type Expediente = {
 export function getMedicalRecord(patientId: number) {
   return apiFetch<Expediente>(`/api/patients/${patientId}/medical-record`)
 }
+
+export type NuevaReceta = {
+  medicalRecordId: number
+  diagnosis: string
+  notes?: string
+  items: { medication: string; dosage: string; frequency: string; durationDays: number }[]
+}
+
+export function createPrescription(data: NuevaReceta) {
+  return apiFetch<Receta>('/api/prescriptions', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}

@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react'
-import { listUpcoming, type Cita } from '../api/appointments'
+import { ApiError } from '../api/http'
+import {
+  listUpcoming, cancelAppointment, completeAppointment,
+  rescheduleAppointment, listSlots, type Cita,
+} from '../api/appointments'
 
 // MOCK temporal — quitar cuando entre el PR de citas (Orellana)
 const MOCK: Cita[] = [
@@ -21,24 +25,74 @@ const badge = (s: string) => ({
   NO_SHOW: 'bg-gray-200 text-gray-700',
 }[s] ?? 'bg-gray-100')
 
+const FINALES = ['CANCELLED', 'COMPLETED', 'NO_SHOW']
+
 export default function Citas() {
   const [rows, setRows] = useState<Cita[]>([])
   const [loading, setLoading] = useState(true)
+  const [aviso, setAviso] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+
+  // estado del panel de reprogramacion
+  const [repro, setRepro] = useState<Cita | null>(null)
+  const [fecha, setFecha] = useState('')
+  const [slots, setSlots] = useState<string[]>([])
+  const [slot, setSlot] = useState('')
 
   useEffect(() => {
     listUpcoming()
       .then(setRows)
-      .catch(() => { setRows(MOCK); setError('Backend de citas no disponible — mostrando datos de ejemplo') })
+      .catch(() => { setRows(MOCK); setAviso('Backend de citas no disponible — mostrando datos de ejemplo') })
       .finally(() => setLoading(false))
   }, [])
 
-  const cancel = (id: number) => {
-    if (!confirm('¿Cancelar cita?')) return
-    setRows(rs => rs.map(r => r.id === id ? { ...r, status: 'CANCELLED' } : r))
+  useEffect(() => {
+    if (!repro || !fecha) { setSlots([]); return }
+    listSlots(1, fecha)
+      .then(setSlots)
+      .catch(() => setSlots(['08:00', '09:00', '10:00', '14:00'].map(h => `${fecha}T${h}:00`)))
+  }, [repro, fecha])
+
+  const actualizar = (c: Cita) => setRows(rs => rs.map(r => r.id === c.id ? c : r))
+
+  const onCancel = async (c: Cita) => {
+    if (!confirm(`¿Cancelar la cita ${c.reservationCode}?`)) return
+    setError(null)
+    try {
+      await cancelAppointment(c.id)
+      actualizar({ ...c, status: 'CANCELLED' })
+    } catch (err) {
+      if (err instanceof ApiError) setError(err.message)
+      else actualizar({ ...c, status: 'CANCELLED' })
+    }
+  }
+
+  const onComplete = async (c: Cita) => {
+    if (!confirm(`¿Marcar como completada la cita ${c.reservationCode}?`)) return
+    setError(null)
+    try {
+      actualizar(await completeAppointment(c.id))
+    } catch (err) {
+      if (err instanceof ApiError) setError(err.message)
+      else actualizar({ ...c, status: 'COMPLETED' })
+    }
+  }
+
+  const onReprogramar = async () => {
+    if (!repro || !slot) return
+    setError(null)
+    try {
+      actualizar(await rescheduleAppointment(repro.id, slot))
+    } catch (err) {
+      if (err instanceof ApiError) { setError(err.message); return }
+      actualizar({ ...repro, scheduledAt: slot })
+    }
+    setRepro(null); setFecha(''); setSlot('')
   }
 
   if (loading) return <p className="p-4">Cargando citas...</p>
+
+  const hoy = new Date().toISOString().slice(0, 10)
 
   return (
     <div>
@@ -47,7 +101,8 @@ export default function Citas() {
         <a href="/citas/nueva" className="bg-blue-600 text-white px-4 py-2 rounded">+ Nueva cita</a>
       </div>
 
-      {error && <p className="mb-3 text-sm text-amber-700 bg-amber-50 p-2 rounded">{error}</p>}
+      {aviso && <p className="mb-3 text-sm text-amber-700 bg-amber-50 p-2 rounded">{aviso}</p>}
+      {error && <p className="mb-3 text-sm text-red-700 bg-red-50 p-2 rounded">{error}</p>}
 
       <table className="w-full bg-white rounded shadow">
         <thead>
@@ -57,7 +112,7 @@ export default function Citas() {
             <th className="text-left p-3">Doctor</th>
             <th className="text-left p-3">Codigo</th>
             <th className="text-left p-3">Estado</th>
-            <th></th>
+            <th className="text-right p-3">Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -70,15 +125,53 @@ export default function Citas() {
               <td className="p-3">
                 <span className={`px-2 py-1 rounded text-xs ${badge(c.status)}`}>{c.status}</span>
               </td>
-              <td className="p-3 text-right">
-                {c.status !== 'CANCELLED' && c.status !== 'COMPLETED' && (
-                  <button onClick={() => cancel(c.id)} className="text-red-600 text-sm">Cancelar</button>
+              <td className="p-3 text-right whitespace-nowrap">
+                {!FINALES.includes(c.status) && (
+                  <>
+                    <button onClick={() => { setRepro(c); setFecha(''); setSlot('') }}
+                            className="text-blue-600 text-sm mr-3">Reprogramar</button>
+                    <button onClick={() => onComplete(c)}
+                            className="text-green-700 text-sm mr-3">Completar</button>
+                    <button onClick={() => onCancel(c)}
+                            className="text-red-600 text-sm">Cancelar</button>
+                  </>
                 )}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {repro && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+          <div className="bg-white p-6 rounded shadow max-w-sm w-full flex flex-col gap-3">
+            <h3 className="text-lg font-semibold">Reprogramar {repro.reservationCode}</h3>
+            <p className="text-sm text-slate-600">
+              Actual: {new Date(repro.scheduledAt).toLocaleString('es-SV')}
+            </p>
+
+            <input type="date" min={hoy} value={fecha}
+                   onChange={e => { setFecha(e.target.value); setSlot('') }}
+                   className="border p-2 rounded" />
+
+            <select value={slot} onChange={e => setSlot(e.target.value)}
+                    className="border p-2 rounded" disabled={!fecha}>
+              <option value="">{fecha ? 'Hora disponible...' : 'Elegi una fecha primero...'}</option>
+              {slots.map(s => (
+                <option key={s} value={s}>{new Date(s).toLocaleTimeString('es-SV')}</option>
+              ))}
+            </select>
+
+            <div className="flex gap-2 justify-end mt-2">
+              <button onClick={() => setRepro(null)} className="px-3 py-2 text-slate-600">Cerrar</button>
+              <button onClick={onReprogramar} disabled={!slot}
+                      className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50">
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

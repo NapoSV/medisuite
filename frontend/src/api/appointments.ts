@@ -55,3 +55,14 @@ export function createAppointment(data: NuevaCita) {
     body: JSON.stringify(data),
   })
 }
+
+export function completeAppointment(id: number) {
+  return apiFetch<Cita>(`/api/appointments/${id}/complete`, { method: 'POST' })
+}
+
+export function rescheduleAppointment(id: number, scheduledAt: string) {
+  return apiFetch<Cita>(`/api/appointments/${id}/reschedule`, {
+    method: 'POST',
+    body: JSON.stringify({ scheduledAt }),
+  })
+}

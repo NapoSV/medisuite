@@ -19,6 +19,9 @@ public class Specialty {
     @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;
 
+    @Column(name = "tenant_id", insertable = false, updatable = false)
+    private Long tenantId;
+
     @Column(nullable = false, length = 100)
     private String name;
 

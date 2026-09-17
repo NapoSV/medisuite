@@ -18,9 +18,15 @@ public class Appointment extends BaseEntity {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
+    @Column(name = "patient_id", insertable = false, updatable = false)
+    private Long patientId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
+
+    @Column(name = "doctor_id", insertable = false, updatable = false)
+    private Long doctorId;
 
     @Column(name = "scheduled_at", nullable = false)
     private OffsetDateTime scheduledAt;

@@ -20,6 +20,9 @@ public abstract class BaseEntity implements Serializable {
     @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;
 
+    @Column(name = "tenant_id", insertable = false, updatable = false)
+    private Long tenantId;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
@@ -32,5 +35,4 @@ public abstract class BaseEntity implements Serializable {
     @PreUpdate
     void onUpdate() { updatedAt = OffsetDateTime.now(); }
 
-    public Long getTenantId() { return tenant != null ? tenant.getId() : null; }
 }

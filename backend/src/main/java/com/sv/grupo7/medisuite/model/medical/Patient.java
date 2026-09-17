@@ -31,7 +31,7 @@ public class Patient {
     private String lastName;
 
     @Column(nullable = false, length = 20)
-    private String cif;
+    private String dui;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = true, unique = true)

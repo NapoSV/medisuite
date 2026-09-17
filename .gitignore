@@ -116,3 +116,11 @@ opencode.jsonc
 # ─── Backups temporales de draw.io ──────────────────────
 *.drawio.bkp
 .$*.drawio.bkp
+.claude/mcp-preferences.json
+
+# ─── Research externa (repos de referencia, no versionar) ─
+_research/
+
+# ─── Backups de auditoría generados en runtime ──────────
+backend/audit-backups/
+

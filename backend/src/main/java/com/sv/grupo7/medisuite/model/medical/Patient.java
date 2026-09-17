@@ -21,6 +21,9 @@ public class Patient {
     @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;
 
+    @Column(name = "tenant_id", insertable = false, updatable = false)
+    private Long tenantId;
+
     @Column(name = "first_name", nullable = false, length = 80)
     private String firstName;
 
@@ -28,11 +31,14 @@ public class Patient {
     private String lastName;
 
     @Column(nullable = false, length = 20)
-    private String cif;
+    private String dui;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = true, unique = true)
     private User user;
+
+    @Column(name = "user_id", insertable = false, updatable = false)
+    private Long userId;
 
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;

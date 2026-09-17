@@ -4,6 +4,8 @@ import com.sv.grupo7.medisuite.dao.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -18,8 +20,11 @@ public class DashboardMetricsService {
 
     public Map<String, Long> getMetrics(Long tenantId) {
 
+        OffsetDateTime dayStart = OffsetDateTime.now(ZoneOffset.UTC).toLocalDate().atStartOfDay().atOffset(ZoneOffset.UTC);
+        OffsetDateTime dayEnd = dayStart.plusDays(1);
+
         var f1 = CompletableFuture.supplyAsync(
-                () -> appointments.countTodayByTenant(tenantId));
+                () -> appointments.countByDateAndTenant(tenantId, dayStart, dayEnd));
 
         var f2 = CompletableFuture.supplyAsync(
                 () -> patients.countActiveByTenant(tenantId));

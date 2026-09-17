@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Users, CalendarCheck, Bell, FileText, LogOut, RefreshCw, AlertCircle } from 'lucide-react'
-import { useAuthStore } from '../store/authStore'
+import { useAuth } from '../auth/useAuth'
 import { fetchDashboardMetrics, type DashboardMetrics } from '../api/dashboard'
 import Logo from '../components/Logo'
 
@@ -33,7 +33,7 @@ function KpiCard({ label, value, icon, accent, loading }: KpiCardProps) {
 }
 
 export default function DashboardPage() {
-  const { user, logout } = useAuthStore()
+  const { user, logout } = useAuth()
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

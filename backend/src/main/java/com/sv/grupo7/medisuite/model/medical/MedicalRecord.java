@@ -14,10 +14,6 @@ import java.time.OffsetDateTime;
 @Getter @Setter
 public class MedicalRecord extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tenant_id", nullable = false)
-    private Tenant tenant;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false, unique = true)
     private Patient patient;

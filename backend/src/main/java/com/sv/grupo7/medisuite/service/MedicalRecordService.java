@@ -3,6 +3,7 @@ package com.sv.grupo7.medisuite.service;
 import com.sv.grupo7.medisuite.dao.*;
 import com.sv.grupo7.medisuite.model.medical.*;
 import com.sv.grupo7.medisuite.security.TenantContext;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ public class MedicalRecordService {
     private final PrescriptionRepository prescriptionRepo;
     private final VitalSignRepository vitalSignRepo;
 
+    @Transactional
     public Map<String, Object> findFullByPatientId(Long patientId) {
         Long tid = TenantContext.currentTenantId();
         MedicalRecord mr = recordRepo.findByPatientIdAndTenantId(patientId, tid)

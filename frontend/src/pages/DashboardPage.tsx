@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Users, CalendarCheck, Bell, FileText, LogOut, RefreshCw, AlertCircle } from 'lucide-react'
+import { Users, CalendarCheck, Bell, FileText, LogOut, RefreshCw } from 'lucide-react'
 import { useAuth } from '../auth/useAuth'
 import { fetchDashboardMetrics, type DashboardMetrics } from '../api/dashboard'
 import Logo from '../components/Logo'
+import ErrorAlert from '../components/ErrorAlert'
 
 interface KpiCardProps {
   label: string
@@ -88,19 +89,12 @@ export default function DashboardPage() {
         </div>
 
         {error && (
-          <div className="mb-6 flex items-start gap-3 p-4 bg-[#FEE2E2] border border-[#FCA5A5] rounded-[12px]" role="alert">
-            <AlertCircle className="w-5 h-5 text-[#DC2626] flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="text-sm font-medium text-[#991B1B]">No se pudieron cargar las métricas</p>
-              <p className="text-sm text-[#991B1B]/80 mt-0.5">{error}</p>
-            </div>
-            <button
-              onClick={load}
-              className="text-sm font-medium text-[#991B1B] hover:underline flex-shrink-0"
-            >
-              Reintentar
-            </button>
-          </div>
+            <ErrorAlert
+                className="mb-6"
+                message="No se pudieron cargar las métricas"
+                detail={error}
+                onRetry={load}
+            />
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

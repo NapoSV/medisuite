@@ -22,7 +22,7 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider tokenProvider;
-    private final JwtBlacklist blacklist;
+    private final JwtBlacklistService blacklistService;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest req,
@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             if (header != null && header.startsWith("Bearer ")) {
                 String token = header.substring(7);
-                if (!blacklist.isRevoked(token)) {
+                if (!blacklistService.isBlacklisted(token)) {
                     try {
                         Claims claims = tokenProvider.parse(token);
                         Long userId = Long.valueOf(claims.getSubject());

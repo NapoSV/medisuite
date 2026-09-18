@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.time.OffsetDateTime;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -32,5 +35,14 @@ public class GlobalExceptionHandler {
                 fieldErrors.put(fe.getField(), fe.getDefaultMessage()));
         return ResponseEntity.badRequest()
                 .body(Map.of("error", "validation_failed", "fields", fieldErrors));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
+        log.error("Error no controlado", ex);
+        return ResponseEntity.status(500).body(Map.of(
+            "error", "Error interno del servidor",
+            "timestamp", OffsetDateTime.now().toString()
+        ));
     }
 }

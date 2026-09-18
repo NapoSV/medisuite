@@ -164,3 +164,31 @@ docker compose down && docker compose up -d
 ### Cómo reconocer este error rápido
 
 Cualquier `SchemaManagementException: Schema-validation: missing table [X]` en los logs de Docker **significa que la BD está vacía o le falta esa tabla**. No es un error de código. Verificar primero si `APP_ENV=development` está activo y si la BD es local o remota.
+
+---
+
+## 2026-09-18 — Backend no inicia: `Schema-validation: missing column [updated_at] in table [audit_logs]`
+
+**Reportado por:** Nicole Sánchez.
+
+### Síntoma
+
+El backend arranca con Docker pero Hibernate falla en validación:
+
+```
+Schema-validation: missing column [updated_at] in table [audit_logs]
+```
+
+### Causa raíz
+
+`AuditLog` fue modificada para `extends BaseEntity` en un commit de resolución de conflicto. `BaseEntity` tiene `updated_at`, pero la tabla `audit_logs` no la tiene y nunca debe tenerla: `AuditLog` es una entidad **append-only** (solo se inserta, nunca se actualiza). Agregar `updated_at` a un log de auditoría es semánticamente incorrecto.
+
+### Solución
+
+`AuditLog` **no debe extender `BaseEntity`**. Debe declarar sus propios campos (`id`, `tenant`, `tenantId`, `createdAt` con `@PrePersist`) e implementar `Serializable` (requerido por `AuditLogDatDao` para serializar a `.dat`).
+
+**Regla general:** solo extienden `BaseEntity` las entidades mutables. Las tablas append-only (como `audit_logs`) solo tienen `created_at`.
+
+### Cómo evitarlo
+
+Ver `docs/ESTANDARES_CODIGO.md` — sección SQL, regla de `created_at`/`updated_at` y su excepción para tablas append-only.

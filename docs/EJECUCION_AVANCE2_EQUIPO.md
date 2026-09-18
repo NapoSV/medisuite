@@ -2451,6 +2451,123 @@ public class AuditLogDatDao extends DatFileDao<AuditLog> {
 > Alternativa: leer via `auditRepo.findAll()` dentro de una `@Transactional`
 > y mapear a un DTO serializable `AuditLogSnapshot` antes de escribir a `.dat`.
 
+**Tarea M-04 · MedicalRecordBackupScheduler (backup expedientes .dat)**
+
+- **Archivos a crear:**
+  - `backend/src/main/java/com/sv/grupo7/medisuite/dat/MedicalRecordDatDao.java`
+  - `backend/src/main/java/com/sv/grupo7/medisuite/dat/MedicalRecordBackupScheduler.java`
+- **Archivos a modificar** (agregar `implements Serializable` + `serialVersionUID = 1L`):
+  - `backend/src/main/java/com/sv/grupo7/medisuite/model/medical/MedicalRecord.java`
+  - `backend/src/main/java/com/sv/grupo7/medisuite/model/medical/Patient.java`
+  - `backend/src/main/java/com/sv/grupo7/medisuite/model/users/User.java`
+  - `backend/src/main/java/com/sv/grupo7/medisuite/model/tenant/Tenant.java`
+
+> **Nota:** `MedicalRecord` tiene asociaciones LAZY a `Patient` y `Tenant`. Para que
+> `ObjectOutputStream` pueda serializarlas (como Hibernate proxies), todas las entidades
+> de la cadena deben implementar `Serializable`. Los campos escalares (`tenantId`,
+> `patientId`) siempre estarán disponibles tras deserializar.
+
+**Paso 1 — Agregar `Serializable` a las 4 entidades**
+
+En cada uno de los 4 archivos, agregar el import y la declaración:
+
+```java
+// Agregar imports (después de los imports existentes):
+import java.io.Serial;
+import java.io.Serializable;
+
+// Modificar la declaración de clase, por ejemplo en MedicalRecord:
+public class MedicalRecord implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+    // ... resto sin cambios ...
+```
+
+Mismo patrón para `Patient`, `User` y `Tenant`.
+
+**Paso 2 — Crear `MedicalRecordDatDao.java`**
+
+```java
+package com.sv.grupo7.medisuite.dat;
+
+import com.sv.grupo7.medisuite.model.medical.MedicalRecord;
+import org.springframework.stereotype.Component;
+
+@Component
+public class MedicalRecordDatDao extends DatFileDao<MedicalRecord> {
+
+    public MedicalRecordDatDao() {
+        super("medical_records_backup.dat");
+    }
+}
+```
+
+**Paso 3 — Crear `MedicalRecordBackupScheduler.java`**
+
+```java
+package com.sv.grupo7.medisuite.dat;
+
+import com.sv.grupo7.medisuite.dao.MedicalRecordRepository;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+@Component
+@RequiredArgsConstructor
+public class MedicalRecordBackupScheduler {
+
+    private static final Logger log = LoggerFactory.getLogger(MedicalRecordBackupScheduler.class);
+    private final MedicalRecordRepository recordRepo;
+    private final MedicalRecordDatDao datDao;
+    private ScheduledExecutorService executor;
+
+    @PostConstruct
+    void start() {
+        executor = Executors.newSingleThreadScheduledExecutor(r -> {
+            Thread t = new Thread(r, "medical-record-backup");
+            t.setDaemon(true);
+            return t;
+        });
+        executor.scheduleAtFixedRate(this::backup, 60, 60, TimeUnit.SECONDS);
+        log.info("MedicalRecordBackupScheduler iniciado (cada 60s)");
+    }
+
+    void backup() {
+        try {
+            var all = recordRepo.findAll();
+            datDao.save(all);
+            log.info("Backup .dat: {} expedientes respaldados", all.size());
+        } catch (Exception e) {
+            log.error("Fallo backup medical_records .dat", e);
+        }
+    }
+
+    @PreDestroy
+    void stop() { if (executor != null) executor.shutdown(); }
+}
+```
+
+**Paso 4 — Commit**
+
+```bash
+git add backend/src/main/java/com/sv/grupo7/medisuite/model/medical/MedicalRecord.java \
+        backend/src/main/java/com/sv/grupo7/medisuite/model/medical/Patient.java \
+        backend/src/main/java/com/sv/grupo7/medisuite/model/users/User.java \
+        backend/src/main/java/com/sv/grupo7/medisuite/model/tenant/Tenant.java \
+        backend/src/main/java/com/sv/grupo7/medisuite/dat/MedicalRecordDatDao.java \
+        backend/src/main/java/com/sv/grupo7/medisuite/dat/MedicalRecordBackupScheduler.java
+git commit -m "feat(M-04): backup scheduler para expedientes médicos en .dat"
+git push origin feature/avance2-merino
+```
+
 **Tarea M-05 · DashboardMetricsService (feature C paralelo)**
 
 - **Archivo:** `backend/src/main/java/com/sv/grupo7/medisuite/service/DashboardMetricsService.java`

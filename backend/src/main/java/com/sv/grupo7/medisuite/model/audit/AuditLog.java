@@ -1,6 +1,6 @@
 package com.sv.grupo7.medisuite.model.audit;
 
-import com.sv.grupo7.medisuite.model.BaseEntity;
+import com.sv.grupo7.medisuite.model.tenant.Tenant;
 import com.sv.grupo7.medisuite.model.users.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,14 +9,26 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.io.Serial;
+import java.io.Serializable;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "audit_logs")
 @Getter @Setter
-public class AuditLog extends BaseEntity {
+public class AuditLog implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tenant_id")
+    private Tenant tenant;
+
+    @Column(name = "tenant_id", insertable = false, updatable = false)
+    private Long tenantId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -41,4 +53,10 @@ public class AuditLog extends BaseEntity {
 
     @Column(name = "ip_address", length = 45)
     private String ipAddress;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private OffsetDateTime createdAt;
+
+    @PrePersist
+    void prePersist() { createdAt = OffsetDateTime.now(); }
 }

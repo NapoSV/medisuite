@@ -127,7 +127,8 @@ src/
 - Tablas en `snake_case` **plural**: `patients`, `appointments`, `medical_records`
 - Columnas en `snake_case`: `patient_id`, `birth_date`, `tenant_id`
 - **Toda tabla de dominio debe tener `tenant_id`** (multi-tenancy desde el diseño)
-- **Toda tabla debe tener `created_at` y `updated_at`** (auditoría básica)
+- **Toda tabla de dominio mutable debe tener `created_at` y `updated_at`** — heredados de `BaseEntity`
+- **Excepción: tablas append-only** (ej. `audit_logs`) solo tienen `created_at`. No extienden `BaseEntity` porque nunca se actualizan; agregar `updated_at` sería semánticamente incorrecto
 - Claves foráneas con sufijo `_id`: `doctor_id`, `patient_id`
 
 ---

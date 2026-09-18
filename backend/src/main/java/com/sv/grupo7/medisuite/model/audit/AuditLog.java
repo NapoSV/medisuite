@@ -1,5 +1,6 @@
 package com.sv.grupo7.medisuite.model.audit;
 
+import com.sv.grupo7.medisuite.model.BaseEntity;
 import com.sv.grupo7.medisuite.model.tenant.Tenant;
 import com.sv.grupo7.medisuite.model.users.User;
 import jakarta.persistence.*;
@@ -13,14 +14,7 @@ import java.time.OffsetDateTime;
 @Entity
 @Table(name = "audit_logs")
 @Getter @Setter
-public class AuditLog {
-
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tenant_id")
-    private Tenant tenant;
+public class AuditLog extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -45,10 +39,4 @@ public class AuditLog {
 
     @Column(name = "ip_address", length = 45)
     private String ipAddress;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private OffsetDateTime createdAt;
-
-    @PrePersist
-    void prePersist() { createdAt = OffsetDateTime.now(); }
 }

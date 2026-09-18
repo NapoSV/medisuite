@@ -1,7 +1,6 @@
 package com.sv.grupo7.medisuite.model.audit;
 
 import com.sv.grupo7.medisuite.model.BaseEntity;
-import com.sv.grupo7.medisuite.model.tenant.Tenant;
 import com.sv.grupo7.medisuite.model.users.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,12 +8,15 @@ import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.time.OffsetDateTime;
+import java.io.Serial;
 
 @Entity
 @Table(name = "audit_logs")
 @Getter @Setter
 public class AuditLog extends BaseEntity {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

@@ -16,6 +16,9 @@ import java.time.OffsetDateTime;
 @Getter @Setter
 public class Doctor extends BaseEntity {
 
+    @Column(name = "tenant_id", insertable = false, updatable = false)
+    private Long tenantId;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
@@ -23,6 +26,9 @@ public class Doctor extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "specialty_id", nullable = false)
     private Specialty specialty;
+
+    @Column(name = "specialty_id", insertable = false, updatable = false)
+    private Long specialtyId;
 
     @Column(name = "license_number", nullable = false, length = 30)
     private String licenseNumber;

@@ -13,6 +13,9 @@ import java.time.OffsetDateTime;
 @Getter @Setter
 public class Specialty extends BaseEntity {
 
+    @Column(name = "tenant_id", insertable = false, updatable = false)
+    private Long tenantId;
+
     @Column(nullable = false, length = 100)
     private String name;
 

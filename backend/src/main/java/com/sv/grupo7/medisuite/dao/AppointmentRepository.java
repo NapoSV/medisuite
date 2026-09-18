@@ -24,9 +24,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
                               @Param("dayStart") OffsetDateTime start,
                               @Param("dayEnd") OffsetDateTime end);
 
-    @Query("SELECT COUNT(a) FROM Appointment a WHERE DATE(a.scheduledAt) = CURRENT_DATE AND a.tenantId = :tid")
-    long countTodayByTenant(@Param("tid") Long tid);
-
     boolean existsByDoctorIdAndScheduledAtAndStatusNot(
         Long doctorId, OffsetDateTime scheduledAt, String excludedStatus);
 

@@ -10,7 +10,7 @@ export class ApiError extends Error {
 }
 
 export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const token = useAuthStore.getState().token
+  const token = localStorage.getItem('token') ?? useAuthStore.getState().token
   const headers = new Headers(init.headers)
   headers.set('Accept', 'application/json')
   if (init.body && !headers.has('Content-Type')) {

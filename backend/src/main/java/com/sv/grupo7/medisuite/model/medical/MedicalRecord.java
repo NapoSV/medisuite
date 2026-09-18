@@ -14,9 +14,15 @@ import java.time.OffsetDateTime;
 @Getter @Setter
 public class MedicalRecord extends BaseEntity {
 
+    @Column(name = "tenant_id", insertable = false, updatable = false)
+    private Long tenantId;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false, unique = true)
     private Patient patient;
+
+    @Column(name = "patient_id", insertable = false, updatable = false)
+    private Long patientId;
 
     @Column(name = "created_on", nullable = false)
     private LocalDate createdOn;

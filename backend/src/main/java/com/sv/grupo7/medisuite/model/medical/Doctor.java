@@ -1,5 +1,6 @@
 package com.sv.grupo7.medisuite.model.medical;
 
+import com.sv.grupo7.medisuite.model.BaseEntity;
 import com.sv.grupo7.medisuite.model.tenant.Tenant;
 import com.sv.grupo7.medisuite.model.users.User;
 import jakarta.persistence.*;
@@ -13,14 +14,7 @@ import java.time.OffsetDateTime;
 @Entity
 @Table(name = "doctors")
 @Getter @Setter
-public class Doctor {
-
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tenant_id", nullable = false)
-    private Tenant tenant;
+public class Doctor extends BaseEntity {
 
     @Column(name = "tenant_id", insertable = false, updatable = false)
     private Long tenantId;
@@ -42,16 +36,4 @@ public class Doctor {
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "available_schedule", columnDefinition = "jsonb")
     private String availableSchedule;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private OffsetDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private OffsetDateTime updatedAt;
-
-    @PrePersist
-    void prePersist() { createdAt = updatedAt = OffsetDateTime.now(); }
-
-    @PreUpdate
-    void preUpdate() { updatedAt = OffsetDateTime.now(); }
 }

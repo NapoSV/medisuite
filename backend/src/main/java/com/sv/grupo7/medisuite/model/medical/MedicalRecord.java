@@ -1,5 +1,6 @@
 package com.sv.grupo7.medisuite.model.medical;
 
+import com.sv.grupo7.medisuite.model.BaseEntity;
 import com.sv.grupo7.medisuite.model.tenant.Tenant;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -11,14 +12,7 @@ import java.time.OffsetDateTime;
 @Entity
 @Table(name = "medical_records")
 @Getter @Setter
-public class MedicalRecord {
-
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tenant_id", nullable = false)
-    private Tenant tenant;
+public class MedicalRecord extends BaseEntity {
 
     @Column(name = "tenant_id", insertable = false, updatable = false)
     private Long tenantId;
@@ -36,18 +30,9 @@ public class MedicalRecord {
     @Column(name = "general_notes", columnDefinition = "text")
     private String generalNotes;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private OffsetDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private OffsetDateTime updatedAt;
-
     @PrePersist
-    void prePersist() {
-        createdAt = updatedAt = OffsetDateTime.now();
+    void onMedicalRecordCreate() {
         if (createdOn == null) createdOn = LocalDate.now();
     }
-
-    @PreUpdate
-    void preUpdate() { updatedAt = OffsetDateTime.now(); }
 }
+

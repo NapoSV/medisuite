@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import ErrorAlert from '../components/ErrorAlert'
 import { useParams } from 'react-router-dom'
 import { ApiError } from '../api/http'
 import { createPrescription } from '../api/medicalRecords'
@@ -53,7 +54,7 @@ export default function Recetas() {
     <form onSubmit={submit} className="max-w-3xl flex flex-col gap-4">
       <h2 className="text-2xl font-bold">Nueva receta</h2>
 
-      {error && <p className="text-sm text-red-700 bg-red-50 p-2 rounded">{error}</p>}
+      {error && <ErrorAlert message={error} />}
       {ok && <p className="text-sm text-green-700 bg-green-50 p-2 rounded">{ok}</p>}
 
       <div className="flex flex-col gap-1">

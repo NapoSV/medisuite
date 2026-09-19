@@ -4,6 +4,8 @@ import {
   listUpcoming, cancelAppointment, completeAppointment,
   rescheduleAppointment, listSlots, type Cita,
 } from '../api/appointments'
+import LoadingSpinner from '../components/LoadingSpinner'
+import ErrorAlert from '../components/ErrorAlert'
 
 // MOCK temporal — quitar cuando entre el PR de citas (Orellana)
 const MOCK: Cita[] = [
@@ -90,7 +92,7 @@ export default function Citas() {
     setRepro(null); setFecha(''); setSlot('')
   }
 
-  if (loading) return <p className="p-4">Cargando citas...</p>
+  if (loading) return <LoadingSpinner label="Cargando citas..." />
 
   const hoy = new Date().toISOString().slice(0, 10)
 
@@ -102,7 +104,7 @@ export default function Citas() {
       </div>
 
       {aviso && <p className="mb-3 text-sm text-amber-700 bg-amber-50 p-2 rounded">{aviso}</p>}
-      {error && <p className="mb-3 text-sm text-red-700 bg-red-50 p-2 rounded">{error}</p>}
+      {error && <ErrorAlert className="mb-3" message={error} />}
 
       <table className="w-full bg-white rounded shadow">
         <thead>

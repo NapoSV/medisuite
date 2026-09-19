@@ -4,6 +4,7 @@ import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../auth/useAuth'
 import { getTenantSlug } from '../lib/tenant'
 import Logo from '../components/Logo'
+import ErrorAlert from '../components/ErrorAlert'
 
 export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' })
@@ -92,15 +93,7 @@ export default function LoginPage() {
             </div>
 
             {/* Error */}
-            {error && (
-              <div className="flex items-start gap-2.5 p-3 bg-[#FEE2E2] border border-[#FCA5A5] rounded-[10px]" role="alert">
-                <div className="w-4 h-4 rounded-full bg-[#DC2626] flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-white text-[10px] font-bold leading-none">!</span>
-                </div>
-                <p className="text-sm text-[#991B1B]">{error}</p>
-              </div>
-            )}
-
+            {error && <ErrorAlert message={error} />}
             {/* Botón */}
             <button
               type="submit"

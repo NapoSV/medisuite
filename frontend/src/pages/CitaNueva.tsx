@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
+import ErrorAlert from '../components/ErrorAlert'
 import { ApiError } from '../api/http'
-import {
-  listDoctors, listPatients, listSlots, createAppointment,
+import {listDoctors, listPatients, listSlots, createAppointment,
   type Doctor, type Paciente,
 } from '../api/appointments'
 
@@ -63,7 +63,7 @@ export default function CitaNueva() {
     <form onSubmit={submit} className="max-w-lg flex flex-col gap-3">
       <h2 className="text-2xl font-bold">Nueva cita</h2>
 
-      {error && <p className="text-sm text-red-700 bg-red-50 p-2 rounded">{error}</p>}
+      {error && <ErrorAlert message={error} />}
       {ok && <p className="text-sm text-green-700 bg-green-50 p-2 rounded">{ok}</p>}
 
       <select value={form.patientId} onChange={e => setForm({ ...form, patientId: e.target.value })}

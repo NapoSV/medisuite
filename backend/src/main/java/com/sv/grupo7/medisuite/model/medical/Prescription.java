@@ -29,6 +29,12 @@ public class Prescription extends BaseEntity {
     @Column(columnDefinition = "text")
     private String instructions;
 
+    /**
+     * Lista de ítems de receta en orden de inserción.
+     * Se usa {@code List} (y no {@code Set}) porque el orden importa para impresión
+     * y se permite el mismo medicamento con distintas dosis.
+     * El orden se conserva en la base de datos con {@code @OrderColumn}.
+     */
     @OneToMany(mappedBy = "prescription", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderColumn(name = "order_idx")
     private List<PrescriptionItem> items = new ArrayList<>();

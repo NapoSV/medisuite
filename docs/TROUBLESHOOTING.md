@@ -192,3 +192,152 @@ Schema-validation: missing column [updated_at] in table [audit_logs]
 ### Cómo evitarlo
 
 Ver `docs/ESTANDARES_CODIGO.md` — sección SQL, regla de `created_at`/`updated_at` y su excepción para tablas append-only.
+
+---
+
+## 2026-09-18 — Backend no inicia: `ConflictingBeanDefinitionException: authController`
+
+**Reportado por:** Nicole Sánchez (Windows).
+
+### Síntoma
+
+El backend falla al arrancar con:
+
+```
+ConflictingBeanDefinitionException: Annotation-specified bean name 'authController'
+for bean class [com.sv.grupo7.medisuite.controller.AuthController]
+conflicts with existing, non-compatible bean definition of same name and class
+[com.sv.grupo7.medisuite.controller.api.AuthController]
+```
+
+### Causa raíz
+
+Existían dos clases llamadas `AuthController` en paquetes distintos (`controller/` y `controller/api/`), ambas anotadas con `@RestController`. Spring las registra con el mismo nombre de bean `authController` y falla al iniciar el contexto.
+
+### Solución
+
+Se fusionó el endpoint `/logout` (que estaba en `controller/AuthController`) dentro de `controller/api/AuthController`, que ya tenía `/login` y `/change-password`. El archivo `controller/AuthController.java` quedó vacío (solo declaración de paquete).
+
+**Regla general:** no puede haber dos clases con el mismo nombre simple en paquetes distintos si ambas son `@RestController` o cualquier componente de Spring. Si se necesita separar endpoints, usar nombres de clase distintos o un único controlador consolidado.
+
+---
+
+## 2026-09-18 — Backend no inicia en Neon: `Schema-validation: missing column [dui]` y tablas faltantes
+
+**Reportado por:** Nicole Sánchez (Windows, BD compartida Neon).
+
+### Síntoma
+
+El backend arranca con Docker apuntando a Neon pero Hibernate falla en validación:
+
+```
+Schema-validation: missing column [dui] in table [patients]
+```
+
+Luego de corregirlo, aparecen errores similares para `prescription_items`, `appointments`, `medical_records`.
+
+### Causa raíz
+
+`application-development.yml` tiene `flyway.enabled: false`, así que Flyway **nunca corre en modo development**. Las migraciones V2 (rename `cif` → `dui`), V5 (appointments), V6 (medical_records) y V7 (prescription_items) nunca se aplicaron en Neon. La BD se inicializó manualmente en un estado anterior y quedó desincronizada con las entidades del código.
+
+### Solución
+
+Aplicar las migraciones pendientes manualmente desde el **SQL Editor de Neon** (`console.neon.tech`):
+
+```sql
+-- V1
+ALTER TABLE users ADD COLUMN IF NOT EXISTS must_change_password BOOLEAN NOT NULL DEFAULT TRUE;
+
+-- V2 (requiere permisos de owner — usar SQL Editor de Neon, no psql con clinica_app)
+ALTER TABLE patients RENAME COLUMN cif TO dui;
+
+-- V5
+CREATE TABLE IF NOT EXISTS appointments (
+    id BIGSERIAL PRIMARY KEY,
+    tenant_id BIGINT NOT NULL REFERENCES tenants(id),
+    patient_id BIGINT NOT NULL REFERENCES patients(id),
+    doctor_id BIGINT NOT NULL REFERENCES doctors(id),
+    scheduled_at TIMESTAMPTZ NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    reason VARCHAR(200),
+    office VARCHAR(50),
+    reservation_code VARCHAR(10) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE UNIQUE INDEX IF NOT EXISTS ux_appt_doctor_slot ON appointments (doctor_id, scheduled_at) WHERE status <> 'CANCELLED';
+CREATE INDEX IF NOT EXISTS idx_appt_patient ON appointments (patient_id);
+CREATE INDEX IF NOT EXISTS idx_appt_tenant_date ON appointments (tenant_id, scheduled_at);
+
+-- V6
+CREATE TABLE IF NOT EXISTS medical_records (
+    id BIGSERIAL PRIMARY KEY,
+    tenant_id BIGINT NOT NULL REFERENCES tenants(id),
+    patient_id BIGINT NOT NULL UNIQUE REFERENCES patients(id),
+    created_on DATE NOT NULL DEFAULT CURRENT_DATE,
+    general_notes TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- V7
+ALTER TABLE prescriptions DROP COLUMN IF EXISTS medications;
+ALTER TABLE prescriptions DROP COLUMN IF EXISTS dosage;
+ALTER TABLE prescriptions DROP COLUMN IF EXISTS duration;
+CREATE TABLE IF NOT EXISTS prescription_items (
+    id BIGSERIAL PRIMARY KEY,
+    prescription_id BIGINT NOT NULL REFERENCES prescriptions(id) ON DELETE CASCADE,
+    order_idx INTEGER NOT NULL DEFAULT 0,
+    medication VARCHAR(200) NOT NULL,
+    dose VARCHAR(100),
+    frequency VARCHAR(100),
+    duration_days INTEGER
+);
+CREATE INDEX IF NOT EXISTS idx_prescription_items_rx ON prescription_items (prescription_id, order_idx);
+```
+
+> El usuario `clinica_app` no tiene permisos de `ALTER TABLE ... RENAME COLUMN`. Usar siempre el SQL Editor del dashboard de Neon para este tipo de operaciones.
+
+### Reglas para el equipo
+
+- Flyway está desactivado en `development`. Si agregas una nueva migración SQL, **debes aplicarla manualmente en Neon** y avisar al equipo.
+- Ante cualquier `Schema-validation: missing column/table`, verificar primero si existe la migración correspondiente en `db/migration/` y si fue aplicada en Neon.
+
+---
+
+## 2026-09-18 — Backend no inicia en Docker: `AccessDeniedException: /app/data`
+
+**Reportado por:** Héctor López (validación local tras fix de schema).
+
+### Síntoma
+
+```
+java.nio.file.AccessDeniedException: /app/data
+at com.sv.grupo7.medisuite.dat.DatFileDao.<init>(DatFileDao.java:15)
+```
+
+El backend no levanta porque `DatFileDao` intenta crear el directorio `data/` (relativo al working directory `/app`) pero el usuario `appuser` no tiene permisos de escritura en `/app`.
+
+### Causa raíz
+
+El `Dockerfile` copiaba el JAR y asignaba permisos solo sobre `app.jar`, pero no creaba ni otorgaba permisos sobre `/app/data`. Al correr como `appuser` (usuario sin privilegios), la creación del directorio falla.
+
+### Solución
+
+En el `Dockerfile`, crear `/app/data` y dar ownership completo a `appuser` antes de cambiar de usuario:
+
+```dockerfile
+RUN mkdir -p /app/data && chown -R appuser:appgroup /app
+```
+
+En `docker-compose.yml`, agregar un volumen para que los archivos `.dat` persistan entre reinicios del contenedor:
+
+```yaml
+services:
+  backend:
+    volumes:
+      - backend_data:/app/data
+
+volumes:
+  backend_data:
+```

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import LoadingSpinner from '../components/LoadingSpinner'
 import { useParams } from 'react-router-dom'
 import { getMedicalRecord, type Expediente as Exp } from '../api/medicalRecords'
 
@@ -40,7 +41,7 @@ export default function Expediente() {
       .finally(() => setLoading(false))
   }, [id])
 
-  if (loading) return <p className="p-4">Cargando expediente...</p>
+  if (loading) return <LoadingSpinner label="Cargando expediente..." />
   if (!rec) return <p className="p-4 text-red-600">No se encontro el expediente.</p>
 
   const eventos: Evento[] = [

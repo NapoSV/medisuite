@@ -9,6 +9,6 @@ FROM eclipse-temurin:21-jre-jammy
 RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
-RUN chown appuser:appgroup app.jar
+RUN mkdir -p /app/data && chown -R appuser:appgroup /app
 USER appuser
 ENTRYPOINT ["java", "-jar", "app.jar"]

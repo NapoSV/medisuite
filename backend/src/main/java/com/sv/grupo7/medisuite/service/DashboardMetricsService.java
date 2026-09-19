@@ -38,10 +38,10 @@ public class DashboardMetricsService {
         CompletableFuture.allOf(f1, f2, f3, f4).join();
 
         return Map.of(
-                "citasHoy", f1.join(),
-                "pacientesActivos", f2.join(),
-                "recetasEmitidas", f3.join(),
-                "alertas", f4.join()
+                "appointmentsToday", f1.join(),
+                "activePatients", f2.join(),
+                "prescriptionsIssued", f3.join(),
+                "alerts", f4.join()
         );
     }
 }

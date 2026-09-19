@@ -28,8 +28,8 @@ public class MedicalRecordBackupScheduler {
             t.setDaemon(true);
             return t;
         });
-        executor.scheduleAtFixedRate(this::backup, 60, 60, TimeUnit.SECONDS);
-        log.info("MedicalRecordBackupScheduler iniciado (cada 60s)");
+        executor.scheduleAtFixedRate(this::backup, 0, 1, TimeUnit.DAYS);
+        log.info("MedicalRecordBackupScheduler iniciado (diario)");
     }
 
     void backup() {

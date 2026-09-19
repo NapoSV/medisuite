@@ -9,3 +9,9 @@ body {
   background-color: #F8FAFC;
   color: #0F172A;
 }
+
+@media print {
+  .no-print { display: none !important; }
+  nav, aside { display: none !important; }
+  body { font-size: 12pt; }
+}

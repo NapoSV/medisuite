@@ -1,5 +1,6 @@
 package com.sv.grupo7.medisuite.model.medical;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sv.grupo7.medisuite.model.BaseEntity;
 import com.sv.grupo7.medisuite.model.users.User;
 import jakarta.persistence.*;
@@ -25,6 +26,7 @@ public class Patient extends BaseEntity {
     @Column(nullable = false, length = 20)
     private String dui;
 
+    @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = true, unique = true)
     private User user;

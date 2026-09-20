@@ -45,6 +45,7 @@ public class PrescriptionService {
         return repo.save(p);
     }
 
+    @Transactional(readOnly = true)
     public Prescription findById(Long id) {
         return repo.findById(id).orElseThrow(() ->
                 new RuntimeException("Receta " + id + " no existe"));

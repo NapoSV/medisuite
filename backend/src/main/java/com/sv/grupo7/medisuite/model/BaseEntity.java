@@ -1,5 +1,6 @@
 package com.sv.grupo7.medisuite.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sv.grupo7.medisuite.model.tenant.Tenant;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -16,6 +17,7 @@ public abstract class BaseEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;

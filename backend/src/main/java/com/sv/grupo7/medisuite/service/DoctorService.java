@@ -12,8 +12,10 @@ import java.util.List;
 public class DoctorService {
     private final DoctorRepository repo;
 
+    @Transactional(readOnly = true)
     public List<Doctor> findAll() { return repo.findAll(); }
 
+    @Transactional(readOnly = true)
     public Doctor findById(Long id) {
         return repo.findById(id).orElseThrow(() -> new RuntimeException("Doctor no encontrado"));
     }

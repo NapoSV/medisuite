@@ -13,6 +13,7 @@ public class PatientService {
 
     private final PatientRepository repo;
 
+    @Transactional(readOnly = true)
     public Page<Patient> search(String query, Pageable pageable) {
         if (query == null || query.isBlank()) return repo.findAll(pageable);
         String q = query.replace("-", "").toLowerCase();
@@ -29,6 +30,7 @@ public class PatientService {
         return repo.save(p);
     }
 
+    @Transactional(readOnly = true)
     public Patient findById(Long id) {
         return repo.findById(id).orElseThrow(() ->
             new RuntimeException("Paciente " + id + " no existe"));

@@ -1,12 +1,12 @@
 package com.sv.grupo7.medisuite.model.medical;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sv.grupo7.medisuite.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.Serializable;
@@ -17,11 +17,12 @@ import java.io.Serializable;
 public class Prescription extends BaseEntity implements Serializable  {
     private static final long serialVersionUID = 1L;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "medical_record_id", nullable = false)
     private MedicalRecord medicalRecord;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
 
@@ -37,7 +38,7 @@ public class Prescription extends BaseEntity implements Serializable  {
      * y se permite el mismo medicamento con distintas dosis.
      * El orden se conserva en la base de datos con {@code @OrderColumn}.
      */
-    @OneToMany(mappedBy = "prescription", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "prescription", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @OrderColumn(name = "order_idx")
     private List<PrescriptionItem> items = new ArrayList<>();
 

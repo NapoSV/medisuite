@@ -9,11 +9,13 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "prescriptions")
 @Getter @Setter
-public class Prescription extends BaseEntity {
+public class Prescription extends BaseEntity implements Serializable  {
+    private static final long serialVersionUID = 1L;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "medical_record_id", nullable = false)

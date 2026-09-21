@@ -6,11 +6,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "medical_records")
 @Getter @Setter
-public class MedicalRecord extends BaseEntity {
+public class MedicalRecord extends BaseEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Column(name = "tenant_id", insertable = false, updatable = false)
     private Long tenantId;

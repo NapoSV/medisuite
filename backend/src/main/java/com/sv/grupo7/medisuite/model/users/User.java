@@ -63,6 +63,9 @@ public class User implements Serializable {
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
 
+    @Column(name = "must_change_password", nullable = false)
+    private Boolean mustChangePassword = true;
+
     @PrePersist
     void prePersist() { createdAt = updatedAt = OffsetDateTime.now(); }
 

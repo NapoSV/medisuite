@@ -1,20 +1,27 @@
 package com.sv.grupo7.medisuite.model.users;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sv.grupo7.medisuite.model.tenant.Tenant;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "users")
 @Getter @Setter
-public class User {
+public class User implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;
@@ -34,6 +41,7 @@ public class User {
     @Column(nullable = false, length = 150)
     private String email;
 
+    @JsonIgnore
     @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
 
@@ -54,6 +62,9 @@ public class User {
 
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
+
+    @Column(name = "must_change_password", nullable = false)
+    private Boolean mustChangePassword = true;
 
     @PrePersist
     void prePersist() { createdAt = updatedAt = OffsetDateTime.now(); }

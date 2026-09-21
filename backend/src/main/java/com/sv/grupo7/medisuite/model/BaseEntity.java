@@ -1,5 +1,6 @@
 package com.sv.grupo7.medisuite.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sv.grupo7.medisuite.model.tenant.Tenant;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -12,10 +13,13 @@ import java.time.OffsetDateTime;
 @Getter @Setter
 public abstract class BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;

@@ -1,60 +1,49 @@
 package com.sv.grupo7.medisuite.model.medical;
 
-import com.sv.grupo7.medisuite.model.tenant.Tenant;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sv.grupo7.medisuite.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "prescriptions")
 @Getter @Setter
-public class Prescription {
+public class Prescription extends BaseEntity implements Serializable  {
+    private static final long serialVersionUID = 1L;
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tenant_id", nullable = false)
-    private Tenant tenant;
-
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "medical_record_id", nullable = false)
     private MedicalRecord medicalRecord;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
 
     @Column(name = "issued_on", nullable = false)
     private LocalDate issuedOn;
 
-    @Column(nullable = false, columnDefinition = "text")
-    private String medications;
-
-    @Column(length = 150)
-    private String dosage;
-
-    @Column(length = 50)
-    private String duration;
-
     @Column(columnDefinition = "text")
     private String instructions;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private OffsetDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private OffsetDateTime updatedAt;
+    /**
+     * Lista de ítems de receta en orden de inserción.
+     * Se usa {@code List} (y no {@code Set}) porque el orden importa para impresión
+     * y se permite el mismo medicamento con distintas dosis.
+     * El orden se conserva en la base de datos con {@code @OrderColumn}.
+     */
+    @OneToMany(mappedBy = "prescription", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OrderColumn(name = "order_idx")
+    private List<PrescriptionItem> items = new ArrayList<>();
 
     @PrePersist
-    void prePersist() {
-        createdAt = updatedAt = OffsetDateTime.now();
+    void prePersistPrescription() {
         if (issuedOn == null) issuedOn = LocalDate.now();
     }
-
-    @PreUpdate
-    void preUpdate() { updatedAt = OffsetDateTime.now(); }
 }

@@ -5,6 +5,8 @@ services:
       - "8097:8097"
     env_file:
       - .env
+    volumes:
+      - backend_data:/app/data
     healthcheck:
       test: ["CMD-SHELL", "curl -sf http://localhost:8097/actuator/health || exit 1"]
       interval: 15s
@@ -25,3 +27,6 @@ services:
       backend:
         condition: service_healthy
     restart: unless-stopped
+
+volumes:
+  backend_data:

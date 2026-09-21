@@ -118,20 +118,20 @@ git pull origin develop
 
 ### 3.1 Variables de entorno
 
-El backend usa variables de entorno para las credenciales. **Nunca pongas contraseñas directamente en el código.** Copia y pega este bloque en PowerShell antes de correr el servidor (reemplaza los valores `<...>` con los reales del equipo):
+El proyecto incluye un archivo `.env` en la raíz del repositorio con todas las variables de entorno del equipo de desarrollo. **Este archivo está en `.gitignore` y NO se sube al repo.** Pídelo a Héctor López por Teams si no lo tienes.
+
+Una vez que tengas el `.env` en `C:\Users\<tu-usuario>\medisuite\`, cárgalo en PowerShell con:
 
 ```powershell
-$env:DB_HOST="ep-nameless-water-avvbs1vv-pooler.c-11.us-east-1.aws.neon.tech"
-$env:DB_PORT="5432"
-$env:DB_NAME="clinica_dev"
-$env:DB_USERNAME="clinica_app"
-$env:DB_PASSWORD="<pedir a Héctor por Teams>"
-$env:DB_SSLMODE="require"
-$env:JWT_SECRET="medisuite-dev-secret-key-32chars-ok!!"
-$env:JWT_EXPIRATION_MS="86400000"
+cd C:\Users\$env:USERNAME\medisuite
+Get-Content .\.env | ForEach-Object {
+    if ($_ -match '^([^#=]+)=(.+)$') {
+        [System.Environment]::SetEnvironmentVariable($Matches[1].Trim(), $Matches[2].Trim())
+    }
+}
 ```
 
-> Las credenciales reales están en el `.env` de Héctor López. Pídelas por Teams — no se publican en el repo.
+> **Importante:** las variables de entorno de PowerShell se pierden al cerrar la terminal. Debes correr este bloque **cada vez** que abras una nueva sesión antes de levantar el backend.
 
 ### 3.2 Levantar el servidor
 
@@ -145,17 +145,17 @@ mvn spring-boot:run
 **El servidor está listo cuando ves:**
 ```
 Started MediSuiteApplication in X.XXX seconds
-Tomcat started on port 8080
+Tomcat started on port 8097 (http)
 ```
 
-También verás en el log: `Found 17 JPA repository interfaces` — eso confirma que las entidades y la BD están bien conectadas.
+También verás en el log: `Found 13 JPA repository interfaces` — eso confirma que las entidades y la BD están bien conectadas.
 
 ### 3.3 Verificar que funciona
 
 Abre otra terminal de PowerShell y ejecuta:
 
 ```powershell
-Invoke-RestMethod -Method POST -Uri "http://localhost:8080/api/auth/login" `
+Invoke-RestMethod -Method POST -Uri "http://localhost:8097/api/auth/login" `
   -ContentType "application/json" `
   -Body '{"tenantSlug":"clinica-san-rafael","email":"beatriz.reyes.demo@medisuite.test","password":"Demo2026!"}'
 ```
@@ -247,7 +247,7 @@ Ese hash corresponde a la contraseña `Demo2026!`.
 ### Error: "HikariPool — Connection refused" o similar
 
 El backend no puede conectarse a Neon. Causas posibles:
-- Las variables de entorno no están definidas (cerraste PowerShell y las perdiste — redefínelas).
+- Las variables de entorno no están definidas (cerraste PowerShell y las perdiste — vuelve a cargar el `.env` con el bloque de la sección 3.1).
 - La contraseña de `clinica_app` cambió.
 - El host de Neon está incorrecto.
 
@@ -256,7 +256,7 @@ Verifica ejecutando en PowerShell:
 echo $env:DB_HOST
 echo $env:DB_USERNAME
 ```
-Si salen vacíos, vuelve a pegar el bloque de variables (sección 3.1).
+Si salen vacíos, vuelve a cargar el `.env` (sección 3.1).
 
 ### Error: "Failed to load tsconfig for 'src/main.tsx'"
 

@@ -410,8 +410,12 @@ Las variables de entorno sensibles (`SPRING_DATASOURCE_URL`, `JWT_SECRET`, `CORS
 
 ## 13. Conclusiones
 
-> *Sección a completar por Erika Fuentes (tarea V-12).*
-> *Mínimo 5 conclusiones concretas sobre lo implementado en el Avance 2.*
+1. **Autenticación y estructura base del frontend:** se implementaron `LoginPage` y `MainLayout`, y se validó su funcionamiento con QA de humo en Chrome y Firefox (EK-01).
+2. **Gestión de perfil:** se completó la pantalla de perfil y el flujo de cambio de contraseña, conectado al endpoint `change-password` del backend (D-08).
+3. **Experiencia de usuario consistente:** las pantallas manejan de forma uniforme los estados de carga y error (D-09).
+4. **Modelo de dominio clínico:** se implementaron `MedicalRecord` y `Prescription` como clases serializables (VT-07).
+5. **Decisión de diseño documentada:** se documentó en JavaDoc la diferencia entre lista y conjunto en `Prescription` (VT-05).
+6. **Diseño adaptable a móvil:** las pantallas de listas se adaptaron a móviles con Tailwind (MR-08).
 
 ---
 

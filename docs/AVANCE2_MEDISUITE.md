@@ -421,5 +421,14 @@ Las variables de entorno sensibles (`SPRING_DATASOURCE_URL`, `JWT_SECRET`, `CORS
 
 ## 14. Bibliografía
 
-> *Sección a completar por Erika Fuentes (tarea V-13).*
-> *Mínimo 5 referencias bibliográficas en formato APA 7ma edición.*
+
+
+Docker Inc. (s.f.). *Docker documentation*. Docker. https://docs.docker.com
+
+Internet Engineering Task Force. (2015). *JSON Web Token (JWT)* (RFC 7519). https://doi.org/10.17487/RFC7519
+
+PostgreSQL Global Development Group. (2024). *PostgreSQL 16 documentation*. https://www.postgresql.org/docs/16/
+
+Spring. (s.f.). *Spring Boot reference documentation*. VMware. https://docs.spring.io/spring-boot/index.html
+
+Tailwind Labs. (s.f.). *Tailwind CSS documentation*. https://tailwindcss.com/docs

@@ -48,7 +48,7 @@ public class AppointmentService {
         a.setDoctor(doctor);
         a.setScheduledAt(scheduledAt);
         a.setReason(reason);
-        a.setStatus("PENDING");
+        a.setStatus("SCHEDULED");
         a.setReservationCode("COD-" + String.format("%04d", new Random().nextInt(10000)));
         return appointmentRepo.save(a);
     }
@@ -66,6 +66,37 @@ public class AppointmentService {
             throw new BusinessException("Solo se puede cancelar con 24h de anticipacion");
         }
         a.setStatus("CANCELLED");
+    }
+
+    @Transactional
+    public Appointment complete(Long appointmentId) {
+        Appointment a = appointmentRepo.findById(appointmentId)
+            .orElseThrow(() -> new BusinessException("Cita no existe"));
+        if ("CANCELLED".equals(a.getStatus()) || "COMPLETED".equals(a.getStatus())) {
+            throw new BusinessException("La cita ya está " + a.getStatus().toLowerCase());
+        }
+        a.setStatus("COMPLETED");
+        return a;
+    }
+
+    @Transactional
+    public Appointment reschedule(Long appointmentId, OffsetDateTime newTime) {
+        if (newTime.isBefore(OffsetDateTime.now())) {
+            throw new BusinessException("La nueva hora no puede ser en el pasado");
+        }
+        Appointment a = appointmentRepo.findById(appointmentId)
+            .orElseThrow(() -> new BusinessException("Cita no existe"));
+        if ("CANCELLED".equals(a.getStatus()) || "COMPLETED".equals(a.getStatus())) {
+            throw new BusinessException("No se puede reprogramar una cita " + a.getStatus().toLowerCase());
+        }
+        boolean occupied = appointmentRepo.existsByDoctorIdAndScheduledAtAndStatusNot(
+            a.getDoctorId(), newTime, "CANCELLED");
+        if (occupied) {
+            throw new BusinessException("El doctor ya tiene una cita en ese horario");
+        }
+        a.setScheduledAt(newTime);
+        a.setStatus("SCHEDULED");
+        return a;
     }
 
     public List<OffsetDateTime> availableSlots(Long doctorId, LocalDate date) {

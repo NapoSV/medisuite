@@ -41,6 +41,19 @@ public class AppointmentController {
         return ResponseEntity.ok(Map.of("status", "CANCELLED"));
     }
 
+    @PostMapping("/{id}/complete")
+    public ResponseEntity<Appointment> complete(@PathVariable Long id) {
+        return ResponseEntity.ok(service.complete(id));
+    }
+
+    public record RescheduleRequest(OffsetDateTime scheduledAt) {}
+
+    @PostMapping("/{id}/reschedule")
+    public ResponseEntity<Appointment> reschedule(@PathVariable Long id,
+                                                  @RequestBody RescheduleRequest r) {
+        return ResponseEntity.ok(service.reschedule(id, r.scheduledAt()));
+    }
+
         @GetMapping("/doctors/{doctorId}/slots")
     public ResponseEntity<List<OffsetDateTime>> slots(@PathVariable Long doctorId,
                                                       @RequestParam String date) {

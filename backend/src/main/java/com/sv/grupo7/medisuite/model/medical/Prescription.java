@@ -9,11 +9,13 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "prescriptions")
 @Getter @Setter
-public class Prescription extends BaseEntity {
+public class Prescription extends BaseEntity implements Serializable  {
+    private static final long serialVersionUID = 1L;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

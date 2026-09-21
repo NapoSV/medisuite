@@ -1,7 +1,13 @@
-# Verificación de Serializable
+# Verificación de Serializable (VT-07)
 
-- BaseEntity: ya implementaba Serializable, pero SIN serialVersionUID declarado.
-- MedicalRecord: se agregó 'implements Serializable' explícito + serialVersionUID = 1L ✅
-- Prescription: se agregó 'implements Serializable' explícito + serialVersionUID = 1L ✅
+| Clase         | Serializable                  | serialVersionUID | Estado |
+|---------------|-------------------------------|------------------|--------|
+| BaseEntity    | Ya implementaba               | Agregado (1L)    | ✅     |
+| MedicalRecord | Agregado `implements` explícito | 1L             | ✅     |
+| Prescription  | Agregado `implements` explícito | 1L             | ✅     |
 
-Verificado por: Erika Fuentes, 19/09/2026
+## Verificaciones
+- Los campos de MedicalRecord y Prescription son serializables (o están marcados `transient`).
+- Compatible con el backup `.dat` de Merino (M-02/M-03).
+
+Verificado por: Erika Fuentes, 20/09/2026

@@ -100,11 +100,13 @@ public class AppointmentService {
     }
 
     public List<OffsetDateTime> availableSlots(Long doctorId, LocalDate date) {
+        OffsetDateTime now = OffsetDateTime.now(ZoneOffset.of("-06:00"));
         List<OffsetDateTime> all = new ArrayList<>();
         for (int h = 8; h < 17; h++) {
             all.add(date.atTime(h, 0).atOffset(ZoneOffset.of("-06:00")));
         }
         return all.stream().filter(s ->
+            s.isAfter(now) &&
             !appointmentRepo.existsByDoctorIdAndScheduledAtAndStatusNot(doctorId, s, "CANCELLED")
         ).toList();
     }

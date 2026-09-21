@@ -33,8 +33,8 @@ export default function Doctores() {
         try {
             setLoading(true);
             const [docRes, spRes] = await Promise.all([
-                api.get<Doctor[]>('/doctors'),
-                api.get<Specialty[]>('/specialties'),
+                api.get<Doctor[]>('/api/doctors'),
+                api.get<Specialty[]>('/api/specialties'),
             ]);
             setDoctors(docRes.data);
             setSpecialties(spRes.data);
@@ -59,7 +59,7 @@ export default function Doctores() {
         setSaving(true);
         setFormError(null);
         try {
-            await api.post('/doctors', {
+            await api.post('/api/doctors', {
                 firstName: form.firstName,
                 lastName: form.lastName,
                 email: form.email,
@@ -138,7 +138,7 @@ export default function Doctores() {
                             placeholder="Matrícula médica (ej. MED-2024-0001)" required className="border rounded p-2 w-full" />
                         <select name="specialtyId" value={form.specialtyId} onChange={handleChange}
                             required className="border rounded p-2 w-full">
-                            <option value="">— Especialidad —</option>
+                            <option value="">Seleccionar especialidad</option>
                             {specialties.map(s => (
                                 <option key={s.id} value={s.id}>{s.name}</option>
                             ))}

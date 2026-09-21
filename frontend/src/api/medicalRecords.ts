@@ -2,7 +2,7 @@ import { apiFetch } from './http'
 
 export type Receta = {
   id: number
-  emittedAt: string
+  issuedOn: string
   doctor: { user: { firstName: string; lastName: string } }
   items: { medication: string; dosage: string }[]
 }
@@ -10,22 +10,52 @@ export type Receta = {
 export type SignosVitales = {
   id: number
   recordedAt: string
-  temperature: number
-  heartRate: number
+  temperatureC?: number
+  heartRate?: number
   bloodPressure?: string
+  weightKg?: number
+  heightCm?: number
+  symptoms?: string
+  priority?: string
+}
+
+export type ExpedientePatient = {
+  id: number
+  firstName: string
+  lastName: string
+  dui: string
+  birthDate?: string
+  bloodType?: string
+  allergies?: string
 }
 
 export type Expediente = {
   id: number
-  patient: { firstName: string; lastName: string; dui: string; birthDate?: string }
-  bloodType?: string
-  allergies?: string
+  patient: ExpedientePatient
+  generalNotes?: string
   prescriptions: Receta[]
   vitalSigns: SignosVitales[]
 }
 
 export function getMedicalRecord(patientId: number) {
   return apiFetch<Expediente>(`/api/patients/${patientId}/medical-record`)
+}
+
+export type NuevoTriaje = {
+  temperatureC?: number
+  heartRate?: number
+  bloodPressure?: string
+  weightKg?: number
+  heightCm?: number
+  symptoms?: string
+  priority: string
+}
+
+export function createVitalSign(patientId: number, data: NuevoTriaje) {
+  return apiFetch<SignosVitales>(`/api/patients/${patientId}/vital-signs`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
 }
 
 export type NuevaReceta = {

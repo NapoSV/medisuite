@@ -43,7 +43,7 @@ export default function Recetas() {
       setDiagnosis(''); setNotes(''); setItems([{ ...ITEM_VACIO }])
     } catch (err) {
       if (err instanceof ApiError) setError(err.message)
-      else { setOk(`Receta registrada localmente con ${limpios.length} medicamento(s) — backend no disponible.`)
+      else { setOk(`Receta registrada localmente con ${limpios.length} medicamento(s) (backend no disponible).`)
              setDiagnosis(''); setNotes(''); setItems([{ ...ITEM_VACIO }]) }
     } finally {
       setSaving(false)

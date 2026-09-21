@@ -1,3 +1,3 @@
 export default function Forbidden() {
-  return <div>403 — Acceso denegado</div>;
+  return <div>403: Acceso denegado</div>;
 }

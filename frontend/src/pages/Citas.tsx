@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { ApiError } from '../api/http'
 import {
   listUpcoming, cancelAppointment, completeAppointment,
   rescheduleAppointment, listSlots, type Cita,
 } from '../api/appointments'
+import { useAuth } from '../auth/useAuth'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorAlert from '../components/ErrorAlert'
 
-// MOCK temporal — quitar cuando entre el PR de citas (Orellana)
+// MOCK temporal - quitar cuando entre el PR de citas (Orellana)
 const MOCK: Cita[] = [
   { id: 1, scheduledAt: '2026-09-18T09:00:00', patient: { firstName: 'Ana', lastName: 'Ramirez' },
     doctor: { user: { firstName: 'Carlos', lastName: 'Mejia' } }, status: 'PENDING', reservationCode: 'CT-0001' },
@@ -30,6 +32,11 @@ const badge = (s: string) => ({
 const FINALES = ['CANCELLED', 'COMPLETED', 'NO_SHOW']
 
 export default function Citas() {
+  const { user } = useAuth()
+  const isDoctor = user?.role === 'DOCTOR'
+  const isReceptionist = user?.role === 'RECEPTIONIST'
+  const canManage = user?.role === 'ADMIN' || user?.role === 'RECEPTIONIST' || user?.role === 'NURSE'
+
   const [rows, setRows] = useState<Cita[]>([])
   const [loading, setLoading] = useState(true)
   const [aviso, setAviso] = useState<string | null>(null)
@@ -43,14 +50,31 @@ export default function Citas() {
 
   useEffect(() => {
     listUpcoming()
-      .then(setRows)
-      .catch(() => { setRows(MOCK); setAviso('Backend de citas no disponible — mostrando datos de ejemplo') })
+      .then(data => {
+        if (isDoctor && user?.fullName) {
+          const [first, ...rest] = user.fullName.split(' ')
+          const last = rest.join(' ')
+          setRows(data.filter(c =>
+            c.doctor.user.firstName.toLowerCase() === first.toLowerCase() ||
+            c.doctor.user.lastName.toLowerCase() === last.toLowerCase()
+          ))
+        } else {
+          setRows(data)
+        }
+      })
+      .catch(() => {
+        const mock = isDoctor && user?.fullName
+          ? MOCK.filter(c => c.doctor.user.firstName === user.fullName?.split(' ')[0])
+          : MOCK
+        setRows(mock)
+        setAviso('Backend de citas no disponible, mostrando datos de ejemplo')
+      })
       .finally(() => setLoading(false))
-  }, [])
+  }, [isDoctor, user?.fullName])
 
   useEffect(() => {
     if (!repro || !fecha) { setSlots([]); return }
-    listSlots(1, fecha)
+    listSlots(repro.doctor.id, fecha)
       .then(setSlots)
       .catch(() => setSlots(['08:00', '09:00', '10:00', '14:00'].map(h => `${fecha}T${h}:00`)))
   }, [repro, fecha])
@@ -99,8 +123,17 @@ export default function Citas() {
   return (
     <div>
       <div className="flex justify-between mb-4">
-        <h2 className="text-2xl font-bold">Citas</h2>
-        <a href="/citas/nueva" className="bg-blue-600 text-white px-4 py-2 rounded">+ Nueva cita</a>
+        <div>
+          <h2 className="text-2xl font-bold">
+            {isDoctor ? 'Mis citas' : 'Citas'}
+          </h2>
+          {isDoctor && (
+            <p className="text-sm text-slate-500 mt-0.5">Solo se muestran tus consultas asignadas</p>
+          )}
+        </div>
+        {(canManage || isReceptionist) && (
+          <Link to="/citas/nueva" className="bg-blue-600 text-white px-4 py-2 rounded">+ Nueva cita</Link>
+        )}
       </div>
 
       {aviso && <p className="mb-3 text-sm text-amber-700 bg-amber-50 p-2 rounded">{aviso}</p>}
@@ -130,12 +163,16 @@ export default function Citas() {
               <td className="p-3 text-right whitespace-nowrap">
                 {!FINALES.includes(c.status) && (
                   <>
-                    <button onClick={() => { setRepro(c); setFecha(''); setSlot('') }}
-                            className="text-blue-600 text-sm mr-3">Reprogramar</button>
+                    {!isDoctor && (
+                      <button onClick={() => { setRepro(c); setFecha(''); setSlot('') }}
+                              className="text-blue-600 text-sm mr-3">Reprogramar</button>
+                    )}
                     <button onClick={() => onComplete(c)}
                             className="text-green-700 text-sm mr-3">Completar</button>
-                    <button onClick={() => onCancel(c)}
-                            className="text-red-600 text-sm">Cancelar</button>
+                    {!isDoctor && (
+                      <button onClick={() => onCancel(c)}
+                              className="text-red-600 text-sm">Cancelar</button>
+                    )}
                   </>
                 )}
               </td>

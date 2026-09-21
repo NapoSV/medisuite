@@ -2,7 +2,24 @@ import { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import PatientModal from '../components/patients/PatientModal';
 
-type Patient = { id: number; firstName: string; lastName: string; dui: string; phone: string };
+type Patient = {
+    id: number;
+    firstName: string;
+    lastName: string;
+    dui: string;
+    phone: string;
+    birthDate: string;
+    address: string;
+};
+
+function calcAge(birthDate: string): number {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+    return age;
+}
 
 export default function Pacientes() {
     const [rows, setRows] = useState<Patient[]>([]);
@@ -10,7 +27,7 @@ export default function Pacientes() {
     const [modalOpen, setModalOpen] = useState(false);
     const [editId, setEditId] = useState<number | undefined>(undefined);
 
-    const load = () => api.get<Patient[]>(`/patients?search=${q}`).then(r => setRows(r.data));
+    const load = () => api.get<{ content: Patient[] }>(`/api/patients?search=${q}`).then(r => setRows(r.data.content));
     useEffect(() => { load(); }, []);
 
     const openCreate = () => { setEditId(undefined); setModalOpen(true); };
@@ -34,7 +51,9 @@ export default function Pacientes() {
                 <tr className="border-b">
                     <th className="text-left p-3">Nombre</th>
                     <th className="text-left p-3">DUI</th>
+                    <th className="text-left p-3">Edad</th>
                     <th className="text-left p-3">Teléfono</th>
+                    <th className="text-left p-3">Dirección</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -43,10 +62,12 @@ export default function Pacientes() {
                     <tr key={p.id} className="border-b hover:bg-slate-50">
                         <td className="p-3">{p.firstName} {p.lastName}</td>
                         <td className="p-3 font-mono">{p.dui}</td>
-                        <td className="p-3">{p.phone}</td>
+                        <td className="p-3">{p.birthDate ? `${calcAge(p.birthDate)} años` : '-'}</td>
+                        <td className="p-3">{p.phone || '-'}</td>
+                        <td className="p-3 max-w-xs truncate">{p.address || '-'}</td>
                         <td className="p-3 text-right flex gap-3 justify-end">
                             <button onClick={() => openEdit(p.id)} className="text-blue-600 hover:underline text-sm">Editar</button>
-                            <a className="text-slate-600 hover:underline text-sm" href={`/pacientes/${p.id}`}>Ver</a>
+                            <a className="text-slate-600 hover:underline text-sm" href={`/pacientes/${p.id}/expediente`}>Ver</a>
                         </td>
                     </tr>
                 ))}

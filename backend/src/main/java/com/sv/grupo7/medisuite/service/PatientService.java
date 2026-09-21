@@ -2,6 +2,7 @@ package com.sv.grupo7.medisuite.service;
 
 import com.sv.grupo7.medisuite.dao.PatientRepository;
 import com.sv.grupo7.medisuite.model.medical.Patient;
+import com.sv.grupo7.medisuite.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -15,15 +16,15 @@ public class PatientService {
 
     @Transactional(readOnly = true)
     public Page<Patient> search(String query, Pageable pageable) {
-        if (query == null || query.isBlank()) return repo.findAll(pageable);
+        Long tid = TenantContext.currentTenantId();
+        if (query == null || query.isBlank()) return repo.findByTenantId(tid, pageable);
         String q = query.replace("-", "").toLowerCase();
-        return repo.searchByDuiOrName(q, pageable);
+        return repo.searchByDuiOrName(tid, q, pageable);
     }
 
     @Transactional
     public Patient create(Patient p) {
-        // Setea el tenant desde el JWT del usuario logueado (VG-08)
-        Long tid = com.sv.grupo7.medisuite.security.TenantContext.currentTenantId();
+        Long tid = TenantContext.currentTenantId();
         com.sv.grupo7.medisuite.model.tenant.Tenant t = new com.sv.grupo7.medisuite.model.tenant.Tenant();
         t.setId(tid);
         p.setTenant(t);

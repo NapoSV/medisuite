@@ -2,10 +2,12 @@ package com.sv.grupo7.medisuite.service;
 
 import com.sv.grupo7.medisuite.dao.PatientRepository;
 import com.sv.grupo7.medisuite.model.medical.Patient;
+import com.sv.grupo7.medisuite.security.TenantContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -27,32 +29,39 @@ class PatientServiceTest {
     @InjectMocks
     private PatientService patientService;
 
+    private static final Long TENANT_ID = 1L;
+
     @Test
-    void search_sinQuery_debeRetornarTodosLosPacientes() {
+    void search_sinQuery_debeRetornarPacientesDelTenant() {
         Pageable pageable = PageRequest.of(0, 10);
         Patient patient = new Patient();
         Page<Patient> page = new PageImpl<>(List.of(patient));
 
-        when(repo.findAll(pageable)).thenReturn(page);
+        try (MockedStatic<TenantContext> ctx = mockStatic(TenantContext.class)) {
+            ctx.when(TenantContext::currentTenantId).thenReturn(TENANT_ID);
+            when(repo.findByTenantId(TENANT_ID, pageable)).thenReturn(page);
 
-        Page<Patient> result = patientService.search("", pageable);
+            Page<Patient> result = patientService.search("", pageable);
 
-        assertEquals(1, result.getTotalElements());
-        verify(repo).findAll(pageable);
+            assertEquals(1, result.getTotalElements());
+            verify(repo).findByTenantId(TENANT_ID, pageable);
+        }
     }
 
     @Test
-    void search_conQuery_debeBuscarPorDuiONombre() {
+    void search_conQuery_debeBuscarPorDuiONombreEnTenant() {
         Pageable pageable = PageRequest.of(0, 10);
         Page<Patient> page = new PageImpl<>(List.of(new Patient()));
 
-        when(repo.searchByDuiOrName("061234567", pageable)).thenReturn(page);
+        try (MockedStatic<TenantContext> ctx = mockStatic(TenantContext.class)) {
+            ctx.when(TenantContext::currentTenantId).thenReturn(TENANT_ID);
+            when(repo.searchByDuiOrName(TENANT_ID, "061234567", pageable)).thenReturn(page);
 
-        Page<Patient> result =
-                patientService.search("0612-34567", pageable);
+            Page<Patient> result = patientService.search("0612-34567", pageable);
 
-        assertEquals(1, result.getTotalElements());
-        verify(repo).searchByDuiOrName("061234567", pageable);
+            assertEquals(1, result.getTotalElements());
+            verify(repo).searchByDuiOrName(TENANT_ID, "061234567", pageable);
+        }
     }
 
     @Test

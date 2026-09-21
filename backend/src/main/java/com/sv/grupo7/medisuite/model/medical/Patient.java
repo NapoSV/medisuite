@@ -14,9 +14,6 @@ import java.time.LocalDate;
 @Getter @Setter
 public class Patient extends BaseEntity {
 
-    @Column(name = "tenant_id", insertable = false, updatable = false)
-    private Long tenantId;
-
     @Column(name = "first_name", nullable = false, length = 80)
     private String firstName;
 

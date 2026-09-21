@@ -1,7 +1,6 @@
 package com.sv.grupo7.medisuite.model.medical;
 
 import com.sv.grupo7.medisuite.model.BaseEntity;
-import com.sv.grupo7.medisuite.model.tenant.Tenant;
 import com.sv.grupo7.medisuite.model.users.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,15 +8,10 @@ import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.time.OffsetDateTime;
-
 @Entity
 @Table(name = "doctors")
 @Getter @Setter
 public class Doctor extends BaseEntity {
-
-    @Column(name = "tenant_id", insertable = false, updatable = false)
-    private Long tenantId;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false, unique = true)

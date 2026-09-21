@@ -1,6 +1,8 @@
 package com.sv.grupo7.medisuite.controller.api;
 
+import com.sv.grupo7.medisuite.model.medical.VitalSign;
 import com.sv.grupo7.medisuite.service.MedicalRecordService;
+import com.sv.grupo7.medisuite.service.MedicalRecordService.VitalSignRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,5 +19,11 @@ public class MedicalRecordController {
     @GetMapping("/{patientId}/medical-record")
     public ResponseEntity<Map<String, Object>> get(@PathVariable Long patientId) {
         return ResponseEntity.ok(service.findFullByPatientId(patientId));
+    }
+
+    @PostMapping("/{patientId}/vital-signs")
+    public ResponseEntity<VitalSign> addVitalSign(@PathVariable Long patientId,
+                                                  @RequestBody VitalSignRequest req) {
+        return ResponseEntity.status(201).body(service.addVitalSign(patientId, req));
     }
 }

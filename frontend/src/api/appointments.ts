@@ -4,7 +4,7 @@ export type Cita = {
   id: number
   scheduledAt: string
   patient: { firstName: string; lastName: string }
-  doctor: { user: { firstName: string; lastName: string } }
+  doctor: { id: number; user: { firstName: string; lastName: string } }
   status: string
   reservationCode: string
 }
@@ -42,7 +42,8 @@ export function listDoctors() {
 }
 
 export function listPatients() {
-  return apiFetch<Paciente[]>('/api/patients?size=100')
+  return apiFetch<{ content: Paciente[] }>('/api/patients?size=100')
+    .then(r => r.content)
 }
 
 export function listSlots(doctorId: number, date: string) {

@@ -8,6 +8,20 @@ body {
   font-family: 'Inter', sans-serif;
   background-color: #F8FAFC;
   color: #0F172A;
+  cursor: default;
+}
+
+/* Evitar cursor de texto en elementos no editables */
+p, span, div, h1, h2, h3, h4, h5, h6, td, th, li, nav, aside, header, footer {
+  cursor: default;
+}
+
+a, button, [role="button"], label, select, [tabindex] {
+  cursor: pointer;
+}
+
+input, textarea, [contenteditable="true"] {
+  cursor: text;
 }
 
 @media print {

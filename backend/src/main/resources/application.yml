@@ -35,7 +35,7 @@ management:
 
 app:
   jwt:
-    secret: ${JWT_SECRET}
+    secret: ${JWT_SECRET:dev_only_change_me_before_deploying_anywhere_shared}
     expiration-ms: ${JWT_EXPIRATION_MS:900000}
     refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:604800000}
   default-tenant-id: ${DEFAULT_TENANT_ID:1}

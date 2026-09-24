@@ -229,8 +229,97 @@ Todas las tablas incluyen los campos heredados de `BaseEntity`: `id` (BIGSERIAL)
 
 ## 10. Entradas y Salidas por Historia de Usuario
 
-> *Sección a completar por Walter Vásquez (tarea V-09).*
-> *Mínimo 5 HUs con tabla de entradas y salidas.*
+Para cada Historia de Usuario definida en la Sección 6 se especifican los datos que el usuario ingresa al sistema (entradas) y la información que el sistema devuelve o ejecuta como resultado (salidas).
+
+---
+
+**HU-001 — Autenticación con JWT**
+
+| | Detalle |
+|---|---|
+| **Entradas** | `tenantSlug` (identificador de la clínica), correo electrónico, contraseña |
+| **Salidas** | Token JWT firmado con HS256 (payload: `userId`, `tenantId`, `role`, `exp`); código HTTP 200 con datos del usuario autenticado · HTTP 401 si las credenciales son incorrectas · HTTP 429 si se supera el límite de 10 intentos/minuto por IP · HTTP 423 si la cuenta está bloqueada tras 5 intentos fallidos |
+
+---
+
+**HU-002 — Gestión de pacientes**
+
+| | Detalle |
+|---|---|
+| **Entradas** | Nombre, apellido, DUI (documento de identidad), fecha de nacimiento, teléfono, dirección, correo electrónico (opcional), contacto de emergencia, tipo de sangre, alergias · Para búsqueda: texto libre (nombre o DUI) |
+| **Salidas** | Paciente registrado con `id` generado · Lista paginada de pacientes del tenant activo · Resultado de búsqueda filtrado por DUI o nombre · HTTP 409 si el DUI ya existe en el mismo tenant |
+
+---
+
+**HU-003 — Gestión de citas**
+
+| | Detalle |
+|---|---|
+| **Entradas** | `doctorId`, `patientId`, fecha (`YYYY-MM-DD`), slot horario (`HH:mm`), motivo de consulta · Para consulta: filtros por fecha, doctor o estado |
+| **Salidas** | Cita creada con código único (`RSV-XXXX`), `status = SCHEDULED` · Lista de citas del tenant filtrada · Slots disponibles del doctor para una fecha dada · HTTP 409 si el slot ya está ocupado por otra cita activa |
+
+---
+
+**HU-004 — Expediente médico del paciente**
+
+| | Detalle |
+|---|---|
+| **Entradas** | `patientId` en la URL · Para triaje (signos vitales): peso (kg), talla (cm), presión arterial (mmHg), temperatura (°C), frecuencia cardíaca (bpm), síntomas, nivel de prioridad (`LOW / MEDIUM / HIGH / CRITICAL`) |
+| **Salidas** | Expediente completo: datos del paciente, historial de citas, lista cronológica de signos vitales, lista de prescripciones · Signo vital registrado en el expediente con `id` generado · HTTP 404 si el expediente no existe para ese paciente |
+
+---
+
+**HU-005 — Prescripción de recetas**
+
+| | Detalle |
+|---|---|
+| **Entradas** | `medicalRecordId`, `doctorId` (extraído del JWT) · Lista de ítems: medicamento, dosis, frecuencia, duración del tratamiento, indicaciones adicionales · El orden de los ítems se preserva mediante `order_idx` |
+| **Salidas** | Receta creada con `id`, fecha y hora de emisión, lista de ítems ordenada · Lista de recetas del expediente · HTTP 403 si el usuario no tiene rol de médico |
+
+---
+
+**HU-006 — Dashboard de métricas clínicas**
+
+| | Detalle |
+|---|---|
+| **Entradas** | Token JWT (el `tenantId` se extrae automáticamente del token; no se requieren parámetros adicionales) |
+| **Salidas** | Objeto JSON con 4 KPIs calculados en paralelo: `appointmentsToday` (citas del día), `activePatients` (pacientes únicos con citas en los últimos 30 días), `pendingAlerts` (citas sin triaje), `prescriptionsIssued` (recetas del día) · Tiempo de respuesta ≈ latencia de la consulta más lenta (no suma) |
+
+---
+
+**HU-007 — Gestión de doctores**
+
+| | Detalle |
+|---|---|
+| **Entradas** | Nombre, apellido, especialidad, número de licencia profesional, horario disponible (JSON: días de la semana + bloques horarios) · Requiere rol ADMIN |
+| **Salidas** | Doctor creado con `id` y asociado al `User` correspondiente · Lista de doctores del tenant · Slots disponibles del doctor para una fecha (`GET /api/appointments/doctors/{id}/slots?date=YYYY-MM-DD`) |
+
+---
+
+**HU-008 — Cambio de contraseña obligatorio en primer login**
+
+| | Detalle |
+|---|---|
+| **Entradas** | Token JWT (con flag `mustChangePassword = true`), contraseña actual, nueva contraseña (mínimo 8 caracteres) |
+| **Salidas** | Contraseña actualizada con nuevo hash BCrypt · Campo `must_change_password` puesto en `false` · HTTP 400 si la contraseña actual no coincide · HTTP 400 si la nueva contraseña no cumple longitud mínima |
+
+---
+
+**HU-009 — Respaldo de auditoría en archivo `.dat`**
+
+| | Detalle |
+|---|---|
+| **Entradas** | Proceso automático — ninguna entrada del usuario. El `AuditBackupScheduler` se dispara cada 60 segundos mediante `ScheduledExecutorService` configurado con `@PostConstruct` |
+| **Salidas** | Archivo `data/audit_backup.dat` actualizado con la serialización binaria de todos los registros de `AuditLog` del tenant · Archivo `data/medical_record_backup.dat` con los expedientes médicos · Registro en log de consola: fecha, hora y cantidad de registros respaldados |
+
+---
+
+**HU-010 — Vista imprimible de receta médica**
+
+| | Detalle |
+|---|---|
+| **Entradas** | `prescriptionId` en la URL (`/prescriptions/{id}/print`) · Acción del usuario: clic en el botón "Imprimir" o `Ctrl+P` desde el navegador |
+| **Salidas** | Página HTML renderizada con estilos `@media print` que ocultan el navbar, el sidebar y todos los controles de navegación · Contenido A4 optimizado: datos del médico, paciente, fecha de emisión y lista de medicamentos · `window.print()` abre el diálogo del sistema para imprimir o guardar como PDF |
 
 ---
 
@@ -410,12 +499,38 @@ Las variables de entorno sensibles (`SPRING_DATASOURCE_URL`, `JWT_SECRET`, `CORS
 
 ## 13. Conclusiones
 
-1. **Autenticación y estructura base del frontend:** se implementaron `LoginPage` y `MainLayout`, y se validó su funcionamiento con QA de humo en Chrome y Firefox (EK-01).
-2. **Gestión de perfil:** se completó la pantalla de perfil y el flujo de cambio de contraseña, conectado al endpoint `change-password` del backend (D-08).
-3. **Experiencia de usuario consistente:** las pantallas manejan de forma uniforme los estados de carga y error (D-09).
-4. **Modelo de dominio clínico:** se implementaron `MedicalRecord` y `Prescription` como clases serializables (VT-07).
-5. **Decisión de diseño documentada:** se documentó en JavaDoc la diferencia entre lista y conjunto en `Prescription` (VT-05).
-6. **Diseño adaptable a móvil:** las pantallas de listas se adaptaron a móviles con Tailwind (MR-08).
+**López Ruiz Héctor Napoleón (Scrum Master / Arquitecto):**
+El Avance 2 demostró que la arquitectura multi-tenant diseñada en el Avance 1 escala correctamente hacia los módulos más complejos del sistema. La coordinación de 88 tareas entre 11 integrantes mediante GitHub Actions y Pull Requests obligatorios fue clave para mantener la rama `develop` compilable en todo momento. El mayor aprendizaje fue que la seguridad no es un módulo aislado sino un eje transversal: cada decisión técnica (JWT, TenantContext, índices únicos parciales) tiene implicaciones directas en la integridad de los datos.
+
+**Vigil Ramírez Alejandro Antonio (Backend / Seguridad):**
+La implementación de la capa de seguridad siguiendo los principios OWASP A01–A10 permitió comprender que proteger una API REST requiere decisiones coordinadas en múltiples puntos: el filtro JWT, el rate limiting en el endpoint de login, la blacklist de tokens y los headers HTTP de seguridad. El uso de Bucket4j para rate limiting y la validación del secreto JWT al arrancar la aplicación fueron los mecanismos más importantes para prevenir ataques de fuerza bruta y secretos débiles.
+
+**Orellana Rojas Bayron Alexander (Backend / Módulo Citas):**
+El módulo de citas fue el más complejo del Avance 2 por los requisitos de concurrencia: dos usuarios simultáneos no pueden reservar el mismo slot. La solución combinó una verificación en el servicio con `@Transactional` y un índice único parcial en PostgreSQL como guardia de última línea. Esta experiencia enseñó que la lógica de negocio en el servicio no es suficiente por sí sola; la base de datos debe ser la fuente de verdad para las restricciones de integridad críticas.
+
+**Díaz Santos Zair Benett (Frontend):**
+Desarrollar el frontend con React 19, TypeScript y Tailwind CSS en paralelo con el backend demostró la importancia de definir el contrato de la API desde el principio. El manejo consistente de estados de carga y error mediante los componentes `LoadingSpinner` y `ErrorAlert` en todas las páginas fue una decisión que mejoró significativamente la experiencia de usuario. La implementación de rutas protegidas con `ProtectedRoute` y el `AuthContext` como fuente única de verdad para el token JWT simplificaron la lógica de autenticación en el cliente.
+
+**Flores Hernández Walter Alejandro (QA / Base de datos):**
+El trabajo de QA en este avance evidenció que la causa raíz de 5 de los 6 bugs encontrados era la misma: relaciones JPA lazy sin `@Transactional` en los métodos de servicio. Esta consistencia en los fallos permitió aplicar una corrección sistemática y documentar el patrón en el documento de troubleshooting del equipo. Los 20 casos de prueba manuales diseñados cubrieron los flujos end-to-end de las 10 historias de usuario y fueron fundamentales para validar la integración frontend-backend antes del code freeze.
+
+**Melgar Rivas William Ariel (Frontend):**
+La implementación del diseño responsive con Tailwind CSS demostró que las clases utilitarias permiten adaptar interfaces complejas a diferentes tamaños de pantalla sin escribir media queries personalizadas. El módulo de recetas con ítems dinámicos (agregar y eliminar medicamentos en tiempo real) fue el componente más desafiante del frontend, ya que requirió manejo de estado local cuidadoso para mantener el orden de los ítems sincronizado con el campo `order_idx` del backend.
+
+**Merino Ventura Alejandro Sebastián (Feature Crítico / Concurrencia):**
+La implementación de la capa de persistencia en archivos `.dat` mediante `DatFileDao<T extends Serializable>` integró dos conceptos clave del curso en un solo desarrollo: herencia con clase abstracta genérica y programación concurrente con `ScheduledExecutorService`. El diseño del scheduler asíncrono —que ejecuta el respaldo cada 60 segundos sin bloquear el hilo principal— demostró cómo Java gestiona la concurrencia de forma controlada. El endpoint de dashboard con `CompletableFuture.allOf` redujo el tiempo de respuesta de forma notable al paralelizar las cuatro consultas de métricas.
+
+**Fuentes Ortiz Erika Alexandra (QA):**
+La verificación del comportamiento del sistema bajo condiciones de error (credenciales incorrectas, tokens expirados, slots ocupados) fue esencial para garantizar que la aplicación no exponga información sensible en los mensajes de error. Las pruebas de humo en Chrome y Firefox para el flujo de autenticación y la pantalla principal confirmaron que la integración JWT funciona correctamente en el navegador. Este avance consolidó la comprensión de que el QA no comienza al final del sprint sino en paralelo con el desarrollo.
+
+**Vásquez Amaya Walter Amílcar (Backend / Frontend):**
+Trabajar en ambas capas del sistema permitió apreciar el valor del contrato REST como interfaz entre frontend y backend. La implementación de las entradas y salidas por historia de usuario (Sección 10) requirió un análisis detallado de cada endpoint para documentar exactamente qué datos fluyen en cada dirección. Esta tarea evidenció que la documentación técnica no es un complemento del código sino una parte integral del proceso de desarrollo que facilita la integración y el mantenimiento.
+
+**Ventura Velásquez Carlos Mario (Backend / Entidades):**
+La decisión de usar `List` en lugar de `Set` para los ítems de `Prescription` fue un caso concreto donde la elección del tipo de colección tiene consecuencias directas en el comportamiento del sistema: `Set` no garantiza orden y no permite el mismo medicamento con distintas dosis, mientras que `List` con `@OrderColumn` preserva el orden de ingreso y permite duplicados lógicamente distintos. La implementación de `BaseEntity` como clase abstracta con `Serializable` integró los requisitos académicos de herencia y persistencia de objetos en un solo componente reutilizable.
+
+**Sánchez Menjívar Nicole Nohemy (QA / Documentación):**
+La elaboración de la documentación del Avance 2 —que incluye marco teórico, arquitectura, pruebas y conclusiones— permitió comprender que un sistema de software no está completo si no puede ser explicado con claridad. La metodología Scrum con sprints semanales y backlog en Microsoft Planner demostró ser efectiva para un equipo de 11 personas distribuidas, siempre que cada tarea tenga un responsable claro y una fecha de entrega definida. La bibliografía y los estándares de documentación aplicados en este avance serán la base para la entrega final del proyecto.
 
 ---
 

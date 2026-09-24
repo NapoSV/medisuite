@@ -14,9 +14,6 @@ import java.io.Serializable;
 public class MedicalRecord extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "tenant_id", insertable = false, updatable = false)
-    private Long tenantId;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false, unique = true)
     private Patient patient;

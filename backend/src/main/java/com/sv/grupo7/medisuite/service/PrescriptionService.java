@@ -1,6 +1,7 @@
 package com.sv.grupo7.medisuite.service;
 
 import com.sv.grupo7.medisuite.dao.*;
+import com.sv.grupo7.medisuite.exception.BusinessException;
 import com.sv.grupo7.medisuite.model.medical.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,31 +16,24 @@ public class PrescriptionService {
     private final PrescriptionRepository repo;
     private final MedicalRecordRepository recordRepo;
     private final DoctorRepository doctorRepo;
-    private final PatientRepository patientRepo;
 
     @Transactional
-    public Prescription create(Long patientId, Long doctorId,
-                               String indications, List<PrescriptionItem> items) {
-        // El frontend envia patientId; buscamos (o creamos) su expediente
-        var patient = patientRepo.findById(patientId)
-                .orElseThrow(() -> new RuntimeException("Paciente no existe"));
-        MedicalRecord mr = recordRepo
-                .findByPatientIdAndTenantId(patientId, patient.getTenant().getId())
-                .orElseGet(() -> {
-                    MedicalRecord nuevo = new MedicalRecord();
-                    nuevo.setPatient(patient);
-                    nuevo.setTenant(patient.getTenant());
-                    return recordRepo.save(nuevo);
-                });
-        Doctor d = doctorRepo.findById(doctorId)
-                .orElseThrow(() -> new RuntimeException("Doctor no existe"));
+    public Prescription create(Long medicalRecordId, Long userId,
+                               String diagnosis, String notes, List<PrescriptionItem> items) {
+        MedicalRecord mr = recordRepo.findById(medicalRecordId)
+                .orElseThrow(() -> new BusinessException("Expediente no existe"));
+        Doctor d = doctorRepo.findByUserId(userId)
+                .orElseThrow(() -> new BusinessException("El usuario autenticado no es un doctor"));
+
+        String instructions = diagnosis != null ? diagnosis : "";
+        if (notes != null && !notes.isBlank()) instructions += "\n" + notes;
 
         Prescription p = new Prescription();
-        p.setTenant(patient.getTenant());
+        p.setTenant(mr.getPatient().getTenant());
         p.setMedicalRecord(mr);
         p.setDoctor(d);
         p.setIssuedOn(java.time.LocalDate.now());
-        p.setInstructions(indications);
+        p.setInstructions(instructions);
         items.forEach(it -> it.setPrescription(p));
         p.setItems(items);
         return repo.save(p);

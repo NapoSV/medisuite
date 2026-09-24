@@ -48,7 +48,7 @@ public class AppointmentService {
         a.setDoctor(doctor);
         a.setScheduledAt(scheduledAt);
         a.setReason(reason);
-        a.setStatus("SCHEDULED");
+        a.setStatus("PENDING");
         a.setReservationCode("COD-" + String.format("%04d", new Random().nextInt(10000)));
         return appointmentRepo.save(a);
     }

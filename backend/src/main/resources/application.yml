@@ -22,7 +22,9 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
+    baseline-version: 8
     locations: classpath:db/migration
+    validate-on-migrate: false
 
 server:
   port: ${APP_PORT:8097}

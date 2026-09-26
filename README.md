@@ -1,32 +1,32 @@
-# MediSuite â€” Plataforma de GestiÃ³n ClÃ­nica SaaS
+# MediSuite — Plataforma de Gestión Clínica SaaS
 
-Sistema web multi-empresa (SaaS) para gestiÃ³n de citas mÃ©dicas, expediente clÃ­nico,
-triaje, recetas, inventario y activos fÃ­sicos.
+Sistema web multi-empresa (SaaS) para gestión de citas médicas, expediente clínico,
+triaje, recetas, inventario y activos físicos.
 
 ---
 
-## Stack TecnolÃ³gico
+## Stack Tecnológico
 
-| Capa | TecnologÃ­a |
+| Capa | Tecnología |
 |------|-----------|
-| **Backend** | Java 21 Â· Spring Boot 3.3 Â· Spring Security Â· JWT |
-| **Frontend** | React 19 Â· Tailwind CSS Â· Vite |
+| **Backend** | Java 21 · Spring Boot 3.3 · Spring Security · JWT |
+| **Frontend** | React 19 · Tailwind CSS · Vite |
 | **Base de datos** | PostgreSQL 16 (Neon) |
-| **Infraestructura** | Docker Â· Docker Compose |
+| **Infraestructura** | Docker · Docker Compose |
 
 ---
 
-## CÃ³mo correr el proyecto
+## Cómo correr el proyecto
 
-**Requisito Ãºnico: Docker Desktop instalado y corriendo.**
+**Requisito único: Docker Desktop instalado y corriendo.**
 
 ```bash
-# Desde la carpeta raÃ­z del proyecto
+# Desde la carpeta raíz del proyecto
 docker compose up --build
 ```
 
-La primera vez tarda ~3â€“5 minutos (descarga imÃ¡genes y compila).  
-Las siguientes veces es mucho mÃ¡s rÃ¡pido.
+La primera vez tarda ~3–5 minutos (descarga imágenes y compila).  
+Las siguientes veces es mucho más rápido.
 
 Una vez levantado:
 
@@ -40,7 +40,7 @@ Una vez levantado:
 
 ## Cuentas de acceso
 
-Ver [CUENTAS_DEMO.md](CUENTAS_DEMO.md) para usuarios y contraseÃ±as de prueba.
+Ver [CUENTAS_DEMO.md](CUENTAS_DEMO.md) para usuarios y contraseñas de prueba.
 
 ---
 
@@ -48,13 +48,10 @@ Ver [CUENTAS_DEMO.md](CUENTAS_DEMO.md) para usuarios y contraseÃ±as de prueba.
 
 ```
 medisuite/
-â”œâ”€â”€ backend/          â† Spring Boot (Java 21)
-â”œâ”€â”€ frontend/         â† React + Tailwind + Vite
-â”œâ”€â”€ database/         â† Scripts SQL (schema + seed)
-â”œâ”€â”€ docker-compose.yml
-â”œâ”€â”€ .env.example      â† Plantilla de variables de entorno
-â””â”€â”€ CUENTAS_DEMO.md   â† Instrucciones de ejecuciÃ³n y credenciales
+├── backend/          ← Spring Boot (Java 21)
+├── frontend/         ← React + Tailwind + Vite
+├── database/         ← Scripts SQL (schema + seed)
+├── docker-compose.yml
+├── .env.example      ← Plantilla de variables de entorno
+└── CUENTAS_DEMO.md   ← Instrucciones de ejecución y credenciales
 ```
-# Equipo Avance 2"
-
-# Tarea H-06 Â· Verificar Docker levanta todo el sistema

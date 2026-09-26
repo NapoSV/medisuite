@@ -8,9 +8,10 @@ import ErrorAlert from '../components/ErrorAlert'
 type Patient = { id: number; firstName: string; lastName: string; dui: string; birthDate?: string }
 
 const PRIORITY_OPTS = [
-  { value: 'NORMAL',     label: 'Normal',     color: 'bg-green-100 text-green-800' },
-  { value: 'URGENTE',    label: 'Urgente',    color: 'bg-yellow-100 text-yellow-800' },
-  { value: 'EMERGENCIA', label: 'Emergencia', color: 'bg-red-100 text-red-800' },
+  { value: 'LOW',      label: 'Normal',       color: 'bg-green-100 text-green-800' },
+  { value: 'MEDIUM',   label: 'Urgente',      color: 'bg-yellow-100 text-yellow-800' },
+  { value: 'HIGH',     label: 'Urgente alto', color: 'bg-orange-100 text-orange-800' },
+  { value: 'CRITICAL', label: 'Emergencia',   color: 'bg-red-100 text-red-800' },
 ]
 
 const EMPTY_FORM = {
@@ -20,7 +21,7 @@ const EMPTY_FORM = {
   weightKg: '',
   heightCm: '',
   symptoms: '',
-  priority: 'NORMAL',
+  priority: 'LOW',
 }
 
 function calcAge(birthDate?: string) {

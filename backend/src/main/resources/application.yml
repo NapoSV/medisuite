@@ -22,9 +22,11 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
-    baseline-version: 8
+    baseline-version: 9
     locations: classpath:db/migration
     validate-on-migrate: false
+    user: ${DB_FLYWAY_USERNAME:${DB_USERNAME}}
+    password: ${DB_FLYWAY_PASSWORD:${DB_PASSWORD}}
 
 server:
   port: ${APP_PORT:8097}

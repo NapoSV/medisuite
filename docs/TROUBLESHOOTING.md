@@ -4,6 +4,65 @@ Registro de errores encontrados por el equipo durante el desarrollo, con su caus
 
 ---
 
+## 2026-09-26 — Backend no arranca: "permission denied for table flyway_schema_history"
+
+**Reportado por:** equipo tras `git pull` de `develop` (commit `d66ab89`).
+
+### Síntoma
+
+Al arrancar el backend:
+
+```
+ERROR: permission denied for table flyway_schema_history
+
+Error while retrieving the list of applied migrations from
+Schema History table "public"."flyway_schema_history"
+
+Caused by: org.postgresql.util.PSQLException:
+ERROR: permission denied for table flyway_schema_history
+
+org.springframework.beans.factory.BeanCreationException:
+Error creating bean with name 'flywayInitializer'
+
+Application run failed
+```
+
+### Causa raíz
+
+El commit `d66ab89` (26/09) hizo dos cambios combinados:
+
+1. Habilitó Flyway en el perfil `development` (antes estaba `enabled: false`).
+2. Cambió `application.yml` para que Flyway use credenciales separadas:
+
+   ```yaml
+   spring:
+     flyway:
+       user: ${DB_FLYWAY_USERNAME:${DB_USERNAME}}
+       password: ${DB_FLYWAY_PASSWORD:${DB_PASSWORD}}
+   ```
+
+La tabla `flyway_schema_history` en Neon es **propiedad de `neondb_owner`**. El rol de la app (el que usa `DB_USERNAME`) no tiene permisos sobre esa tabla. Si el `.env` local no define `DB_FLYWAY_USERNAME`/`DB_FLYWAY_PASSWORD`, Flyway cae al fallback y usa el rol de app → `permission denied`.
+
+### Solución
+
+Agregar dos variables al `.env` local del backend:
+
+```dotenv
+DB_FLYWAY_USERNAME=neondb_owner
+DB_FLYWAY_PASSWORD=<password de neondb_owner — pedirlo al líder técnico>
+```
+
+La contraseña de `neondb_owner` es la misma que ya está documentada en el canal privado del equipo. Verificar contra `.env.example` que estén las dos variables presentes.
+
+Después reiniciar el backend. Debe arrancar sin tocar el esquema (`baseline-version: 9` ya corresponde a V1–V9 aplicadas manualmente).
+
+### Regla para el equipo
+
+- Cada vez que aparezca una variable nueva en `application.yml` con la forma `${NUEVA_VAR:fallback}`, **actualizar el `.env` local** aunque no sea obligatoria. El fallback existe para que el build no explote, no para producir configuración correcta.
+- Comparar `.env` local contra `.env.example` cuando algo falle al arrancar tras un `git pull`.
+
+---
+
 ## 2026-09-09 — Backend no compila: "cannot find symbol" en getters/setters (Lombok)
 
 **Reportado por:** Carlos Mario (macOS, Apple Silicon).

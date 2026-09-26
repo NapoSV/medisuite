@@ -96,10 +96,12 @@ docs/politicas/
 # Added by code-review-graph
 .code-review-graph/
 
-# Claude Code — per-user local settings (permissions cache pueden traer secretos)
-.claude/settings.local.json
-
-# ─── Configs de agentes de IA no usados por el equipo ────
+# ─── Configs y artefactos de agentes de IA (no versionar) ────
+.claude/
+.mcp.json
+CLAUDE.md
+.github/instructions/
+.github/workflows/commit-trailers-check.yml
 .codebuddy/
 .cursor/
 .gemini/
@@ -116,7 +118,6 @@ opencode.jsonc
 # ─── Backups temporales de draw.io ──────────────────────
 *.drawio.bkp
 .$*.drawio.bkp
-.claude/mcp-preferences.json
 
 # ─── Research externa (repos de referencia, no versionar) ─
 _research/

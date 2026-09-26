@@ -305,6 +305,127 @@ CREATE INDEX IF NOT EXISTS idx_prescription_items_rx ON prescription_items (pres
 
 ---
 
+## 2026-09-23 — Dashboard muestra 403 tras reiniciar Docker
+
+**Reportado por:** Héctor López (validación sesión demo).
+
+### Síntoma
+
+El sistema arranca correctamente (`Started MediSuiteApplication`), pero al navegar a `http://localhost:5173` el Dashboard retorna 403 y no carga datos.
+
+### Causa raíz
+
+El token JWT de una sesión anterior permanece en `localStorage` del navegador. Como el servidor reinició con una clave secreta nueva (o el token expiró), el backend rechaza el token con 403 Forbidden.
+
+### Solución
+
+Limpiar el localStorage antes de iniciar sesión:
+
+1. Abrir DevTools (`F12`).
+2. Ir a **Application → Local Storage → http://localhost:5173**.
+3. Seleccionar todo (`Ctrl+A`) → **Delete** (o botón "Clear all").
+4. Navegar a `/login` e iniciar sesión de nuevo.
+
+---
+
+## 2026-09-23 — `POST /api/appointments/patients/{id}/vitals` devuelve HTTP 500 (registro de triaje duplicado)
+
+**Reportado por:** Héctor López (sesión de capturas).
+
+### Síntoma
+
+Al intentar registrar triaje (signos vitales) desde `http://localhost:5173/triaje`, el formulario envía correctamente pero el backend responde HTTP 500. El paciente seleccionado tiene signos vitales previos del seed de datos.
+
+### Causa raíz
+
+La migración V6 (`R__Seed_Data.sql`) inserta signos vitales de ejemplo para los pacientes del expediente médico. Si se intenta registrar un segundo conjunto de signos vitales para el mismo expediente sin que el backend valide duplicados, el INSERT puede violar una constraint o la lógica de negocio rechaza el duplicado con un 500 genérico.
+
+### Solución temporal
+
+Para capturar la pantalla de triaje durante demostraciones, llenar el formulario pero **no** presionar "Registrar". El form está completamente funcional para propósitos visuales.
+
+### Solución definitiva (pendiente Avance 3)
+
+Agregar validación en `VitalSignService.create()` que verifique si ya existen signos vitales recientes y retorne HTTP 409 Conflict con mensaje descriptivo en lugar de propagar la excepción como 500.
+
+---
+
+## 2026-09-23 — Swagger UI no disponible en Docker (`GET /swagger-ui.html` → 403)
+
+**Reportado por:** Héctor López (sesión de capturas).
+
+### Síntoma
+
+`http://localhost:8097/swagger-ui.html` y `http://localhost:8097/swagger-ui/index.html` retornan 403 Forbidden cuando el sistema corre con Docker.
+
+### Causa raíz
+
+`SecurityConfig` tiene el filtro JWT en todos los endpoints. En el perfil Docker/producción, las rutas de Swagger no están incluidas en la lista de rutas públicas (`permitAll`).
+
+### Solución temporal
+
+Usar el health check para verificar que el backend responde: `http://localhost:8097/actuator/health` → retorna `{"status":"UP"}` sin autenticación.
+
+### Solución definitiva
+
+Agregar las rutas de Swagger a `permitAll` solo en perfiles no-productivos, o habilitarlo condicionalmente vía `@ConditionalOnProperty`.
+
+---
+
+## 2026-09-23 — Pacientes sin expediente médico (solo paciente ID 1 tiene datos completos)
+
+**Reportado por:** Héctor López (sesión de capturas).
+
+### Síntoma
+
+Al navegar a `http://localhost:5173/pacientes/{id}/expediente` para varios pacientes, la pantalla muestra "No se encontró el expediente". Solo el paciente con ID 1 (Martha Cáceres) tiene expediente con recetas y signos vitales.
+
+### Causa raíz
+
+La migración `R__Seed_Data.sql` (o V6) solo crea el expediente médico para un subconjunto de los 20 pacientes del seed. Los demás pacientes tienen registro en la tabla `patients` pero no tienen fila en `medical_records`.
+
+### Solución temporal para capturas
+
+Usar siempre `http://localhost:5173/pacientes/1/expediente` para demostrar el módulo de expediente médico. Martha Cáceres (ID 1) tiene datos completos.
+
+### Solución definitiva (Avance 3)
+
+Ampliar el seed para que los 20 pacientes tengan expediente médico con al menos un signo vital y una receta.
+
+---
+
+## 2026-09-23 — Ruta de nueva receta no es `/prescriptions/new` sino `/recetas/:id`
+
+**Reportado por:** Héctor López (sesión de capturas).
+
+### Síntoma
+
+Las rutas `/prescriptions/new` y `/prescriptions/:id/print` retornan página en blanco.
+
+### Causa raíz
+
+El frontend usa rutas en español. Las rutas correctas son:
+- **Formulario de receta:** `/recetas/:id` donde `id` es el ID del **expediente médico** (no el ID de la receta).
+- **Vista de impresión:** `/receta-print/:id` donde `id` es el ID de la **receta** (prescription ID).
+
+No existe botón "Nueva receta" visible en el módulo de Expediente para el rol Doctor. La URL hay que escribirla directamente en el navegador.
+
+### Rutas frontend correctas
+
+| Pantalla | URL |
+|---|---|
+| Dashboard | `/dashboard` |
+| Pacientes | `/pacientes` |
+| Detalle paciente | `/pacientes/:id` |
+| Expediente | `/pacientes/:id/expediente` |
+| Formulario receta | `/recetas/:id` (id = medical_record_id) |
+| Impresión receta | `/receta-print/:id` (id = prescription_id) |
+| Citas | `/citas` |
+| Doctores | `/doctores` |
+| Triaje | `/triaje` |
+
+---
+
 ## 2026-09-18 — Backend no inicia en Docker: `AccessDeniedException: /app/data`
 
 **Reportado por:** Héctor López (validación local tras fix de schema).

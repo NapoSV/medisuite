@@ -5,6 +5,7 @@ import com.sv.grupo7.medisuite.model.medical.PrescriptionItem;
 import com.sv.grupo7.medisuite.service.PrescriptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,13 +17,15 @@ public class PrescriptionController {
 
     private final PrescriptionService service;
 
-    public record CreateRequest(Long patientId, Long doctorId,
-                                String indications, List<PrescriptionItem> items) {}
+    public record CreateRequest(Long medicalRecordId, String diagnosis,
+                                String notes, List<PrescriptionItem> items) {}
 
     @PostMapping
-    public ResponseEntity<Prescription> create(@RequestBody CreateRequest r) {
-        Prescription p = service.create(r.patientId(), r.doctorId(),
-                r.indications(), r.items());
+    public ResponseEntity<Prescription> create(@RequestBody CreateRequest r,
+                                               Authentication auth) {
+        Long userId = (Long) auth.getPrincipal();
+        Prescription p = service.create(r.medicalRecordId(), userId,
+                r.diagnosis(), r.notes(), r.items());
         return ResponseEntity.status(201).body(p);
     }
 

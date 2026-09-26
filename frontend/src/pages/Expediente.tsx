@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import LoadingSpinner from '../components/LoadingSpinner'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { getMedicalRecord, createVitalSign, type Expediente as Exp, type SignosVitales } from '../api/medicalRecords'
 import { useAuth } from '../auth/useAuth'
 
@@ -16,8 +16,10 @@ const PRIORITY_COLOR: Record<string, string> = {
 
 export default function Expediente() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const { user } = useAuth()
   const canTriage = user?.role === 'NURSE' || user?.role === 'DOCTOR'
+  const canPrescribe = user?.role === 'DOCTOR'
 
   const [rec, setRec] = useState<Exp | null>(null)
   const [loading, setLoading] = useState(true)
@@ -94,12 +96,20 @@ export default function Expediente() {
         <h2 className="text-2xl font-bold">
           Expediente: {patient.firstName} {patient.lastName}
         </h2>
-        {canTriage && (
-          <button onClick={() => { setShowTriaje(!showTriaje); setTriajeOk(null); setTriajeErr(null) }}
-                  className="bg-emerald-600 text-white text-sm px-3 py-2 rounded">
-            {showTriaje ? 'Cerrar triaje' : '+ Registrar signos vitales'}
-          </button>
-        )}
+        <div className="flex gap-2">
+          {canPrescribe && (
+            <button onClick={() => navigate(`/recetas/${rec.id}`)}
+                    className="bg-blue-600 text-white text-sm px-3 py-2 rounded">
+              + Nueva receta
+            </button>
+          )}
+          {canTriage && (
+            <button onClick={() => { setShowTriaje(!showTriaje); setTriajeOk(null); setTriajeErr(null) }}
+                    className="bg-emerald-600 text-white text-sm px-3 py-2 rounded">
+              {showTriaje ? 'Cerrar triaje' : '+ Registrar signos vitales'}
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="mt-1 flex flex-wrap gap-4 text-sm text-slate-600">

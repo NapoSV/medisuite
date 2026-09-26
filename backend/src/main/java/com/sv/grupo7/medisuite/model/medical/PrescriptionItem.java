@@ -1,6 +1,7 @@
 package com.sv.grupo7.medisuite.model.medical;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,6 +25,7 @@ public class PrescriptionItem implements Serializable {
     @Column(nullable = false, length = 200)
     private String medication;
 
+    @JsonProperty("dosage")
     @Column(length = 100)
     private String dose;
 

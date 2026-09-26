@@ -119,6 +119,9 @@ opencode.jsonc
 *.drawio.bkp
 .$*.drawio.bkp
 
+# ─── Retos semanales UEES — no pertenecen a este proyecto ──
+retos_Semanales/
+
 # ─── Research externa (repos de referencia, no versionar) ─
 _research/
 

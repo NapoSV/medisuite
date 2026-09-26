@@ -1,6 +1,6 @@
 # Arranque rápido — MediSuite
 > Cómo levantar el sistema en tu computadora en menos de 5 minutos.
-> Versión: 2.0 · Actualizado: 21/09/2026
+> Versión: 2.1 · Actualizado: 26/09/2026
 
 ---
 
@@ -10,12 +10,22 @@
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado y **corriendo**
 - El archivo `.env` en la raíz del repo (pídelo a Héctor si no lo tienes)
 
+> **Si ya tenías el `.env` de antes del 26/09:** agrega estas dos líneas al final del archivo
+> (los valores te los comparte Héctor por Teams):
+> ```
+> DB_FLYWAY_USERNAME=neondb_owner
+> DB_FLYWAY_PASSWORD=<pedirlo a Héctor>
+> ```
+> Sin ellas el backend falla al arrancar con `permission denied for table flyway_schema_history`.
+
 ### Pasos
 
 ```powershell
-# 1. Clonar y entrar al repo
+# 1. Clonar el repo (solo si es la primera vez)
 git clone https://github.com/NapoSV/medisuite.git
 cd medisuite
+
+# Si ya lo tienes clonado, solo actualiza:
 git checkout develop
 git pull origin develop
 
@@ -56,7 +66,7 @@ docker compose up
 - Apache Maven 3.9.x — [descargar](https://maven.apache.org/download.cgi)
 - Node.js 20 LTS — [descargar](https://nodejs.org/en/download)
 - pnpm: `npm install -g pnpm`
-- El archivo `.env` en la raíz del repo
+- El archivo `.env` en la raíz del repo (con `DB_FLYWAY_USERNAME` y `DB_FLYWAY_PASSWORD` — ver nota arriba)
 
 ### Backend
 
@@ -108,6 +118,7 @@ Listo cuando aparece: `Local: http://localhost:5173/`
 
 | Síntoma | Causa | Solución |
 |---|---|---|
+| `permission denied for table flyway_schema_history` | Faltan `DB_FLYWAY_USERNAME/PASSWORD` en el `.env` | Agregar las dos variables (ver nota al inicio de Opción A) · Detalle en `docs/TROUBLESHOOTING.md` |
 | `Port 8097 is already in use` | Hay otro backend corriendo | `Get-Process java \| Stop-Process -Force` |
 | `Credenciales inválidas` al login | Hash de contraseña en BD | Ver `docs/GUIA_CORRIDA_LOCAL.md` sección 5 |
 | Docker no levanta | Docker Desktop no está corriendo | Abre Docker Desktop, espera a que el Engine diga "Running" |

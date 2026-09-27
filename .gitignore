@@ -98,6 +98,7 @@ docs/politicas/
 
 # ─── Configs y artefactos de agentes de IA (no versionar) ────
 .claude/
+.codex/
 .mcp.json
 CLAUDE.md
 .github/instructions/
@@ -127,4 +128,5 @@ _research/
 
 # ─── Backups de auditoría generados en runtime ──────────
 backend/audit-backups/
+backend/data/
 

@@ -162,7 +162,18 @@ Los actores del sistema son: **Administrador**, **Doctor**, **Recepcionista** y 
 - La Recepcionista registra pacientes, agenda citas y gestiona el estado de las mismas.
 - El Sistema ejecuta el scheduler de respaldo cada 60 segundos de forma autónoma.
 
-### 7.2 Flujo principal — Ciclo de una cita
+### 7.2 Diagrama de Clases actualizado
+
+El diseño de clases del Avance 2 está versionado en dos formatos:
+
+- [`diagramas/DIAGRAMA_CLASES_MEDISUITE_AVANCE2.drawio`](diagramas/DIAGRAMA_CLASES_MEDISUITE_AVANCE2.drawio): fuente editable en draw.io.
+- [`diagramas/DIAGRAMA_CLASES_MEDISUITE_AVANCE2.png`](diagramas/DIAGRAMA_CLASES_MEDISUITE_AVANCE2.png): vista exportada para consulta rápida.
+
+El diagrama representa la jerarquía basada en `BaseEntity`, las entidades clínicas,
+las relaciones JPA principales, la persistencia genérica `.dat` y los componentes
+concurrentes incorporados en este avance.
+
+### 7.3 Flujo principal — Ciclo de una cita
 
 ```
 Login → Dashboard → Nueva Cita → (seleccionar doctor, fecha, slot)
@@ -310,7 +321,7 @@ Para cada Historia de Usuario definida en la Sección 6 se especifican los datos
 | | Detalle |
 |---|---|
 | **Entradas** | Proceso automático — ninguna entrada del usuario. El `AuditBackupScheduler` se dispara cada 60 segundos mediante `ScheduledExecutorService` configurado con `@PostConstruct` |
-| **Salidas** | Archivo `data/audit_backup.dat` actualizado con la serialización binaria de todos los registros de `AuditLog` del tenant · Archivo `data/medical_record_backup.dat` con los expedientes médicos · Registro en log de consola: fecha, hora y cantidad de registros respaldados |
+| **Salidas** | Archivos versionados por fecha en `audit-backups/audit_YYYY-MM-DD_HH-mm-ss.dat` con la serialización binaria de los registros de `AuditLog` · Archivo `data/medical_records_backup.dat` con los expedientes médicos · Registro en log de consola: fecha, hora y cantidad de registros respaldados |
 
 ---
 
@@ -342,7 +353,7 @@ Se implementaron pruebas unitarias con JUnit 5 y Mockito para los servicios prin
 
 ### 11.3 Test de integración backup `.dat`
 
-`AuditLogDatDaoIntegrationTest` verifica el ciclo completo de serialización y deserialización del `AuditLogDatDao`: guarda una lista de `AuditLog` en el archivo binario y la recupera, comprobando integridad de los datos.
+`AuditLogDatDaoIntegrationTest` verifica el ciclo completo de serialización y deserialización: guarda una lista de `AuditLog` mediante `AuditLogDatDao`, abre el archivo binario generado con `ObjectInputStream` y comprueba la integridad de los datos recuperados.
 
 ### 11.4 Casos de prueba manuales
 
@@ -442,10 +453,10 @@ El sistema implementa una capa de persistencia dual:
 
 **Archivos `.dat`** son una capa secundaria de respaldo para datos de auditoría y expedientes, basada en serialización binaria de objetos Java. Su propósito es demostrar la persistencia de objetos con las APIs nativas de Java.
 
-La clase genérica `DatFileDao<T extends Serializable>` abstrae la lógica de serialización/deserialización usando `ObjectOutputStream` y `ObjectInputStream` sobre un archivo en el sistema de ficheros. Dos implementaciones concretas la utilizan:
+La clase genérica `DatFileDao<T extends Serializable>` abstrae la lógica de serialización/deserialización usando `ObjectOutputStream` y `ObjectInputStream` sobre un archivo en el sistema de ficheros. La persistencia `.dat` se concreta de dos formas:
 
-- `AuditLogDatDao`: respalda los registros de `AuditLog` en `data/audit_backup.dat`.
-- `MedicalRecordDatDao`: respalda los expedientes médicos en `data/medical_record_backup.dat`.
+- `MedicalRecordDatDao` extiende `DatFileDao<MedicalRecord>` y respalda los expedientes médicos en `data/medical_records_backup.dat`.
+- `AuditLogDatDao` genera respaldos independientes y fechados en `audit-backups/audit_YYYY-MM-DD_HH-mm-ss.dat`, permitiendo conservar el historial de ejecuciones del scheduler.
 
 ### 12.8 Concurrencia — Dos Patrones Implementados
 

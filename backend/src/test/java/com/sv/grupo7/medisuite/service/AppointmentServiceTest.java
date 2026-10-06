@@ -123,7 +123,7 @@ class AppointmentServiceTest{
 
 
     @Test
-    void cancel_debeCambiarStatusACancelled() {
+    void cancel_conMotivoValido_debeCambiarStatusACancelled() {
 
         Long appointmentId = 1L;
 
@@ -134,10 +134,51 @@ class AppointmentServiceTest{
         when(appointmentRepo.findById(appointmentId))
                 .thenReturn(Optional.of(appointment));
 
-        appointmentService.cancel(appointmentId);
+        appointmentService.cancel(appointmentId, "Paciente reporta imposibilidad de asistir");
 
         assertEquals("CANCELLED", appointment.getStatus());
+        assertEquals("Paciente reporta imposibilidad de asistir", appointment.getCancelReason());
+        assertNotNull(appointment.getCancelledAt());
     }
 
+    @Test
+    void cancel_sinMotivo_debeLanzarBusinessException() {
+        assertThrows(BusinessException.class, () ->
+                appointmentService.cancel(1L, null));
+        assertThrows(BusinessException.class, () ->
+                appointmentService.cancel(1L, ""));
+        assertThrows(BusinessException.class, () ->
+                appointmentService.cancel(1L, "xx"));
+    }
+
+    @Test
+    void complete_antesDeFechaDeCita_debeLanzarBusinessException() {
+        Long appointmentId = 1L;
+        Appointment appointment = new Appointment();
+        appointment.setStatus("PENDING");
+        appointment.setScheduledAt(OffsetDateTime.now().plusDays(5));
+
+        when(appointmentRepo.findById(appointmentId))
+                .thenReturn(Optional.of(appointment));
+
+        assertThrows(BusinessException.class, () ->
+                appointmentService.complete(appointmentId));
+    }
+
+    @Test
+    void complete_enDiaDeCita_debePermitirYRegistrarCompletedAt() {
+        Long appointmentId = 1L;
+        Appointment appointment = new Appointment();
+        appointment.setStatus("PENDING");
+        appointment.setScheduledAt(OffsetDateTime.now().plusHours(2));
+
+        when(appointmentRepo.findById(appointmentId))
+                .thenReturn(Optional.of(appointment));
+
+        Appointment result = appointmentService.complete(appointmentId);
+
+        assertEquals("COMPLETED", result.getStatus());
+        assertNotNull(result.getCompletedAt());
+    }
 
 }

@@ -10,6 +10,7 @@ import Citas from './pages/Citas';
 import CitaNueva from './pages/CitaNueva';
 import Expediente from './pages/Expediente';
 import Recetas from './pages/Recetas';
+import RecetasInicio from './pages/RecetasInicio';
 import RecetaPrint from './pages/RecetaPrint';
 import Perfil from './pages/Perfil';
 import Forbidden from './pages/Forbidden';
@@ -33,6 +34,7 @@ export default function App() {
               <Route path="/pacientes/:id/expediente" element={<Expediente />} />
               <Route path="/expediente/:id" element={<Expediente />} />
               <Route path="/triaje" element={<Triaje />} />
+              <Route path="/recetas" element={<RecetasInicio />} />
               <Route path="/recetas/:id" element={<Recetas />} />
               <Route path="/perfil" element={<Perfil />} />
             </Route>

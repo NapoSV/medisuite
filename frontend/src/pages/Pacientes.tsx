@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import PatientModal from '../components/patients/PatientModal';
+import { useAuth } from '../auth/useAuth';
 
 type Patient = {
     id: number;
@@ -22,6 +23,9 @@ function calcAge(birthDate: string): number {
 }
 
 export default function Pacientes() {
+    const { user } = useAuth();
+    const esDoctor = user?.role === 'DOCTOR';
+    const puedeTriar = user?.role === 'DOCTOR' || user?.role === 'NURSE';
     const [rows, setRows] = useState<Patient[]>([]);
     const [q, setQ] = useState('');
     const [modalOpen, setModalOpen] = useState(false);
@@ -68,6 +72,12 @@ export default function Pacientes() {
                         <td className="p-3 text-right flex gap-3 justify-end">
                             <button onClick={() => openEdit(p.id)} className="text-blue-600 hover:underline text-sm">Editar</button>
                             <a className="text-slate-600 hover:underline text-sm" href={`/pacientes/${p.id}/expediente`}>Ver</a>
+                            {puedeTriar && (
+                                <a className="text-purple-700 hover:underline text-sm" href={`/triaje?patientId=${p.id}`}>Triar</a>
+                            )}
+                            {esDoctor && (
+                                <a className="text-emerald-700 hover:underline text-sm" href={`/pacientes/${p.id}/expediente`}>+ Receta</a>
+                            )}
                         </td>
                     </tr>
                 ))}

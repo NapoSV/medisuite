@@ -59,13 +59,24 @@ public class AppointmentService {
     }
 
     @Transactional
-    public void cancel(Long appointmentId) {
+    public void cancel(Long appointmentId, String reason) {
+        if (reason == null || reason.trim().length() < 5) {
+            throw new BusinessException("Debe indicar un motivo de cancelacion (minimo 5 caracteres)");
+        }
+        if (reason.length() > 500) {
+            throw new BusinessException("El motivo de cancelacion no puede exceder 500 caracteres");
+        }
         Appointment a = appointmentRepo.findById(appointmentId)
             .orElseThrow(() -> new BusinessException("Cita no existe"));
+        if ("CANCELLED".equals(a.getStatus()) || "COMPLETED".equals(a.getStatus())) {
+            throw new BusinessException("La cita ya esta " + a.getStatus().toLowerCase());
+        }
         if (a.getScheduledAt().minusHours(24).isBefore(OffsetDateTime.now())) {
             throw new BusinessException("Solo se puede cancelar con 24h de anticipacion");
         }
         a.setStatus("CANCELLED");
+        a.setCancelReason(reason.trim());
+        a.setCancelledAt(OffsetDateTime.now());
     }
 
     @Transactional
@@ -73,9 +84,20 @@ public class AppointmentService {
         Appointment a = appointmentRepo.findById(appointmentId)
             .orElseThrow(() -> new BusinessException("Cita no existe"));
         if ("CANCELLED".equals(a.getStatus()) || "COMPLETED".equals(a.getStatus())) {
-            throw new BusinessException("La cita ya está " + a.getStatus().toLowerCase());
+            throw new BusinessException("La cita ya esta " + a.getStatus().toLowerCase());
+        }
+        // Validacion: no se puede completar una cita antes de su fecha agendada.
+        // Permitimos completar desde el inicio del dia de la cita (00:00) hasta siempre.
+        OffsetDateTime now = OffsetDateTime.now();
+        OffsetDateTime inicioDelDiaDeCita = a.getScheduledAt().toLocalDate()
+                .atStartOfDay().atOffset(a.getScheduledAt().getOffset());
+        if (now.isBefore(inicioDelDiaDeCita)) {
+            throw new BusinessException(
+                "No se puede completar una cita antes de su fecha agendada (" +
+                a.getScheduledAt().toLocalDate() + ")");
         }
         a.setStatus("COMPLETED");
+        a.setCompletedAt(now);
         return a;
     }
 

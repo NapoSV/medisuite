@@ -25,7 +25,9 @@ public class AppointmentController {
     @GetMapping
     public ResponseEntity<List<Appointment>> list(
             @RequestParam(defaultValue = "false") boolean upcoming) {
-        return ResponseEntity.ok(upcoming ? service.upcoming() : service.upcoming());
+        // Nota: hoy el service solo expone upcoming(); el flag se preserva
+        // para extender a historico en Fase 3.
+        return ResponseEntity.ok(service.upcoming());
     }
 
     @PostMapping
@@ -35,9 +37,13 @@ public class AppointmentController {
         return ResponseEntity.status(201).body(a);
     }
 
+    public record CancelRequest(String reason) {}
+
     @PostMapping("/{id}/cancel")
-    public ResponseEntity<Map<String,String>> cancel(@PathVariable Long id) {
-        service.cancel(id);
+    public ResponseEntity<Map<String,String>> cancel(@PathVariable Long id,
+                                                     @RequestBody(required = false) CancelRequest r) {
+        String reason = (r != null) ? r.reason() : null;
+        service.cancel(id, reason);
         return ResponseEntity.ok(Map.of("status", "CANCELLED"));
     }
 

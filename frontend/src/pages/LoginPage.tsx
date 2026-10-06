@@ -1,5 +1,5 @@
-import { useState, type FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useMemo, type FormEvent } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../auth/useAuth'
 import { getTenantSlug } from '../lib/tenant'
@@ -13,6 +13,15 @@ export default function LoginPage() {
   const [showPass, setShowPass] = useState(false)
   const { login } = useAuth()
   const navigate = useNavigate()
+  const [params] = useSearchParams()
+
+  // Aviso cuando el usuario llega aqui por sesion expirada/invalida (bug Ing. Guevara).
+  const sessionNotice = useMemo(() => {
+    const reason = params.get('reason')
+    if (reason === 'expired') return 'Tu sesión expiró. Vuelve a iniciar sesión para continuar.'
+    if (reason === 'forbidden') return 'Tu sesión no es válida. Vuelve a iniciar sesión.'
+    return ''
+  }, [params])
 
   const handle = async (e: FormEvent) => {
     e.preventDefault()
@@ -20,7 +29,8 @@ export default function LoginPage() {
     setLoading(true)
     try {
       await login(getTenantSlug(), form.email.trim(), form.password)
-      navigate('/dashboard', { replace: true })
+      const next = params.get('next')
+      navigate(next && next.startsWith('/') ? next : '/dashboard', { replace: true })
     } catch (err: unknown) {
       const msg = (err as any)?.response?.data?.message ?? (err as Error)?.message ?? 'Error al iniciar sesión'
       setError(msg)
@@ -41,6 +51,12 @@ export default function LoginPage() {
         {/* Card */}
         <div className="bg-surface rounded-[20px] shadow-card border border-border p-8">
           <h2 className="text-lg font-semibold text-text mb-6">Iniciar sesión</h2>
+
+          {sessionNotice && (
+            <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+              {sessionNotice}
+            </div>
+          )}
 
           <form onSubmit={handle} noValidate className="space-y-4">
 

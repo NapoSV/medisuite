@@ -4,7 +4,7 @@ Coordinación: Héctor López. Cierre interno: **19/10/2026**. Entrega externa i
 
 | B | Responsable | Entregable principal | PR / enlace | Pruebas o evidencia | Revisor sugerido | Estado |
 |---|---|---|---|---|---|---|
-| B1 | Héctor López | Dashboard JDBC y alcance por rol/tenant | pendiente | HTTP/servicio y PostgreSQL descartable pasan; QA manual de dos tenants pendiente | William, Vigil | En desarrollo |
+| B1 | Héctor López | Dashboard JDBC y alcance por rol/tenant | [PR #41](https://github.com/NapoSV/medisuite/pull/41) | Compilación y 10 pruebas locales pasan; QA manual de dos tenants pendiente | William, Vigil | Borrador; espera B2/B4/B5 |
 | B2 | Alejandro Vigil | Pool `jdbcDataSource` y parámetros | pendiente | Configuración, conexión y carga | Héctor | Pendiente |
 | B3a | Bayron Orellana | Recordatorios concurrentes y V11 | pendiente | Concurrencia, idempotencia y migración | Flores | Pendiente |
 | B3b | Alejandro Merino | Códigos de reserva y V12 | pendiente | Unicidad bajo carrera y migración | Flores | Pendiente |
@@ -23,4 +23,4 @@ Coordinación: Héctor López. Cierre interno: **19/10/2026**. Entrega externa i
 3. Reservar 18/10 para demo transversal y 19/10 para correcciones; cada persona aporta una conclusión y cinco respuestas de defensa.
 4. Verificar A1/A2/A3 contra código, tests, migraciones, documento, video y repositorio público. Un PR abierto o un script presente no equivale a evidencia pasada.
 
-Estado observado al iniciar B1 el 06/10/2026: la rama remota base no existía, la búsqueda de PR por `avance3` estaba vacía y B2/B4/B5 no estaban en el checkout. Actualizar esta línea cuando cambie la situación.
+Estado verificado el 06/10/2026: `feature/avance3-fase-b` está publicada desde Fase A (`a1b6dc0`); B1 está publicado en `b1-dashboard-backend` (`85b82b3`) y abierto como PR **borrador** #41. B2/B4/B5 todavía no están integrados. Ni la existencia de la rama ni el PR sustituyen las pruebas de integración y los merges pendientes.

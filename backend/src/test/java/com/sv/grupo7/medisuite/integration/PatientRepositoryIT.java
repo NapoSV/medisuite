@@ -17,13 +17,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PatientRepositoryIT {
 
     @Container
-    static PostgreSQLContainer<?> pg = new PostgreSQLContainer<>("postgres:16-alpine");
+    static PostgreSQLContainer<?> pg = new PostgreSQLContainer<>("postgres:16-alpine")
+            .withInitScript("schema.sql");
 
     @DynamicPropertySource
     static void props(DynamicPropertyRegistry r) {
         r.add("spring.datasource.url", pg::getJdbcUrl);
         r.add("spring.datasource.username", pg::getUsername);
         r.add("spring.datasource.password", pg::getPassword);
+        r.add("spring.flyway.url", pg::getJdbcUrl);
+        r.add("spring.flyway.user", pg::getUsername);
+        r.add("spring.flyway.password", pg::getPassword);
     }
 
     @Autowired PatientRepository repo;

@@ -1,0 +1,70 @@
+name: Fase B PR
+
+on:
+  pull_request:
+    branches:
+      - feature/avance3-fase-b
+  push:
+    branches:
+      - feature/avance3-fase-b
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fase-b-pr-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend-tests:
+    name: backend-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Configure Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+      - name: Run backend tests
+        working-directory: backend
+        run: mvn -B -ntp test
+      - name: Run PostgreSQL integration test
+        working-directory: backend
+        run: mvn -B -ntp -Dtest=PatientRepositoryIT test
+
+  frontend-build:
+    name: frontend-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Configure pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.18.0
+          run_install: false
+      - name: Configure Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - name: Install locked dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+      - name: Check TypeScript
+        working-directory: frontend
+        run: pnpm exec tsc --noEmit
+      - name: Build frontend
+        working-directory: frontend
+        run: pnpm build

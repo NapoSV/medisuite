@@ -4,7 +4,7 @@ Coordinación: Héctor López. Cierre interno: **19/10/2026**. Entrega externa i
 
 | B | Responsable | Entregable principal | PR / enlace | Pruebas o evidencia | Revisor sugerido | Estado |
 |---|---|---|---|---|---|---|
-| B1 | Héctor López | Dashboard JDBC y alcance por rol/tenant | [PR #41](https://github.com/NapoSV/medisuite/pull/41) | Compilación y 10 pruebas locales pasan; QA manual de dos tenants pendiente | William, Vigil | Borrador; espera B2/B4/B5 |
+| B1 | Héctor López | Dashboard JDBC y alcance por rol/tenant | [PR #41](https://github.com/NapoSV/medisuite/pull/41) | 12 pruebas B1 y 32 pruebas seleccionadas A1/A2/B1 pasan; QA manual de dos tenants pendiente | William, Vigil | Borrador; espera B2/B4/B5 |
 | B2 | Alejandro Vigil | Pool `jdbcDataSource` y parámetros | pendiente | Configuración, conexión y carga | Héctor | Pendiente |
 | B3a | Bayron Orellana | Recordatorios concurrentes y V11 | pendiente | Concurrencia, idempotencia y migración | Flores | Pendiente |
 | B3b | Alejandro Merino | Códigos de reserva y V12 | pendiente | Unicidad bajo carrera y migración | Flores | Pendiente |

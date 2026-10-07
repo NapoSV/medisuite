@@ -84,8 +84,12 @@ public class DashboardJdbcDao implements DashboardMetricsReader {
     }
 
     private long countPrescriptions(Connection c, DashboardQuery q) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM prescriptions p WHERE p.tenant_id = ? "
-                + "AND p.issued_on >= ? AND p.issued_on < ?" + doctorFilter(q, "p");
+        String sql = "SELECT COUNT(*) FROM prescriptions rx "
+                + "JOIN medical_records mr ON mr.id = rx.medical_record_id AND mr.tenant_id = rx.tenant_id "
+                + "JOIN patients p ON p.id = mr.patient_id AND p.tenant_id = mr.tenant_id "
+                + "JOIN doctors d ON d.id = rx.doctor_id AND d.tenant_id = rx.tenant_id "
+                + "WHERE rx.tenant_id = ? AND rx.issued_on >= ? AND rx.issued_on < ?"
+                + doctorFilter(q, "rx");
         try (PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setLong(1, q.tenantId());
             ps.setObject(2, q.weekStart());

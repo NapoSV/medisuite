@@ -33,7 +33,7 @@ class DashboardJdbcDaoTest {
             s.execute("CREATE TABLE patients (id bigint primary key, tenant_id bigint not null, first_name text, last_name text)");
             s.execute("CREATE TABLE doctors (id bigint primary key, tenant_id bigint not null)");
             s.execute("CREATE TABLE appointments (id bigint primary key, tenant_id bigint not null, patient_id bigint, doctor_id bigint, scheduled_at timestamptz, status text)");
-            s.execute("CREATE TABLE prescriptions (id bigint primary key, tenant_id bigint not null, doctor_id bigint, issued_on date)");
+            s.execute("CREATE TABLE prescriptions (id bigint primary key, tenant_id bigint not null, medical_record_id bigint, doctor_id bigint, issued_on date)");
             s.execute("CREATE TABLE medical_records (id bigint primary key, tenant_id bigint not null, patient_id bigint)");
             s.execute("CREATE TABLE vital_signs (id bigint primary key, tenant_id bigint not null, medical_record_id bigint, priority text, recorded_at timestamptz)");
 
@@ -46,11 +46,14 @@ class DashboardJdbcDaoTest {
                     // FKs by ID alone allow these tenant-inconsistent appointments.
                     + "(4,1,3,11,'2026-10-12 17:00:00+00','WAITING'),"
                     + "(5,1,1,21,'2026-10-12 18:00:00+00','WAITING')");
-            s.execute("INSERT INTO prescriptions VALUES "
-                    + "(1,1,11,'2026-10-12'),(2,1,12,'2026-10-12'),"
-                    + "(3,2,21,'2026-10-12'),(4,1,11,'2026-10-11')");
             // The database FK allows a mismatched tenant/patient pair; dashboard reads must reject it.
             s.execute("INSERT INTO medical_records VALUES (1,1,1),(2,1,2),(3,2,3),(4,1,3)");
+            s.execute("INSERT INTO prescriptions VALUES "
+                    + "(1,1,1,11,'2026-10-12'),(2,1,2,12,'2026-10-12'),"
+                    + "(3,2,3,21,'2026-10-12'),(4,1,1,11,'2026-10-11'),"
+                    // Each row has a mismatched medical record, doctor, or patient tenant.
+                    + "(5,1,3,11,'2026-10-12'),(6,1,1,21,'2026-10-12'),"
+                    + "(7,1,4,11,'2026-10-12')");
             s.execute("INSERT INTO vital_signs VALUES "
                     + "(1,1,1,'LOW','2026-10-12 10:00:00+00'),"
                     + "(2,1,1,'CRITICAL','2026-10-12 11:00:00+00'),"

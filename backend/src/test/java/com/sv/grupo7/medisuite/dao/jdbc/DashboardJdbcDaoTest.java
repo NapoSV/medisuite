@@ -40,12 +40,15 @@ class DashboardJdbcDaoTest {
             s.execute("INSERT INTO patients VALUES (1,1,'Ana','Uno'),(2,1,'Beto','Dos'),(3,2,'Cora','Tres')");
             s.execute("INSERT INTO doctors VALUES (11,1),(12,1),(21,2)");
             s.execute("INSERT INTO appointments VALUES "
-                    + "(1,1,1,11,'2026-10-12 15:00:00+00','IN_WAITING'),"
+                    + "(1,1,1,11,'2026-10-12 06:00:00+00','IN_WAITING'),"
                     + "(2,1,2,12,'2026-10-12 16:00:00+00','CONFIRMED'),"
                     + "(3,2,3,21,'2026-10-12 15:00:00+00','WAITING'),"
                     // FKs by ID alone allow these tenant-inconsistent appointments.
                     + "(4,1,3,11,'2026-10-12 17:00:00+00','WAITING'),"
-                    + "(5,1,1,21,'2026-10-12 18:00:00+00','WAITING')");
+                    + "(5,1,1,21,'2026-10-12 18:00:00+00','WAITING'),"
+                    // Local day starts at 06:00Z; the end is exclusive.
+                    + "(6,1,1,11,'2026-10-12 05:59:59+00','WAITING'),"
+                    + "(7,1,1,11,'2026-10-13 06:00:00+00','WAITING')");
             // The database FK allows a mismatched tenant/patient pair; dashboard reads must reject it.
             s.execute("INSERT INTO medical_records VALUES (1,1,1),(2,1,2),(3,2,3),(4,1,3)");
             s.execute("INSERT INTO prescriptions VALUES "
@@ -53,7 +56,9 @@ class DashboardJdbcDaoTest {
                     + "(3,2,3,21,'2026-10-12'),(4,1,1,11,'2026-10-11'),"
                     // Each row has a mismatched medical record, doctor, or patient tenant.
                     + "(5,1,3,11,'2026-10-12'),(6,1,1,21,'2026-10-12'),"
-                    + "(7,1,4,11,'2026-10-12')");
+                    + "(7,1,4,11,'2026-10-12'),"
+                    // The following Monday is the exclusive end of the selected week.
+                    + "(8,1,1,11,'2026-10-19')");
             s.execute("INSERT INTO vital_signs VALUES "
                     + "(1,1,1,'LOW','2026-10-12 10:00:00+00'),"
                     + "(2,1,1,'CRITICAL','2026-10-12 11:00:00+00'),"
@@ -69,7 +74,7 @@ class DashboardJdbcDaoTest {
         assertThat(admin.prescriptionsThisWeek()).isEqualTo(2);
         assertThat(admin.criticalAlerts()).isEqualTo(2);
         assertThat(admin.waitingRoom()).extracting("patientName").containsExactly("Ana Uno");
-        assertThat(admin.occupancyByHour()).extracting("hour").containsExactly(9, 10);
+        assertThat(admin.occupancyByHour()).extracting("hour").containsExactly(0, 10);
         assertThat(admin.clinicalAlerts()).isNull();
 
         DashboardResponse doctor = dao.read(query(1L, 11L, DashboardQuery.Role.DOCTOR));

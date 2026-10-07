@@ -24,6 +24,10 @@ import java.util.List;
 @Repository
 public class DashboardJdbcDao implements DashboardMetricsReader {
 
+    private static final String APPOINTMENT_TENANT_JOINS =
+            " JOIN patients p ON p.id = a.patient_id AND p.tenant_id = a.tenant_id "
+            + "JOIN doctors d ON d.id = a.doctor_id AND d.tenant_id = a.tenant_id ";
+
     private final DataSource dataSource;
 
     @Autowired
@@ -61,7 +65,7 @@ public class DashboardJdbcDao implements DashboardMetricsReader {
     }
 
     private long countAppointments(Connection c, DashboardQuery q) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM appointments a WHERE a.tenant_id = ? "
+        String sql = "SELECT COUNT(*) FROM appointments a" + APPOINTMENT_TENANT_JOINS + "WHERE a.tenant_id = ? "
                 + "AND a.scheduled_at >= ? AND a.scheduled_at < ?" + doctorFilter(q, "a");
         try (PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setLong(1, q.tenantId());
@@ -140,7 +144,7 @@ public class DashboardJdbcDao implements DashboardMetricsReader {
 
     private List<WaitingRoomEntry> findWaitingRoom(Connection c, DashboardQuery q) throws SQLException {
         String sql = "SELECT a.id, p.first_name, p.last_name, a.scheduled_at, a.status "
-                + "FROM appointments a JOIN patients p ON p.id = a.patient_id AND p.tenant_id = a.tenant_id "
+                + "FROM appointments a" + APPOINTMENT_TENANT_JOINS
                 + "WHERE a.tenant_id = ? AND a.scheduled_at >= ? AND a.scheduled_at < ? "
                 + "AND a.status IN ('WAITING', 'IN_WAITING')" + doctorFilter(q, "a")
                 + " ORDER BY a.scheduled_at, a.id LIMIT 20";
@@ -163,7 +167,8 @@ public class DashboardJdbcDao implements DashboardMetricsReader {
 
     private List<OccupancySlot> findOccupancy(Connection c, DashboardQuery q) throws SQLException {
         String sql = "SELECT EXTRACT(HOUR FROM a.scheduled_at AT TIME ZONE 'America/El_Salvador')::int AS hour, "
-                + "COUNT(*) AS appointments FROM appointments a WHERE a.tenant_id = ? "
+                + "COUNT(*) AS appointments FROM appointments a" + APPOINTMENT_TENANT_JOINS
+                + "WHERE a.tenant_id = ? "
                 + "AND a.scheduled_at >= ? AND a.scheduled_at < ? "
                 + "AND a.status NOT IN ('CANCELLED', 'NO_SHOW')" + doctorFilter(q, "a")
                 + " GROUP BY hour ORDER BY hour";

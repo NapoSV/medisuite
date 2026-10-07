@@ -44,12 +44,14 @@ class DashboardJdbcDaoTest {
             s.execute("INSERT INTO prescriptions VALUES "
                     + "(1,1,11,'2026-10-12'),(2,1,12,'2026-10-12'),"
                     + "(3,2,21,'2026-10-12'),(4,1,11,'2026-10-11')");
-            s.execute("INSERT INTO medical_records VALUES (1,1,1),(2,1,2),(3,2,3)");
+            // The database FK allows a mismatched tenant/patient pair; dashboard reads must reject it.
+            s.execute("INSERT INTO medical_records VALUES (1,1,1),(2,1,2),(3,2,3),(4,1,3)");
             s.execute("INSERT INTO vital_signs VALUES "
                     + "(1,1,1,'LOW','2026-10-12 10:00:00+00'),"
                     + "(2,1,1,'CRITICAL','2026-10-12 11:00:00+00'),"
                     + "(3,1,2,'CRITICAL','2026-10-12 11:00:00+00'),"
-                    + "(4,2,3,'CRITICAL','2026-10-12 11:00:00+00')");
+                    + "(4,2,3,'CRITICAL','2026-10-12 11:00:00+00'),"
+                    + "(5,1,4,'CRITICAL','2026-10-12 12:00:00+00')");
         }
 
         DashboardJdbcDao dao = new DashboardJdbcDao(source);

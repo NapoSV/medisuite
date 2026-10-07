@@ -97,6 +97,7 @@ public class DashboardJdbcDao implements DashboardMetricsReader {
                 + "ORDER BY vs.recorded_at DESC, vs.id DESC) AS rn "
                 + "FROM vital_signs vs JOIN medical_records mr ON mr.id = vs.medical_record_id "
                 + "AND mr.tenant_id = vs.tenant_id "
+                + "JOIN patients p ON p.id = mr.patient_id AND p.tenant_id = mr.tenant_id "
                 + "WHERE vs.tenant_id = ? AND mr.tenant_id = ?"
                 + (q.role() == DashboardQuery.Role.DOCTOR
                     ? " AND EXISTS (SELECT 1 FROM appointments a WHERE a.tenant_id = ? "

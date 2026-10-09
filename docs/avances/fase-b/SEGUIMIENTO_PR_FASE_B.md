@@ -30,17 +30,25 @@ Coordinación: Héctor López. Cierre interno: **19/10/2026**. Entrega externa i
 4. Verificar A1/A2/A3 contra código, tests, migraciones, documento, video y repositorio público. Un PR abierto o un script presente no equivale a evidencia pasada.
 5. Flujo de merges al cierre: `PRs individuales → feature/avance3-fase-b → develop → main`. Ningún merge directo a `develop` o `main`.
 
-## Bloqueador transversal detectado 09/10 — prioridad clínica
+## Contrato de prioridad clínica — resuelto 09/10/2026
 
-En el código conviven **tres valores distintos** de `priority` que deben unificarse antes del 14/10:
+**Decisión**: la escala vigente de `vital_signs.priority` es **`NORMAL / URGENTE / EMERGENCIA`** (español).
 
-| Lugar | Valor usado | Archivo |
-|---|---|---|
-| Backend dashboard DAO | `CRITICAL` | `backend/src/main/java/com/sv/grupo7/medisuite/dao/jdbc/DashboardJdbcDao.java:126,135` |
-| Frontend Expediente (triaje inline) | `EMERGENCIA` | `frontend/src/pages/Expediente.tsx:14,164` |
-| Frontend Triaje (página dedicada) | `LOW` | `frontend/src/pages/Triaje.tsx:25,36` |
+**Fundamento verificado contra el repositorio**:
+- Las migraciones Flyway activas (V1–V10) **no imponen CHECK** sobre `vital_signs.priority`. La columna es `VARCHAR(10)` sin restricción.
+- Los seeds reales de `backend/src/main/resources/db/migration/V8__seed_medical_records.sql` insertan `NORMAL` y `URGENTE`.
+- `MedicalRecordService` usa `NORMAL` como default.
+- `frontend/src/pages/Expediente.tsx` ya opera con `NORMAL/URGENTE/EMERGENCIA`.
+- El archivo `database/schema.sql` que listaba `LOW/MEDIUM/HIGH/CRITICAL` es un **export desactualizado**, no es migración activa.
 
-Zair (B7) y Flores (B8) deben confirmar el constraint efectivo de `vital_signs.priority` en el esquema y acordar un conjunto único de valores. Mientras no se resuelva: el conteo de `criticalAlerts` del dashboard quedará en cero si los triajes se guardan con `EMERGENCIA`, y el frontend podría insertar valores incompatibles con el constraint. **Decisión bloqueante** para cerrar B1, B6, B7 y B8.
+**Resuelto en B1 (PR #41)**:
+- `backend/src/main/java/com/sv/grupo7/medisuite/dao/jdbc/DashboardJdbcDao.java:126,135` → filtra `priority = 'EMERGENCIA'`.
+- `backend/src/test/java/com/sv/grupo7/medisuite/dao/jdbc/DashboardJdbcDaoTest.java:62–67` → fixtures alineados a `NORMAL/EMERGENCIA`.
+- `docs/avances/fase-b/B1_CONTRATO_DASHBOARD.md` → contrato de prioridad declarado explícitamente.
+
+**Pendiente ajeno a B1 (sin bloquear a nadie, trabajo independiente de cada autor)**:
+- **Zair Díaz** (B6/B7): alinear `frontend/src/pages/Triaje.tsx:25,36` a la escala `NORMAL/URGENTE/EMERGENCIA`. No bloquea B1 porque Expediente ya está correcto y es la pantalla principal de triaje.
+- **Walter Flores** (B8): en el reporte de regresión, documentar `database/schema.sql` como export obsoleto y proponer su regeneración o eliminación. No bloquea B1.
 
 ## Historial de verificaciones
 

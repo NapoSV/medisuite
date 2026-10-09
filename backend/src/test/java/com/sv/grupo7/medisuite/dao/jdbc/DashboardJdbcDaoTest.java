@@ -60,11 +60,11 @@ class DashboardJdbcDaoTest {
                     // The following Monday is the exclusive end of the selected week.
                     + "(8,1,1,11,'2026-10-19')");
             s.execute("INSERT INTO vital_signs VALUES "
-                    + "(1,1,1,'LOW','2026-10-12 10:00:00+00'),"
-                    + "(2,1,1,'CRITICAL','2026-10-12 11:00:00+00'),"
-                    + "(3,1,2,'CRITICAL','2026-10-12 11:00:00+00'),"
-                    + "(4,2,3,'CRITICAL','2026-10-12 11:00:00+00'),"
-                    + "(5,1,4,'CRITICAL','2026-10-12 12:00:00+00')");
+                    + "(1,1,1,'NORMAL','2026-10-12 10:00:00+00'),"
+                    + "(2,1,1,'EMERGENCIA','2026-10-12 11:00:00+00'),"
+                    + "(3,1,2,'EMERGENCIA','2026-10-12 11:00:00+00'),"
+                    + "(4,2,3,'EMERGENCIA','2026-10-12 11:00:00+00'),"
+                    + "(5,1,4,'EMERGENCIA','2026-10-12 12:00:00+00')");
         }
 
         DashboardJdbcDao dao = new DashboardJdbcDao(source);

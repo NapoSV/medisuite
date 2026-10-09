@@ -123,7 +123,7 @@ public class DashboardJdbcDao implements DashboardMetricsReader {
     }
 
     private long countCriticalAlerts(Connection c, DashboardQuery q) throws SQLException {
-        String sql = latestVitalSignsSql(q) + "SELECT COUNT(*) FROM latest WHERE rn = 1 AND priority = 'CRITICAL'";
+        String sql = latestVitalSignsSql(q) + "SELECT COUNT(*) FROM latest WHERE rn = 1 AND priority = 'EMERGENCIA'";
         try (PreparedStatement ps = c.prepareStatement(sql)) {
             bindVitalScope(ps, q);
             return count(ps);
@@ -132,7 +132,7 @@ public class DashboardJdbcDao implements DashboardMetricsReader {
 
     private List<CriticalAlert> findCriticalAlerts(Connection c, DashboardQuery q) throws SQLException {
         String sql = latestVitalSignsSql(q) + "SELECT id, patient_id, priority, recorded_at FROM latest "
-                + "WHERE rn = 1 AND priority = 'CRITICAL' ORDER BY recorded_at DESC, id DESC LIMIT 20";
+                + "WHERE rn = 1 AND priority = 'EMERGENCIA' ORDER BY recorded_at DESC, id DESC LIMIT 20";
         try (PreparedStatement ps = c.prepareStatement(sql)) {
             bindVitalScope(ps, q);
             try (ResultSet rs = ps.executeQuery()) {

@@ -13,14 +13,14 @@ Responsable backend: Héctor López. Consumidor frontend: William Melgar. Este c
 | `prescriptionsIssued` | sí | solo propias | no | no | Alias temporal del conteo de recetas de esta semana; antes era un total global inseguro. |
 | `alerts` | sí | solo pacientes atendidos | sí | no | Alias temporal de `criticalAlerts`; ya no cuenta `audit_logs`. |
 | `prescriptionsThisWeek` | sí | solo propias | no | no | `issued_on` desde lunes inclusivo a lunes siguiente exclusivo. |
-| `criticalAlerts` | sí | solo pacientes atendidos | sí | no | Pacientes cuyo **último** signo vital registrado tiene prioridad persistida `CRITICAL`. |
+| `criticalAlerts` | sí | solo pacientes atendidos | sí | no | Pacientes cuyo **último** signo vital registrado tiene prioridad persistida `EMERGENCIA`. |
 | `waitingRoom` | sí | solo citas propias | sí | sí | Máximo 20 citas del día en estado `WAITING` o `IN_WAITING`; solo ID, nombre, hora y estado. |
 | `occupancyByHour` | sí | solo citas propias | no | sí | Citas no canceladas/no-show por hora local; no representa capacidad ni porcentaje de ocupación. |
 | `clinicalAlerts` | no | solo pacientes atendidos | sí | no | Máximo 20 alertas actuales: ID de signo vital, ID de paciente, prioridad y fecha. Sin síntomas ni notas clínicas. |
 
 Los campos no permitidos se omiten del JSON (`null` en el DTO); las listas autorizadas sin datos son `[]`. `waitingRoom` contiene `appointmentId`, `patientName`, `scheduledAt`, `status`; `occupancyByHour` contiene `hour` (0–23) y `appointments`; `clinicalAlerts` contiene `vitalSignId`, `patientId`, `priority`, `recordedAt`.
 
-Zona de los límites diarios: `America/El_Salvador`, con intervalo `[inicio, fin)` convertido a `timestamptz`. La semana local inicia el lunes. `issued_on` es `DATE` en la BD. El esquema exportado contiene `CRITICAL`; Zair/Flores deben comprobar el constraint efectivo porque la UI de triaje usa `EMERGENCIA`. Hasta resolver esa discrepancia, el conteo de alertas podría omitir prioridades que se hayan guardado bajo otro valor.
+Zona de los límites diarios: `America/El_Salvador`, con intervalo `[inicio, fin)` convertido a `timestamptz`. La semana local inicia el lunes. `issued_on` es `DATE` en la BD. **Contrato de prioridad clínica resuelto 09/10/2026**: la escala vigente es `NORMAL / URGENTE / EMERGENCIA` (español). Fundamento: las migraciones Flyway activas (V1–V10) no imponen CHECK en `vital_signs.priority`; los seeds reales de `V8__seed_medical_records.sql` insertan `NORMAL` y `URGENTE`; `MedicalRecordService` usa `NORMAL` como default; `Expediente.tsx` opera sobre esa misma escala. El archivo `database/schema.sql` que listaba `LOW/MEDIUM/HIGH/CRITICAL` es un export desactualizado y no refleja la BD real. Pendiente ajeno a B1: alineación de `frontend/src/pages/Triaje.tsx` a la escala vigente (scope de Zair, B6) y marca del `database/schema.sql` como obsoleto en el reporte de regresión (scope de Flores, B8).
 
 El dashboard A2 ejecutaba cuatro `CompletableFuture.supplyAsync` sobre el pool común y contaba recetas/auditoría globalmente. B1 usa lecturas JDBC secuenciales con una conexión cerrada al terminar; evita depender de `TenantContext` en workers y mantiene el paralelismo del proyecto como una capacidad separada de los módulos de B3, no como una propiedad de este endpoint.
 

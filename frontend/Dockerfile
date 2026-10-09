@@ -1,13 +1,14 @@
 FROM node:22-alpine AS build
 WORKDIR /app
-COPY package.json ./
-RUN npm install
+RUN npm install -g pnpm@11.18.0
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+RUN pnpm install --frozen-lockfile
 COPY . .
 ARG VITE_API_BASE_URL=http://localhost:8097
 ARG VITE_TENANT_SLUG=clinica-san-rafael
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 ENV VITE_TENANT_SLUG=$VITE_TENANT_SLUG
-RUN npm run build
+RUN pnpm run build
 
 FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html

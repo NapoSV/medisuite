@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 @Tag("b2-pool")
@@ -23,8 +25,15 @@ class JdbcPoolConfigTest {
     @BeforeEach
     void setUp() {
         contextRunner = new ApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(ConfigurationPropertiesAutoConfiguration.class))
                 .withUserConfiguration(JdbcPoolConfig.class)
                 .withPropertyValues(
+                        "spring.datasource.url=jdbc:postgresql://localhost:5432/medisuite",
+                        "spring.datasource.username=test",
+                        "spring.datasource.password=test",
+                        "spring.datasource.driver-class-name=org.postgresql.Driver",
+                        "spring.datasource.hikari.maximum-pool-size=5",
+                        "spring.datasource.hikari.minimum-idle=1",
                         "spring.datasource.tomcat.url=jdbc:postgresql://localhost:5432/medisuite",
                         "spring.datasource.tomcat.username=test",
                         "spring.datasource.tomcat.password=test",

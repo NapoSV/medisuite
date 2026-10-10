@@ -75,7 +75,7 @@ class MedicalRecordServiceTest {
             assertSame(vitalSigns, result.get("vitalSigns"));
 
             verify(recordRepo).findByPatientIdAndTenantId(10L, 1L);
-            verify(patientRepo, never()).findById(anyLong());
+            verify(patientRepo, never()).findByIdAndTenantId(anyLong(), anyLong());
         }
     }
 
@@ -97,7 +97,7 @@ class MedicalRecordServiceTest {
 
             when(recordRepo.findByPatientIdAndTenantId(10L, 1L))
                     .thenReturn(Optional.empty());
-            when(patientRepo.findById(10L))
+            when(patientRepo.findByIdAndTenantId(10L, 1L))
                     .thenReturn(Optional.of(patient));
             when(recordRepo.save(any(MedicalRecord.class)))
                     .thenReturn(savedRecord);
@@ -113,7 +113,7 @@ class MedicalRecordServiceTest {
             assertSame(patient, result.get("patient"));
             assertEquals("", result.get("generalNotes"));
 
-            verify(patientRepo).findById(10L);
+            verify(patientRepo).findByIdAndTenantId(10L, 1L);
             verify(recordRepo).save(any(MedicalRecord.class));
         }
     }

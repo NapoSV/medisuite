@@ -14,6 +14,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findByPatientIdAndTenantId(Long patientId, Long tenantId);
     List<Appointment> findByDoctorIdAndTenantId(Long doctorId, Long tenantId);
     Optional<Appointment> findByReservationCodeAndTenantId(String reservationCode, Long tenantId);
+    Optional<Appointment> findByIdAndTenantId(Long id, Long tenantId);
 
     List<Appointment> findByTenantIdAndDoctorIdAndScheduledAtBetween(
         Long tenantId, Long doctorId, OffsetDateTime from, OffsetDateTime to);

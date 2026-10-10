@@ -28,7 +28,8 @@ public class MedicalRecordService {
         Long tid = TenantContext.currentTenantId();
         MedicalRecord mr = recordRepo.findByPatientIdAndTenantId(patientId, tid)
                 .orElseGet(() -> {
-                    Patient p = patientRepo.findById(patientId).orElseThrow();
+                    Patient p = patientRepo.findByIdAndTenantId(patientId, tid)
+                            .orElseThrow(() -> new BusinessException("Paciente no existe"));
                     MedicalRecord nuevo = new MedicalRecord();
                     nuevo.setPatient(p);
                     nuevo.setTenant(p.getTenant());
@@ -63,7 +64,7 @@ public class MedicalRecordService {
         Long tid = TenantContext.currentTenantId();
         Tenant tenant = tenantRepo.findById(tid)
                 .orElseThrow(() -> new BusinessException("Tenant no encontrado"));
-        Patient patient = patientRepo.findById(patientId)
+        Patient patient = patientRepo.findByIdAndTenantId(patientId, tid)
                 .orElseThrow(() -> new BusinessException("Paciente no existe"));
 
         MedicalRecord mr = recordRepo.findByPatientIdAndTenantId(patientId, tid)

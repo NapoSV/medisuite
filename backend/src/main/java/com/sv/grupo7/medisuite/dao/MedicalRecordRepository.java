@@ -9,4 +9,7 @@ import java.util.Optional;
 public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, Long> {
     @EntityGraph(attributePaths = {"patient"})
     Optional<MedicalRecord> findByPatientIdAndTenantId(Long patientId, Long tenantId);
+
+    @EntityGraph(attributePaths = {"patient"})
+    Optional<MedicalRecord> findByIdAndTenantId(Long id, Long tenantId);
 }

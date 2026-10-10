@@ -33,7 +33,7 @@ public class PatientService {
 
     @Transactional(readOnly = true)
     public Patient findById(Long id) {
-        return repo.findById(id).orElseThrow(() ->
+        return repo.findByIdAndTenantId(id, TenantContext.currentTenantId()).orElseThrow(() ->
             new RuntimeException("Paciente " + id + " no existe"));
     }
 

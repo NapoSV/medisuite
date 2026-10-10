@@ -33,7 +33,7 @@ public class DoctorService {
 
     @Transactional(readOnly = true)
     public Doctor findById(Long id) {
-        return doctorRepo.findById(id)
+        return doctorRepo.findByIdAndTenantId(id, TenantContext.currentTenantId())
                 .orElseThrow(() -> new RuntimeException("Doctor no encontrado"));
     }
 

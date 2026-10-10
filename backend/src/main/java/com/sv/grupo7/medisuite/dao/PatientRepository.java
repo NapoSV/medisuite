@@ -15,6 +15,7 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     List<Patient> findByTenantId(Long tenantId);
     Page<Patient> findByTenantId(Long tenantId, Pageable pageable);
     Optional<Patient> findByUserIdAndTenantId(Long userId, Long tenantId);
+    Optional<Patient> findByIdAndTenantId(Long id, Long tenantId);
 
     @Query("SELECT COUNT(p) FROM Patient p WHERE p.tenantId = :tid")
     long countActiveByTenant(@Param("tid") Long tid);

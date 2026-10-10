@@ -103,7 +103,9 @@ Crea `frontend/src/components/dashboard/`:
 | `CriticalAlertPanel.tsx` | alertas autorizadas | Texto legible además de color; no muestra datos privados a recepción. |
 | `OccupancyChart.tsx` | conteos por hora | Barras CSS con escala, leyenda y tabla/labels accesibles. |
 
-Si un componente solo se usa una vez y ocupa pocas líneas, evalúa si extraerlo realmente mejora cohesión. No crees un componente por cada `div` para aparentar arquitectura. Mantén clases Tailwind existentes y coordina con Zair el lenguaje visual; los diseños de referencia no justifican ocultar datos o enlaces funcionales.
+Si un componente solo se usa una vez y ocupa pocas líneas, evalúa si extraerlo realmente mejora cohesión. No crees un componente por cada `div` para aparentar arquitectura.
+
+> **🔒 Decisión cerrada (09/10/2026 — H. López, lenguaje visual):** usa las clases Tailwind y los componentes ya existentes en `frontend/src/components/` del Avance 2. No introduzcas un design system nuevo, no cambies paleta, tipografía, radios ni spacings. Si una página pierde consistencia con la UI del Avance 2, prevalece el estilo del Avance 2. No necesitas acordar nada con Zair — ambos trabajan sobre la misma base ya mergeada. Los diseños de referencia (si existen) orientan, no reemplazan datos del API.
 
 ### C. Actualiza `DashboardPage.tsx`
 

@@ -7,7 +7,7 @@
 
 ## 🚦 Chequeo de desbloqueo
 
-Tu rama puede comenzar cuando Héctor @hlopez confirme `feature/avance3-fase-b`. No dependes de B1 para el API de expediente, pero debes coordinar estilo con [William](William_Melgar_Rivas.md) @wmelgar. Antes de rediseñar, abre `Expediente.tsx` y enumera todo lo que ya funciona: carga, edad, alergias, receta, triaje, historial ordenado y errores.
+Tu rama puede comenzar cuando Héctor @hlopez confirme `feature/avance3-fase-b`. No dependes de B1 para el API de expediente. **No necesitas coordinar estilo con William** — ambos usan las clases Tailwind y componentes del Avance 2 ya mergeados; el lenguaje visual está cerrado (ver guía de William §B). Antes de rediseñar, abre `Expediente.tsx` y enumera todo lo que ya funciona: carga, edad, alergias, receta, triaje, historial ordenado y errores.
 
 ```bash
 git fetch origin
@@ -46,7 +46,7 @@ El proyecto usa React 19/Vite 8/TypeScript 6. `frontend/package.json` tiene `bui
 
 Lee `frontend/src/api/medicalRecords.ts`: `getMedicalRecord(patientId)` retorna expediente con `patient`, `prescriptions` y `vitalSigns`; `createVitalSign` hace POST a `/api/patients/{id}/vital-signs`. El enlace de receta actual navega a `/recetas/${rec.id}`; verifica esa ruta en `App.tsx` antes de cambiarla. En `Expediente.tsx`, `events` se ordenan por fecha de receta/signos. Haz una lista de regresión antes de editar y tómala como criterio de aceptación.
 
-Diseña con William una cabecera y cards coherentes. Usa las referencias visuales existentes en `frontend/src/assets/pantallas/` solo como orientación; la UI final debe representar datos que el API realmente entrega. No inventes un campo de “prescripción activa” si no existe indicador de estado.
+Usa la cabecera y cards del Avance 2 como base, con las clases Tailwind existentes. Las referencias visuales en `frontend/src/assets/pantallas/` orientan, no mandan — la UI final representa datos que el API realmente entrega. No inventes un campo de "prescripción activa" si no existe indicador de estado.
 
 ### B. Componentes de propiedad de Zair
 

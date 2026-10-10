@@ -62,10 +62,17 @@ Añade dos pruebas adversariales:
 
 1. `findFullByPatientId()` con `TenantContext=1`, expediente ausente en tenant 1 y paciente ID perteneciente a tenant 2: debe rechazar sin crear expediente.
 2. `addVitalSign()` con el mismo cruce: debe rechazar sin guardar signos ni expediente.
-3. Una receta de tenant B buscada por ID con sesión de A debe ser rechazada; coordina este caso con Erika.
-4. Crear cita con doctor de A y paciente de B debe rechazarse; coordina el caso con Bayron.
+3. Una receta de tenant B buscada por ID con sesión de A debe ser rechazada.
+4. Crear cita con doctor de A y paciente de B debe rechazarse.
 
-Actualmente esos caminos usan `patientRepo.findById`, por lo que es probable que el test revele defecto. Propón una consulta tenant-scoped como `findByIdAndTenantId`, valida que la entidad pertenece al tenant antes de mutar y coordina un PR de corrección pequeño con Héctor/Vásquez. El caso debe entrar en la puerta de calidad antes de la entrega interna. Añade prueba de prioridad válida y otra inválida según constraint efectivo de QA.
+> **🔒 Decisión cerrada (09/10/2026 — H. López, fix aplicado en rama integradora):** las fugas multi-tenant de `MedicalRecordService`, `PrescriptionService`, `AppointmentService`, `DoctorService` y `PatientService` **ya están corregidas** en `feature/avance3-fase-b`. Antes de arrancar B8, haz `git pull origin feature/avance3-fase-b` para que tu rama tenga los fixes.
+>
+> Los cambios ya aplicados:
+> - `PatientRepository`, `MedicalRecordRepository`, `PrescriptionRepository`, `AppointmentRepository`, `DoctorRepository` tienen `findByIdAndTenantId(Long id, Long tenantId)`.
+> - Los services usan `findByIdAndTenantId(id, TenantContext.currentTenantId())` en todos los puntos de lectura por ID.
+> - Tus tests adversariales ahora validan **comportamiento ya enforced**, no revelan defectos nuevos. Si uno falla, el culprit es el test (mock o setup), no el service.
+>
+> **Tu B8 añade pruebas de contrato:** verifica que `findByIdAndTenantId` se invoca con el tenant correcto, y que un ID de otro tenant devuelve `Optional.empty()` → `BusinessException("…no existe")`. No reescribas el service. La prioridad válida/inválida se prueba contra `NORMAL/URGENTE/EMERGENCIA` (commit `f78e73a`).
 
 ### D. JUnit con propósito
 

@@ -61,7 +61,14 @@ Crea `backend/src/main/java/com/sv/grupo7/medisuite/dao/jdbc/ReservationCodeJdbc
 
 Crea `backend/src/main/java/com/sv/grupo7/medisuite/service/concurrent/ReservationCodeGenerator.java`. Formatea el número a diez caracteres; el método `next()` no debe incluir un contador `AtomicLong` como fuente de verdad. Un `AtomicLong` puede medir intentos, pero no garantizar unicidad entre procesos. `ExecutorService` se usa en la prueba de carga concurrente; no necesitas crear un pool de hilos dentro de cada request de cita.
 
-Si la secuencia devuelve un código ya existente por una migración mal inicializada, captura el `UNIQUE_VIOLATION` de la inserción y reintenta **la operación completa** en un límite pequeño. Reintentar solo generar una cadena sin considerar la transacción JPA puede no recuperar el estado de una transacción fallida; diseña el límite transaccional con Bayron y Héctor.
+Si la secuencia devuelve un código ya existente por una migración mal inicializada, captura el `UNIQUE_VIOLATION` de la inserción y reintenta **la operación completa**.
+
+> **🔒 Decisión cerrada (09/10/2026 — H. López, política de reintentos):**
+> - **Máximo 3 reintentos** sobre la operación completa de `AppointmentService.create()`.
+> - Entre reintentos **sin backoff** (colisión es evento raro, no congestión).
+> - Al **4º intento fallido**, propaga `DataAccessException` convertida desde `JdbcErrorCode.UNIQUE_VIOLATION` (B5).
+> - La transacción es **per-request** (`@Transactional` del método `create`). No hagas transacciones compuestas ni coordines con el worker de recordatorios de Bayron — son flujos independientes.
+> - Log de WARN (sin PII) cada vez que haya un reintento, con el `appointmentId` tentativo.
 
 ### D. Integración con `AppointmentService`
 

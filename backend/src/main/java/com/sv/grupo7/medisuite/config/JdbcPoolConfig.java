@@ -29,9 +29,16 @@ public class JdbcPoolConfig {
     }
 
     // Pool secundario Tomcat JDBC para la tarea B2
+    // Reusa la misma url/username/password/driver que Hikari (dataSourceProperties),
+    // así funciona igual en tests con Testcontainers, que solo sobreescriben spring.datasource.*
     @Bean(name = "jdbcDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.tomcat")
-    public org.apache.tomcat.jdbc.pool.DataSource jdbcDataSource() {
-        return new org.apache.tomcat.jdbc.pool.DataSource();
+    public org.apache.tomcat.jdbc.pool.DataSource jdbcDataSource(DataSourceProperties dataSourceProperties) {
+        org.apache.tomcat.jdbc.pool.DataSource ds = new org.apache.tomcat.jdbc.pool.DataSource();
+        ds.setUrl(dataSourceProperties.determineUrl());
+        ds.setUsername(dataSourceProperties.determineUsername());
+        ds.setPassword(dataSourceProperties.determinePassword());
+        ds.setDriverClassName(dataSourceProperties.determineDriverClassName());
+        return ds;
     }
 }

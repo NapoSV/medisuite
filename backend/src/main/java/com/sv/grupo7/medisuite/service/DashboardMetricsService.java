@@ -1,47 +1,82 @@
 package com.sv.grupo7.medisuite.service;
 
-import com.sv.grupo7.medisuite.dao.*;
-import lombok.RequiredArgsConstructor;
+import com.sv.grupo7.medisuite.dao.DoctorRepository;
+import com.sv.grupo7.medisuite.dao.UserRepository;
+import com.sv.grupo7.medisuite.dao.jdbc.DashboardMetricsReader;
+import com.sv.grupo7.medisuite.dto.dashboard.DashboardQuery;
+import com.sv.grupo7.medisuite.dto.dashboard.DashboardResponse;
+import com.sv.grupo7.medisuite.model.medical.Doctor;
+import com.sv.grupo7.medisuite.model.users.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
+import java.time.Clock;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import java.time.temporal.TemporalAdjusters;
 
 @Service
-@RequiredArgsConstructor
 public class DashboardMetricsService {
 
-    private final AppointmentRepository appointments;
-    private final PatientRepository patients;
-    private final PrescriptionRepository prescriptions;
-    private final AuditLogRepository audit;
+    private static final ZoneId CLINIC_ZONE = ZoneId.of("America/El_Salvador");
 
-    public Map<String, Long> getMetrics(Long tenantId) {
+    private final DashboardMetricsReader metrics;
+    private final UserRepository users;
+    private final DoctorRepository doctors;
+    private final Clock clock;
 
-        OffsetDateTime dayStart = OffsetDateTime.now(ZoneOffset.UTC).toLocalDate().atStartOfDay().atOffset(ZoneOffset.UTC);
-        OffsetDateTime dayEnd = dayStart.plusDays(1);
+    @Autowired
+    public DashboardMetricsService(DashboardMetricsReader metrics, UserRepository users, DoctorRepository doctors) {
+        this(metrics, users, doctors, Clock.systemUTC());
+    }
 
-        var f1 = CompletableFuture.supplyAsync(
-                () -> appointments.countByDateAndTenant(tenantId, dayStart, dayEnd));
+    DashboardMetricsService(DashboardMetricsReader metrics, UserRepository users, DoctorRepository doctors, Clock clock) {
+        this.metrics = metrics;
+        this.users = users;
+        this.doctors = doctors;
+        this.clock = clock;
+    }
 
-        var f2 = CompletableFuture.supplyAsync(
-                () -> patients.countActiveByTenant(tenantId));
+    public DashboardResponse getMetrics(Long tenantId, Authentication authentication) {
+        if (tenantId == null || authentication == null || !(authentication.getPrincipal() instanceof Long userId)) {
+            throw new AccessDeniedException("Acceso al dashboard denegado");
+        }
 
-        var f3 = CompletableFuture.supplyAsync(
-                () -> prescriptions.count());
+        User user = users.findById(userId)
+                .filter(u -> Boolean.TRUE.equals(u.getActive()) && tenantId.equals(u.getTenantId()))
+                .orElseThrow(() -> new AccessDeniedException("Acceso al dashboard denegado"));
 
-        var f4 = CompletableFuture.supplyAsync(
-                () -> audit.count());
+        DashboardQuery.Role role;
+        try {
+            role = DashboardQuery.Role.valueOf(user.getRole());
+        } catch (IllegalArgumentException | NullPointerException ex) {
+            throw new AccessDeniedException("Rol no autorizado");
+        }
+        boolean tokenMatchesUser = authentication.getAuthorities().stream()
+                .anyMatch(a -> ("ROLE_" + role.name()).equals(a.getAuthority()));
+        if (!tokenMatchesUser) {
+            throw new AccessDeniedException("Rol no autorizado");
+        }
 
-        CompletableFuture.allOf(f1, f2, f3, f4).join();
+        Long doctorId = null;
+        if (role == DashboardQuery.Role.DOCTOR) {
+            Doctor doctor = doctors.findByUserId(userId)
+                    .filter(d -> tenantId.equals(d.getTenantId()))
+                    .orElseThrow(() -> new AccessDeniedException("Médico no autorizado"));
+            doctorId = doctor.getId();
+        }
 
-        return Map.of(
-                "appointmentsToday", f1.join(),
-                "activePatients", f2.join(),
-                "prescriptionsIssued", f3.join(),
-                "alerts", f4.join()
-        );
+        LocalDate today = LocalDate.now(clock.withZone(CLINIC_ZONE));
+        LocalDate weekStart = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        DashboardQuery query = new DashboardQuery(
+                tenantId, doctorId, role,
+                today.atStartOfDay(CLINIC_ZONE).toInstant().atOffset(ZoneOffset.UTC),
+                today.plusDays(1).atStartOfDay(CLINIC_ZONE).toInstant().atOffset(ZoneOffset.UTC),
+                weekStart, weekStart.plusWeeks(1));
+        return metrics.read(query);
     }
 }

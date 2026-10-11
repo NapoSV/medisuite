@@ -19,6 +19,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -68,8 +69,9 @@ class BaseJdbcDaoTest {
         assertThat(dao.update("UPDATE probe SET name = ? WHERE tenant_id = ?", "nuevo", 5L)).isEqualTo(2);
         assertThat(dao.update("UPDATE probe SET name = ? WHERE tenant_id = ?", "nuevo", 99L)).isEqualTo(0);
 
-        verify(statement).setObject(1, "nuevo");
+        verify(statement, times(2)).setObject(1, "nuevo");
         verify(statement).setObject(2, 5L);
+        verify(statement).setObject(2, 99L);
     }
 
     @Test

@@ -10,6 +10,8 @@ import com.sv.grupo7.medisuite.model.medical.Patient;
 import com.sv.grupo7.medisuite.model.tenant.Tenant;
 import com.sv.grupo7.medisuite.security.TenantContext;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -23,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@Tag("regression")
+@DisplayName("Pruebas unitarias del servicio de citas")
 @ExtendWith(MockitoExtension.class)
 class AppointmentServiceTest{
 
@@ -204,5 +208,90 @@ class AppointmentServiceTest{
             assertNotNull(result.getCompletedAt());
         }
     }
+        @Test
+    void reschedule_conHorarioOcupado_debeLanzarBusinessException() {
 
+        Long appointmentId = 1L;
+        Long doctorId = 2L;
+        OffsetDateTime nuevaFecha = OffsetDateTime.now().plusDays(3);
+
+        Appointment appointment = mock(Appointment.class);
+        when(appointment.getStatus()).thenReturn("PENDING");
+        when(appointment.getDoctorId()).thenReturn(doctorId);
+
+        try (MockedStatic<TenantContext> ctx = mockStatic(TenantContext.class)) {
+            ctx.when(TenantContext::currentTenantId).thenReturn(TENANT_ID);
+
+            when(appointmentRepo.findByIdAndTenantId(appointmentId, TENANT_ID))
+                    .thenReturn(Optional.of(appointment));
+
+            when(appointmentRepo.existsByDoctorIdAndScheduledAtAndStatusNot(
+                    doctorId, nuevaFecha, "CANCELLED"))
+                    .thenReturn(true);
+
+            assertThrows(BusinessException.class, () ->
+                    appointmentService.reschedule(appointmentId, nuevaFecha)
+            );
+
+            verify(appointment, never()).setScheduledAt(nuevaFecha);
+        }
+    }
+    @Test
+    void cancel_conMotivoMayorA500Caracteres_debeLanzarBusinessException() {
+
+        String motivoDemasiadoLargo = "a".repeat(501);
+
+        assertThrows(BusinessException.class, () ->
+                appointmentService.cancel(1L, motivoDemasiadoLargo)
+        );
+
+        verifyNoInteractions(appointmentRepo);
+    }
+        @Test
+    void complete_conCitaCancelada_debeLanzarBusinessException() {
+
+        Long appointmentId = 1L;
+
+        Appointment appointment = new Appointment();
+        appointment.setStatus("CANCELLED");
+
+        try (MockedStatic<TenantContext> ctx = mockStatic(TenantContext.class)) {
+            ctx.when(TenantContext::currentTenantId).thenReturn(TENANT_ID);
+
+            when(appointmentRepo.findByIdAndTenantId(appointmentId, TENANT_ID))
+                    .thenReturn(Optional.of(appointment));
+
+            assertThrows(BusinessException.class, () ->
+                    appointmentService.complete(appointmentId)
+            );
+
+            assertEquals("CANCELLED", appointment.getStatus());
+            assertNull(appointment.getCompletedAt());
+        }
+    }
+        @Test
+    void cancel_conCitaDeOtroTenant_debeLanzarBusinessException() {
+
+        Long citaDeOtroTenantId = 99L;
+        String motivo = "Paciente no puede asistir";
+
+        try (MockedStatic<TenantContext> ctx = mockStatic(TenantContext.class)) {
+            ctx.when(TenantContext::currentTenantId).thenReturn(TENANT_ID);
+
+            when(appointmentRepo.findByIdAndTenantId(
+                    citaDeOtroTenantId, TENANT_ID))
+                    .thenReturn(Optional.empty());
+
+            BusinessException exception = assertThrows(
+                    BusinessException.class,
+                    () -> appointmentService.cancel(
+                            citaDeOtroTenantId, motivo)
+            );
+
+            assertEquals("Cita no existe", exception.getMessage());
+
+            verify(appointmentRepo).findByIdAndTenantId(
+                    citaDeOtroTenantId, TENANT_ID);
+        }
+    }
 }

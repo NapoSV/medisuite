@@ -1,9 +1,12 @@
 package com.sv.grupo7.medisuite.service;
 
 import com.sv.grupo7.medisuite.dao.PatientRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import com.sv.grupo7.medisuite.model.medical.Patient;
 import com.sv.grupo7.medisuite.security.TenantContext;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -20,6 +23,8 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@Tag("regression")
+@DisplayName("Pruebas unitarias del servicio de pacientes")
 @ExtendWith(MockitoExtension.class)
 class PatientServiceTest {
 
@@ -115,6 +120,61 @@ class PatientServiceTest {
             assertEquals("06123456-7", result.getDui());
             assertEquals("7777-7777", result.getPhone());
             assertEquals("Sonsonate", result.getAddress());
+        }
+    }
+        @Test
+    void findById_pacienteDeOtroTenant_debeLanzarRuntimeException() {
+
+        Long pacienteDeOtroTenantId = 50L;
+
+        try (MockedStatic<TenantContext> ctx = mockStatic(TenantContext.class)) {
+            ctx.when(TenantContext::currentTenantId).thenReturn(TENANT_ID);
+
+            when(repo.findByIdAndTenantId(
+                    pacienteDeOtroTenantId, TENANT_ID))
+                    .thenReturn(Optional.empty());
+
+            RuntimeException exception = assertThrows(
+                    RuntimeException.class,
+                    () -> patientService.findById(pacienteDeOtroTenantId)
+            );
+
+            assertEquals(
+                    "Paciente 50 no existe",
+                    exception.getMessage()
+            );
+
+            verify(repo).findByIdAndTenantId(
+                    pacienteDeOtroTenantId, TENANT_ID);
+
+            verify(repo, never()).findById(pacienteDeOtroTenantId);
+        }
+    }
+        @Test
+    void create_conDuiDuplicado_debeLanzarDataIntegrityViolationException() {
+
+        Patient patient = new Patient();
+        patient.setDui("06123456-7");
+
+        try (MockedStatic<TenantContext> ctx = mockStatic(TenantContext.class)) {
+            ctx.when(TenantContext::currentTenantId).thenReturn(TENANT_ID);
+
+            when(repo.save(patient))
+                    .thenThrow(new DataIntegrityViolationException(
+                            "DUI duplicado para el mismo tenant"
+                    ));
+
+            DataIntegrityViolationException exception = assertThrows(
+                    DataIntegrityViolationException.class,
+                    () -> patientService.create(patient)
+            );
+
+            assertEquals(
+                    "DUI duplicado para el mismo tenant",
+                    exception.getMessage()
+            );
+
+            verify(repo).save(patient);
         }
     }
 }

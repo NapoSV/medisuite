@@ -66,3 +66,91 @@ El caso CP-17 presentó un error HTTP 500 durante la prueba de credenciales inco
 Se ejecutaron 20 casos de prueba manuales sobre los módulos de autenticación, seguridad, usuarios, pacientes, médicos, citas, expediente médico, recetas y dashboard.
 
 De los 20 casos ejecutados, 14 finalizaron correctamente y 6 presentaron errores que requieren revisión. Los resultados obtenidos sirven como base para el reporte de bugs correspondiente a la siguiente tarea de QA.
+
+---
+
+## Avance 3 — B8: registro de validación
+
+### Entorno y versión
+
+- Responsable: Walter Flores.
+- Fecha: 11/10/2026.
+- Rama: `b-flores-tests-y-migration-helper`.
+- Commit base: `2fa126e`, con cambios locales de B8 sin commit.
+- Entorno: macOS ARM64, Java 21, Node 22.23.3 y pnpm 11.18.0.
+
+### Validaciones automatizadas
+
+Estos resultados no sustituyen las pruebas manuales ni la revisión de migraciones.
+
+| Validación | Resultado observado | Estado |
+|---|---|---|
+| AppointmentServiceTest, PatientServiceTest y MedicalRecordServiceTest | 22 pruebas, 0 fallos, 0 errores y 0 omitidas | PASS |
+| Script validate-b8-regression.sh | Finalizó con `OK B8 regresion` | PASS |
+| Pruebas completas del backend | 73 pruebas, 0 fallos, 0 errores y 0 omitidas; BUILD SUCCESS | PASS |
+| Construcción del frontend dentro del script integral | El script avanzó hasta la ejecución de lint | PASS |
+| Lint del frontend | 15 errores y 3 advertencias; código de salida 1 | FAIL |
+| Script validate-all.sh | Se detuvo en lint del frontend; no emitió el mensaje final de éxito | FAIL |
+
+### Bloqueo de validación integral
+
+El frontend no presenta modificaciones locales según `git status --short`.
+El reporte de ESLint identifica problemas en:
+
+- `src/auth/useAuth.tsx`
+- `src/pages/CitaNueva.tsx`
+- `src/pages/Citas.tsx`
+- `src/pages/DashboardPage.tsx`
+- `src/pages/Doctores.tsx`
+- `src/pages/Expediente.tsx`
+- `src/pages/LoginPage.tsx`
+- `src/pages/Pacientes.tsx`
+- `src/pages/Perfil.tsx`
+- `src/pages/RecetaPrint.tsx`
+- `src/pages/Triaje.tsx`
+
+Incluye reglas sobre estado dentro de efectos, dependencias de hooks,
+tipos `any`, exportaciones para Fast Refresh, uso previo a declaración
+y asignaciones innecesarias.
+
+Pendiente: coordinar la corrección con el responsable del frontend y
+reejecutar `bash scripts/validate-all.sh`. No se desactivaron reglas
+ni se omitió lint para obtener un resultado aprobado.
+
+### Pruebas manuales A1/A2/A3 pendientes de reejecución
+
+Los resultados históricos del 19/09/2026 se conservan sin cambios.
+Todavía no se han reejecutado ni aprobado los siguientes casos para
+esta versión del Avance 3:
+
+- Login y bloqueo.
+- Alta y búsqueda de pacientes.
+- Citas y doble reserva.
+- Cancelación con motivo.
+- Triaje.
+- Expediente médico.
+- Receta e impresión.
+- Dashboard por rol.
+- Separación de tenants.
+- Recordatorios y códigos.
+- Manejo de error de base de datos.
+- Arranque con Docker.
+
+Cada ejecución deberá registrar fecha, rol, tenant, datos sintéticos,
+pasos, resultado esperado, resultado observado, evidencia y estado.
+
+### Migraciones y contrato de priority
+
+- V11: PASS en PostgreSQL 16 descartable mediante `ReminderMigrationIT`.
+  Se ejecutaron 2 pruebas, sin fallos, errores ni omitidas:
+  inicialización con `schema.sql` y baseline V9 hasta V11, y actualización
+  por etapas desde V10 hasta V11. Se verificaron conservación de la cita,
+  índice, rechazo de duplicados con SQLState 23505 y nombre del constraint,
+  claves foráneas con SQLState 23503, estados permitidos y borrado en cascada.
+  También se verificó que reejecutar Flyway no aplica nuevas migraciones.
+  No se probó una cadena V1–V11 partiendo de una base completamente vacía.
+- V12: pendiente; el archivo no está disponible en esta copia de la rama.
+- Contrato de `priority`: pendiente de confirmar con Zair y verificar
+  el constraint efectivo en QA. La guía señala una posible diferencia
+  entre `LOW/MEDIUM/HIGH/CRITICAL` y `NORMAL/URGENTE/EMERGENCIA`.
+- No se ejecutó DDL sobre la base de datos compartida.

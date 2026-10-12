@@ -2,7 +2,7 @@ package com.sv.grupo7.medisuite.service;
 
 import com.sv.grupo7.medisuite.dao.DoctorRepository;
 import com.sv.grupo7.medisuite.dao.UserRepository;
-import com.sv.grupo7.medisuite.dao.jdbc.DashboardMetricsReader;
+import com.sv.grupo7.medisuite.service.port.MetricsPort;
 import com.sv.grupo7.medisuite.dto.dashboard.DashboardQuery;
 import com.sv.grupo7.medisuite.dto.dashboard.DashboardResponse;
 import com.sv.grupo7.medisuite.model.medical.Doctor;
@@ -24,17 +24,17 @@ public class DashboardMetricsService {
 
     private static final ZoneId CLINIC_ZONE = ZoneId.of("America/El_Salvador");
 
-    private final DashboardMetricsReader metrics;
+    private final MetricsPort metrics;
     private final UserRepository users;
     private final DoctorRepository doctors;
     private final Clock clock;
 
     @Autowired
-    public DashboardMetricsService(DashboardMetricsReader metrics, UserRepository users, DoctorRepository doctors) {
+    public DashboardMetricsService(MetricsPort metrics, UserRepository users, DoctorRepository doctors) {
         this(metrics, users, doctors, Clock.systemUTC());
     }
 
-    DashboardMetricsService(DashboardMetricsReader metrics, UserRepository users, DoctorRepository doctors, Clock clock) {
+    DashboardMetricsService(MetricsPort metrics, UserRepository users, DoctorRepository doctors, Clock clock) {
         this.metrics = metrics;
         this.users = users;
         this.doctors = doctors;
@@ -77,6 +77,6 @@ public class DashboardMetricsService {
                 today.atStartOfDay(CLINIC_ZONE).toInstant().atOffset(ZoneOffset.UTC),
                 today.plusDays(1).atStartOfDay(CLINIC_ZONE).toInstant().atOffset(ZoneOffset.UTC),
                 weekStart, weekStart.plusWeeks(1));
-        return metrics.read(query);
+        return metrics.getMetrics(query);
     }
 }

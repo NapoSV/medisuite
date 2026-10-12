@@ -5,6 +5,7 @@ import com.sv.grupo7.medisuite.dto.dashboard.DashboardQuery;
 import com.sv.grupo7.medisuite.dto.dashboard.DashboardResponse;
 import com.sv.grupo7.medisuite.dto.dashboard.OccupancySlot;
 import com.sv.grupo7.medisuite.dto.dashboard.WaitingRoomEntry;
+import com.sv.grupo7.medisuite.service.port.MetricsPort;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,7 +23,7 @@ import java.util.List;
 
 /** PostgreSQL read model for the authenticated dashboard. Every query is tenant-scoped. */
 @Repository
-public class DashboardJdbcDao implements DashboardMetricsReader {
+public class DashboardJdbcDao implements MetricsPort {
 
     private static final String APPOINTMENT_TENANT_JOINS =
             " JOIN patients p ON p.id = a.patient_id AND p.tenant_id = a.tenant_id "
@@ -42,7 +43,7 @@ public class DashboardJdbcDao implements DashboardMetricsReader {
     }
 
     @Override
-    public DashboardResponse read(DashboardQuery q) {
+    public DashboardResponse getMetrics(DashboardQuery q) {
         try (Connection connection = dataSource.getConnection()) {
             long appointments = countAppointments(connection, q);
             Long patients = q.role() == DashboardQuery.Role.DOCTOR ? null : countPatients(connection, q);

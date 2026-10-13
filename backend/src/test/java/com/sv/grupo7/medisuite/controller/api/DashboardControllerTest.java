@@ -3,7 +3,7 @@ package com.sv.grupo7.medisuite.controller.api;
 import com.sv.grupo7.medisuite.config.SecurityConfig;
 import com.sv.grupo7.medisuite.dao.DoctorRepository;
 import com.sv.grupo7.medisuite.dao.UserRepository;
-import com.sv.grupo7.medisuite.dao.jdbc.DashboardMetricsReader;
+import com.sv.grupo7.medisuite.service.port.MetricsPort;
 import com.sv.grupo7.medisuite.dto.dashboard.DashboardQuery;
 import com.sv.grupo7.medisuite.dto.dashboard.DashboardResponse;
 import com.sv.grupo7.medisuite.model.medical.Doctor;
@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class DashboardControllerTest {
 
     @Autowired MockMvc mvc;
-    @MockBean DashboardMetricsReader metrics;
+    @MockBean MetricsPort metrics;
     @MockBean UserRepository users;
     @MockBean DoctorRepository doctors;
     @MockBean JwtTokenProvider tokenProvider;
@@ -54,7 +54,7 @@ class DashboardControllerTest {
     void authenticatedTenantIsUsedEvenIfRequestTriesAnotherTenant() throws Exception {
         jwt(7L, "ADMIN", 1L);
         when(users.findById(7L)).thenReturn(Optional.of(user(1L, "ADMIN")));
-        when(metrics.read(any())).thenReturn(new DashboardResponse(
+        when(metrics.getMetrics(any())).thenReturn(new DashboardResponse(
                 3L, 2L, 1L, 0L, 1L, 0L, List.of(), List.of(), null));
 
         mvc.perform(get("/api/dashboard/metrics?tenantId=2")
@@ -64,7 +64,7 @@ class DashboardControllerTest {
                 .andExpect(jsonPath("$.waitingRoom").isArray());
 
         ArgumentCaptor<DashboardQuery> scope = ArgumentCaptor.forClass(DashboardQuery.class);
-        verify(metrics).read(scope.capture());
+        verify(metrics).getMetrics(scope.capture());
         assertThat(scope.getValue().tenantId()).isEqualTo(1L);
     }
 
@@ -76,7 +76,7 @@ class DashboardControllerTest {
         doctor.setId(31L);
         doctor.setTenantId(1L);
         when(doctors.findByUserId(7L)).thenReturn(Optional.of(doctor));
-        when(metrics.read(any())).thenReturn(new DashboardResponse(
+        when(metrics.getMetrics(any())).thenReturn(new DashboardResponse(
                 1L, null, 1L, 0L, 1L, 0L, List.of(), List.of(), List.of()));
 
         mvc.perform(get("/api/dashboard/metrics?tenantId=2&doctorId=999")
@@ -85,7 +85,7 @@ class DashboardControllerTest {
                 .andExpect(jsonPath("$.appointmentsToday").value(1));
 
         ArgumentCaptor<DashboardQuery> scope = ArgumentCaptor.forClass(DashboardQuery.class);
-        verify(metrics).read(scope.capture());
+        verify(metrics).getMetrics(scope.capture());
         assertThat(scope.getValue().tenantId()).isEqualTo(1L);
         assertThat(scope.getValue().doctorId()).isEqualTo(31L);
         assertThat(scope.getValue().role()).isEqualTo(DashboardQuery.Role.DOCTOR);
@@ -116,7 +116,7 @@ class DashboardControllerTest {
     void jdbcFailureReturnsSafeErrorWithoutSqlDetails() throws Exception {
         jwt(7L, "ADMIN", 1L);
         when(users.findById(7L)).thenReturn(Optional.of(user(1L, "ADMIN")));
-        when(metrics.read(any())).thenThrow(new DataAccessResourceFailureException(
+        when(metrics.getMetrics(any())).thenThrow(new DataAccessResourceFailureException(
                 "No se pudieron consultar las métricas", new SQLException("private SQL details")));
 
         mvc.perform(get("/api/dashboard/metrics").header("Authorization", "Bearer valid"))

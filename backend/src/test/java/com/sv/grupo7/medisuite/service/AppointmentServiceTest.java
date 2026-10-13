@@ -294,4 +294,148 @@ class AppointmentServiceTest{
                     citaDeOtroTenantId, TENANT_ID);
         }
     }
+        @Test
+    void create_conDoctorTenantAYPacienteTenantB_debeRechazarSinGuardar() {
+        Long doctorId = 10L;
+        Long patientId = 20L;
+        OffsetDateTime fecha = OffsetDateTime.now().plusDays(3);
+
+        Tenant tenantA = new Tenant();
+        tenantA.setId(TENANT_ID);
+
+        Doctor doctor = new Doctor();
+        doctor.setTenant(tenantA);
+
+        // El paciente de B no es visible en una búsqueda dentro de A.
+        try (MockedStatic<TenantContext> ctx = mockStatic(TenantContext.class)) {
+            ctx.when(TenantContext::currentTenantId).thenReturn(TENANT_ID);
+
+            when(doctorRepo.findByIdAndTenantId(doctorId, TENANT_ID))
+                    .thenReturn(Optional.of(doctor));
+            when(patientRepo.findByIdAndTenantId(patientId, TENANT_ID))
+                    .thenReturn(Optional.empty());
+
+            BusinessException exception = assertThrows(
+                    BusinessException.class,
+                    () -> appointmentService.create(
+                            patientId, doctorId, fecha, "Consulta general")
+            );
+
+            assertEquals("Paciente no existe", exception.getMessage());
+            verify(patientRepo).findByIdAndTenantId(patientId, TENANT_ID);
+            verifyNoInteractions(appointmentRepo);
+        }
+    }
+
+    @Test
+    void complete_conCitaDeOtroTenant_debeRechazarSinGuardar() {
+        Long appointmentId = 50L;
+
+        try (MockedStatic<TenantContext> ctx = mockStatic(TenantContext.class)) {
+            ctx.when(TenantContext::currentTenantId).thenReturn(TENANT_ID);
+
+            when(appointmentRepo.findByIdAndTenantId(appointmentId, TENANT_ID))
+                    .thenReturn(Optional.empty());
+
+            BusinessException exception = assertThrows(
+                    BusinessException.class,
+                    () -> appointmentService.complete(appointmentId)
+            );
+
+            assertEquals("Cita no existe", exception.getMessage());
+            verify(appointmentRepo).findByIdAndTenantId(appointmentId, TENANT_ID);
+            verifyNoMoreInteractions(appointmentRepo);
+            verifyNoInteractions(patientRepo, doctorRepo);
+        }
+    }
+
+    @Test
+    void reschedule_conCitaDeOtroTenant_debeRechazarSinGuardar() {
+        Long appointmentId = 50L;
+        OffsetDateTime nuevaFecha = OffsetDateTime.now().plusDays(3);
+
+        try (MockedStatic<TenantContext> ctx = mockStatic(TenantContext.class)) {
+            ctx.when(TenantContext::currentTenantId).thenReturn(TENANT_ID);
+
+            when(appointmentRepo.findByIdAndTenantId(appointmentId, TENANT_ID))
+                    .thenReturn(Optional.empty());
+
+            BusinessException exception = assertThrows(
+                    BusinessException.class,
+                    () -> appointmentService.reschedule(appointmentId, nuevaFecha)
+            );
+
+            assertEquals("Cita no existe", exception.getMessage());
+            verify(appointmentRepo).findByIdAndTenantId(appointmentId, TENANT_ID);
+            verifyNoMoreInteractions(appointmentRepo);
+            verifyNoInteractions(patientRepo, doctorRepo);
+        }
+    }
+
+    @Test
+    void reschedule_conHorarioDisponible_debeActualizarFechaYEstado() {
+        Long appointmentId = 1L;
+        Long doctorId = 2L;
+        OffsetDateTime fechaOriginal = OffsetDateTime.now().plusDays(3);
+        OffsetDateTime nuevaFecha = fechaOriginal.plusDays(1);
+
+        Appointment appointment = mock(Appointment.class);
+        when(appointment.getStatus()).thenReturn("PENDING");
+        when(appointment.getDoctorId()).thenReturn(doctorId);
+
+        try (MockedStatic<TenantContext> ctx = mockStatic(TenantContext.class)) {
+            ctx.when(TenantContext::currentTenantId).thenReturn(TENANT_ID);
+
+            when(appointmentRepo.findByIdAndTenantId(appointmentId, TENANT_ID))
+                    .thenReturn(Optional.of(appointment));
+            when(appointmentRepo.existsByDoctorIdAndScheduledAtAndStatusNot(
+                    doctorId, nuevaFecha, "CANCELLED"))
+                    .thenReturn(false);
+
+            Appointment result =
+                    appointmentService.reschedule(appointmentId, nuevaFecha);
+
+            assertSame(appointment, result);
+            verify(appointment).setScheduledAt(nuevaFecha);
+            verify(appointment).setStatus("SCHEDULED");
+            verify(appointmentRepo).findByIdAndTenantId(appointmentId, TENANT_ID);
+            verify(appointmentRepo).existsByDoctorIdAndScheduledAtAndStatusNot(
+                    doctorId, nuevaFecha, "CANCELLED");
+        }
+    }
+
+    @Test
+    void cancel_conMenosDe24Horas_debeRechazarSinModificarCita() {
+        Long appointmentId = 1L;
+        OffsetDateTime fecha = OffsetDateTime.now().plusHours(12);
+
+        Appointment appointment = new Appointment();
+        appointment.setStatus("PENDING");
+        appointment.setScheduledAt(fecha);
+
+        try (MockedStatic<TenantContext> ctx = mockStatic(TenantContext.class)) {
+            ctx.when(TenantContext::currentTenantId).thenReturn(TENANT_ID);
+
+            when(appointmentRepo.findByIdAndTenantId(appointmentId, TENANT_ID))
+                    .thenReturn(Optional.of(appointment));
+
+            BusinessException exception = assertThrows(
+                    BusinessException.class,
+                    () -> appointmentService.cancel(
+                            appointmentId, "Paciente no puede asistir")
+            );
+
+            assertEquals(
+                    "Solo se puede cancelar con 24h de anticipacion",
+                    exception.getMessage()
+            );
+            assertEquals("PENDING", appointment.getStatus());
+            assertEquals(fecha, appointment.getScheduledAt());
+            assertNull(appointment.getCancelReason());
+            assertNull(appointment.getCancelledAt());
+
+            verify(appointmentRepo).findByIdAndTenantId(appointmentId, TENANT_ID);
+            verifyNoMoreInteractions(appointmentRepo);
+        }
+    }
 }

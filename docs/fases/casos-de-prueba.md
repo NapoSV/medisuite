@@ -150,7 +150,32 @@ pasos, resultado esperado, resultado observado, evidencia y estado.
   También se verificó que reejecutar Flyway no aplica nuevas migraciones.
   No se probó una cadena V1–V11 partiendo de una base completamente vacía.
 - V12: pendiente; el archivo no está disponible en esta copia de la rama.
-- Contrato de `priority`: pendiente de confirmar con Zair y verificar
-  el constraint efectivo en QA. La guía señala una posible diferencia
-  entre `LOW/MEDIUM/HIGH/CRITICAL` y `NORMAL/URGENTE/EMERGENCIA`.
+- Contrato de `priority`: resuelto documentalmente el 09/10/2026.
+  La escala vigente es `NORMAL/URGENTE/EMERGENCIA`, según
+  `docs/avances/fase-b/SEGUIMIENTO_PR_FASE_B.md`.
+  Ese documento indica que las migraciones V1–V10 no imponen un CHECK
+  sobre esta columna y que `database/schema.sql` es un export obsoleto
+  que contiene `LOW/MEDIUM/HIGH/CRITICAL`.
+  Se propone regenerar el export desde el esquema vigente, revisando
+  sus consumidores, o eliminarlo si deja de ser necesario.
+  Pendiente: verificar el constraint efectivo en QA y la alineación
+  del frontend con Zair. No se modificó el export ni la BD compartida.
 - No se ejecutó DDL sobre la base de datos compartida.
+
+### Actualización de regresión — 12/10/2026
+
+- Commit probado: `2f544b6`.
+- Se incorporó la integradora `origin/feature/avance3-fase-b`
+  hasta `77db605`.
+- `AppointmentServiceTest`: 16 pruebas, 0 fallos, 0 errores
+  y 0 omitidas.
+- Las tres clases de servicios: 27 pruebas, 0 fallos, 0 errores
+  y 0 omitidas.
+- Se añadieron cinco casos: creación con paciente de otro tenant,
+  completar y reprogramar una cita de otro tenant, reprogramación
+  exitosa y rechazo de cancelación con menos de 24 horas.
+- Son pruebas unitarias con mocks; no certifican la regresión funcional
+  ni el aislamiento contra una base de datos real.
+- Los resultados de backend completo, lint y migraciones del 11/10
+  corresponden a la ejecución anterior; no se han revalidado después
+  de esta actualización.

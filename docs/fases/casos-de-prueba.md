@@ -179,3 +179,14 @@ pasos, resultado esperado, resultado observado, evidencia y estado.
 - Los resultados de backend completo, lint y migraciones del 11/10
   corresponden a la ejecución anterior; no se han revalidado después
   de esta actualización.
+  ### Revalidación integral — 12/10/2026
+
+- Commit ejecutado: `f4abc63`.
+- Backend completo: 84 pruebas, 0 fallos, 0 errores y 0 omitidas.
+- Build del frontend: aprobado; el script avanzó hasta lint.
+- Lint: 15 errores y 3 advertencias en 11 archivos del frontend.
+- `scripts/validate-all.sh`: FAIL; se detuvo en lint con código 1.
+- Persisten los problemas registrados en la ejecución del 11/10.
+- Pendiente: coordinar su corrección con los responsables del frontend
+  y repetir la validación integral.
+- No se modificaron reglas de ESLint ni se omitió lint.

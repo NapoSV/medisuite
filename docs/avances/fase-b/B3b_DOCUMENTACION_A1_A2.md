@@ -76,7 +76,8 @@ El diagrama editable es de Carlos. El original `docs/diagramas/DIAGRAMA_CLASES_M
 |---|---|---|
 | `AppointmentService` | `service` | usa `ReservationCodeGenerator` (inyección por constructor) |
 | `ReservationCodeGenerator` | `service.concurrent` | usa `ReservationCodeJdbcDao` |
-| `ReservationCodeJdbcDao` | `dao.jdbc` | usa `DataSource` (`jdbcDataSource`); lanza `DataAccessException` con `JdbcErrorCode` |
+| `ReservationCodeJdbcDao` | `dao.jdbc` | extiende `BaseJdbcDao`, implementa `ReservationCodePort`; usa `DataSource` (`jdbcDataSource`); lanza `DataAccessException` con `JdbcErrorCode` |
+| `ReservationCodePort` | `service.port` | interfaz con `nextCode(Long tenantId)` |
 | `AppointmentController` | `controller.api` | usa `AppointmentService`; reintenta ante `UNIQUE_VIOLATION` |
 
-`ReservationCodeJdbcDao` aún no implementa un puerto de B4: B4 (#48) no está integrada. Debe dibujarse como clase concreta; cuando B4 se integre y el DAO implemente el puerto, se actualiza (según la guía de Carlos, lo no integrado se marca como propuesta, no como actual).
+`ReservationCodeJdbcDao` extiende `BaseJdbcDao` e implementa `ReservationCodePort` de B4 (mergeado en PR #48). Usa el pool secundario `jdbcDataSource` (B2) y maneja excepciones mediante B5.

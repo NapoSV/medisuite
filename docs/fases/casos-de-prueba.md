@@ -190,3 +190,64 @@ pasos, resultado esperado, resultado observado, evidencia y estado.
 - Pendiente: coordinar su corrección con los responsables del frontend
   y repetir la validación integral.
 - No se modificaron reglas de ESLint ni se omitió lint.
+
+### Revalidación de V11 — 12/10/2026
+
+- Se ejecutó `mvn -Dtest=ReminderMigrationIT test` con Docker activo.
+- Resultado: 2 pruebas, 0 fallos, 0 errores y 0 omitidas; BUILD SUCCESS.
+- Se mantienen el alcance y las limitaciones documentados para V11.
+- V12 continúa ausente en la rama local; su validación queda pendiente.
+
+### Pruebas manuales en QA local — 12/10/2026
+
+- Responsable: Walter Flores.
+- Tenant: clinica-san-rafael.
+- Entorno: PostgreSQL 16 descartable en Docker, backend Java 21
+  y frontend local en http://127.0.0.1:5173.
+- Datos exclusivamente sintéticos.
+- Estos resultados actualizan parcialmente los pendientes anteriores.
+
+| ID | Rol | Datos y pasos | Esperado | Observado | Estado |
+|---|---|---|---|---|---|
+| B8-M01 | ADMIN | Iniciar sesión con admin.a@medisuite.test | Acceder al sistema | Login y dashboard visibles | PASS |
+| B8-M02 | ADMIN | Buscar A1 por nombre y DUI con y sin guion | Encontrar al paciente | Las tres búsquedas funcionaron | PASS |
+| B8-M03 | ADMIN | Crear A3 Sintetico QA, DUI 00000004-4, nacimiento 1990-01-01 | Guardar paciente | Creado con ID 4 | PASS |
+| B8-M04 | ADMIN | Repetir alta con DUI 00000004-4 | Rechazar con mensaje claro, sin duplicar | HTTP 500 genérico; SQL confirmó un solo paciente | FAIL |
+| B8-M05 | ADMIN | Crear cita de A3 con Doctor A1 QA, 15/10/2026 a las 09:00 | Persistir cita y código | SQL confirmó ID 1, PENDING, COD-9829 | PASS |
+| B8-M06 | ADMIN | Consultar horarios del mismo doctor y fecha | Excluir horario ocupado | Las 09:00 no se ofrecieron; rechazo directo por API pendiente | PASS parcial |
+| B8-M07 | ADMIN | Reprogramar cita ID 1 al 16/10/2026 a las 09:00 | Actualizar fecha y conservar código | Interfaz mostró SCHEDULED y COD-9829 | PASS |
+| B8-M08 | ADMIN | Cancelar ID 1 con motivo "No ire porque no quiero ir" | Persistir cancelación y motivo | Interfaz y SQL confirmaron CANCELLED, motivo y cancelled_at | PASS |
+| B8-M09 | NURSE | Registrar triaje de A3 y abrir expediente: 36.7 °C, pulso 72, presión 120/80, peso 70 kg, talla 165 cm | Conservar signos vitales | Datos visibles en ambas pantallas | PASS |
+| B8-M10 | NURSE | Seleccionar Normal y consultar expediente y SQL | Guardar NORMAL según contrato | Se guardó LOW y se mostró LOW | FAIL |
+
+#### Evidencias
+
+Capturas compartidas en la sesión; pendiente copiarlas al repositorio.
+
+- B8-M03: image(20261013-022554).png.
+- B8-M05: image(20261013-024056).png.
+- B8-M07: image(20261013-025310).png.
+- B8-M08: image(20261013-025614).png y image(20261013-025754).png.
+- B8-M09: image(20261013-030541).png y image(20261013-030945).png.
+- B8-M10: image(20261013-031200).png y búsqueda de priority en el código.
+
+#### Hallazgo de prioridad
+
+Triaje.tsx envía LOW/MEDIUM/HIGH/CRITICAL.
+Expediente.tsx utiliza NORMAL/URGENTE/EMERGENCIA.
+La opción "Normal" de Triaje envía LOW, confirmado en PostgreSQL.
+
+Pendiente coordinar la corrección con Zair y el responsable del backend,
+definir qué ocurre con "Urgente alto" y repetir las pruebas.
+
+#### Preparación y límites
+
+La BD local se inicializó con database/schema.sql.
+Solo en esta BD descartable se eliminó vital_signs_priority_check,
+que contenía la escala antigua. No se ejecutó DDL en la BD compartida
+ni se verificó su constraint efectivo.
+
+Se modificó frontend/src/lib/tenant.ts para evitar enviar tenantSlug "127"
+al acceder mediante 127.0.0.1. Pendiente revisar y validar antes de publicar.
+
+Siguen pendientes los demás casos manuales, V12 y los bloqueos de lint.

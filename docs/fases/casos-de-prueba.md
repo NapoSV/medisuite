@@ -250,4 +250,16 @@ ni se verificó su constraint efectivo.
 Se modificó frontend/src/lib/tenant.ts para evitar enviar tenantSlug "127"
 al acceder mediante 127.0.0.1. Pendiente revisar y validar antes de publicar.
 
+### Continuación de permisos — 12/10/2026
+
+- Enfermería abrió el expediente de A3 y pudo ver el triaje.
+- La interfaz muestra Registrar signos vitales y oculta Nueva receta.
+- Expediente.tsx permite crear recetas únicamente al rol DOCTOR.
+- PrescriptionService comprueba que el usuario tenga un registro de doctor
+  y que pertenezca al tenant actual.
+- Pendiente ejecutar POST /api/prescriptions con Enfermería,
+  registrar el estado HTTP y comprobar que no se guarda una receta.
+- Paciente A3: ID 4. Expediente: ID 1.
+- La solicitud de prueba fue preparada, pero su ejecución no está confirmada.
+
 Siguen pendientes los demás casos manuales, V12 y los bloqueos de lint.

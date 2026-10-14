@@ -263,3 +263,20 @@ al acceder mediante 127.0.0.1. Pendiente revisar y validar antes de publicar.
 - La solicitud de prueba fue preparada, pero su ejecución no está confirmada.
 
 Siguen pendientes los demás casos manuales, V12 y los bloqueos de lint.
+
+### Validación del frontend — 13/10/2026
+
+Commit de correcciones: 49c78ba.
+
+- pnpm lint: PASS, sin errores ni advertencias.
+- TypeScript (tsc --noEmit -p tsconfig.app.json): PASS.
+- pnpm build: PASS.
+- git diff --check: PASS.
+- Se corrigieron los 15 errores y las 3 advertencias iniciales de lint.
+- Se eliminaron las citas y los horarios ficticios usados como respaldo
+  cuando fallaban las consultas en la pantalla Citas.
+
+Pendiente repetir los flujos modificados en el navegador.
+La impresión de recetas sigue pendiente de integrar los datos del paciente.
+V12 y V13 no estaban presentes en la última revisión de esta rama.
+B8 continúa en progreso.

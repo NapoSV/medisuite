@@ -9,15 +9,6 @@ import { useAuth } from '../auth/useAuth'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorAlert from '../components/ErrorAlert'
 
-// MOCK temporal - quitar cuando entre el PR de citas (Orellana)
-const MOCK: Cita[] = [
-  { id: 1, scheduledAt: '2026-09-18T09:00:00', patient: { firstName: 'Ana', lastName: 'Ramirez' },
-    doctor: { user: { firstName: 'Carlos', lastName: 'Mejia' } }, status: 'PENDING', reservationCode: 'CT-0001' },
-  { id: 2, scheduledAt: '2026-09-18T10:30:00', patient: { firstName: 'Luis', lastName: 'Portillo' },
-    doctor: { user: { firstName: 'Sofia', lastName: 'Hernandez' } }, status: 'CONFIRMED', reservationCode: 'CT-0002' },
-  { id: 3, scheduledAt: '2026-09-19T14:00:00', patient: { firstName: 'Marta', lastName: 'Guzman' },
-    doctor: { user: { firstName: 'Carlos', lastName: 'Mejia' } }, status: 'COMPLETED', reservationCode: 'CT-0003' },
-]
 
 const badge = (s: string) => ({
   PENDING: 'bg-yellow-100 text-yellow-800',
@@ -67,21 +58,39 @@ export default function Citas() {
           setRows(data)
         }
       })
-      .catch(() => {
-        const mock = isDoctor && user?.fullName
-          ? MOCK.filter(c => c.doctor.user.firstName === user.fullName?.split(' ')[0])
-          : MOCK
-        setRows(mock)
-        setAviso('Backend de citas no disponible, mostrando datos de ejemplo')
+      .catch((err: unknown) => {
+        setRows([])
+        setAviso(
+          err instanceof ApiError
+            ? err.message
+            : 'No se pudieron cargar las citas. Intenta recargar la página.'
+        )
       })
       .finally(() => setLoading(false))
   }, [isDoctor, user?.fullName])
 
-  useEffect(() => {
-    if (!repro || !fecha) { setSlots([]); return }
+    useEffect(() => {
+    if (!repro || !fecha) return
+
+    let activo = true
+
     listSlots(repro.doctor.id, fecha)
-      .then(setSlots)
-      .catch(() => setSlots(['08:00', '09:00', '10:00', '14:00'].map(h => `${fecha}T${h}:00`)))
+      .then(data => {
+        if (activo) setSlots(data)
+      })
+      .catch((err: unknown) => {
+        if (!activo) return
+        setSlots([])
+        setError(
+          err instanceof ApiError
+            ? err.message
+            : 'No se pudieron cargar los horarios disponibles.'
+        )
+      })
+
+    return () => {
+      activo = false
+    }
   }, [repro, fecha])
 
   const actualizar = (c: Cita) => setRows(rs => rs.map(r => r.id === c.id ? c : r))
@@ -192,10 +201,19 @@ export default function Citas() {
                 {!FINALES.includes(c.status) && (
                   <>
                     {!isDoctor && (
-                      <button onClick={() => { setRepro(c); setFecha(''); setSlot('') }}
-                              className="text-blue-600 text-sm mr-3">Reprogramar</button>
-                    )}
-                    <button onClick={() => onComplete(c)}
+                                        <button
+                        onClick={() => {
+                          setRepro(c)
+                          setFecha('')
+                          setSlot('')
+                          setSlots([])
+                          setError(null)
+                        }}
+                        className="text-blue-600 text-sm mr-3"
+                      >
+                        Reprogramar
+                      </button>
+                    )}                    <button onClick={() => onComplete(c)}
                             disabled={!puedeCompletar(c)}
                             title={puedeCompletar(c)
                               ? 'Marcar como completada'
@@ -259,9 +277,18 @@ export default function Citas() {
               Actual: {new Date(repro.scheduledAt).toLocaleString('es-SV')}
             </p>
 
-            <input type="date" min={hoy} value={fecha}
-                   onChange={e => { setFecha(e.target.value); setSlot('') }}
-                   className="border p-2 rounded" />
+                        <input
+              type="date"
+              min={hoy}
+              value={fecha}
+              onChange={e => {
+                setFecha(e.target.value)
+                setSlot('')
+                setSlots([])
+                setError(null)
+              }}
+              className="border p-2 rounded"
+            />
 
             <select value={slot} onChange={e => setSlot(e.target.value)}
                     className="border p-2 rounded" disabled={!fecha}>

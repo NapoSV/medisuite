@@ -280,3 +280,17 @@ Pendiente repetir los flujos modificados en el navegador.
 La impresión de recetas sigue pendiente de integrar los datos del paciente.
 V12 y V13 no estaban presentes en la última revisión de esta rama.
 B8 continúa en progreso.
+
+### Validación integral — 13/10/2026
+
+- Rama validada en commit 9004b98.
+- Maven ejecutado con Java 21.0.12.1.
+- bash scripts/validate-all.sh: PASS.
+- Backend: 84 pruebas, 0 fallos, 0 errores y 0 omitidas.
+- Build y lint del frontend: PASS.
+- Salida final: OK compilacion, pruebas unitarias y frontend.
+
+El intento previo con Java 26 falló durante la compilación del backend.
+Al seleccionar Java 21, el script terminó correctamente.
+
+Esta ejecución no certifica V12 ni completa las pruebas manuales pendientes.

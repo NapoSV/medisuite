@@ -8,10 +8,12 @@ import com.sv.grupo7.medisuite.model.medical.Appointment;
 import com.sv.grupo7.medisuite.model.medical.Doctor;
 import com.sv.grupo7.medisuite.model.medical.Patient;
 import com.sv.grupo7.medisuite.model.tenant.Tenant;
+import com.sv.grupo7.medisuite.security.TenantContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.OffsetDateTime;
@@ -19,10 +21,12 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AppointmentServiceTest{
+
+    private static final Long TENANT_ID = 1L;
 
     @Mock
     private AppointmentRepository appointmentRepo;
@@ -62,24 +66,28 @@ class AppointmentServiceTest{
         Doctor doctor = new Doctor();
         Patient patient = new Patient();
 
-        when(doctorRepo.findById(doctorId))
-                .thenReturn(Optional.of(doctor));
+        try (MockedStatic<TenantContext> ctx = mockStatic(TenantContext.class)) {
+            ctx.when(TenantContext::currentTenantId).thenReturn(TENANT_ID);
 
-        when(patientRepo.findById(patientId))
-                .thenReturn(Optional.of(patient));
+            when(doctorRepo.findByIdAndTenantId(doctorId, TENANT_ID))
+                    .thenReturn(Optional.of(doctor));
 
-        when(appointmentRepo.existsByDoctorIdAndScheduledAtAndStatusNot(
-                doctorId, fecha, "CANCELLED"))
-                .thenReturn(true);
+            when(patientRepo.findByIdAndTenantId(patientId, TENANT_ID))
+                    .thenReturn(Optional.of(patient));
 
-        assertThrows(BusinessException.class, () ->
-                appointmentService.create(
-                        patientId,
-                        doctorId,
-                        fecha,
-                        "Consulta general"
-                )
-        );
+            when(appointmentRepo.existsByDoctorIdAndScheduledAtAndStatusNot(
+                    doctorId, fecha, "CANCELLED"))
+                    .thenReturn(true);
+
+            assertThrows(BusinessException.class, () ->
+                    appointmentService.create(
+                            patientId,
+                            doctorId,
+                            fecha,
+                            "Consulta general"
+                    )
+            );
+        }
     }
 
     @Test
@@ -96,29 +104,33 @@ class AppointmentServiceTest{
 
         Patient patient = new Patient();
 
-        when(doctorRepo.findById(doctorId))
-                .thenReturn(Optional.of(doctor));
+        try (MockedStatic<TenantContext> ctx = mockStatic(TenantContext.class)) {
+            ctx.when(TenantContext::currentTenantId).thenReturn(TENANT_ID);
 
-        when(patientRepo.findById(patientId))
-                .thenReturn(Optional.of(patient));
+            when(doctorRepo.findByIdAndTenantId(doctorId, TENANT_ID))
+                    .thenReturn(Optional.of(doctor));
 
-        when(appointmentRepo.existsByDoctorIdAndScheduledAtAndStatusNot(
-                doctorId, fecha, "CANCELLED"))
-                .thenReturn(false);
+            when(patientRepo.findByIdAndTenantId(patientId, TENANT_ID))
+                    .thenReturn(Optional.of(patient));
 
-        when(appointmentRepo.save(any(Appointment.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
+            when(appointmentRepo.existsByDoctorIdAndScheduledAtAndStatusNot(
+                    doctorId, fecha, "CANCELLED"))
+                    .thenReturn(false);
 
-        Appointment resultado = appointmentService.create(
-                patientId,
-                doctorId,
-                fecha,
-                "Consulta general"
-        );
+            when(appointmentRepo.save(any(Appointment.class)))
+                    .thenAnswer(invocation -> invocation.getArgument(0));
 
-        assertNotNull(resultado);
-        assertEquals("PENDING", resultado.getStatus());
-        assertNotNull(resultado.getReservationCode());
+            Appointment resultado = appointmentService.create(
+                    patientId,
+                    doctorId,
+                    fecha,
+                    "Consulta general"
+            );
+
+            assertNotNull(resultado);
+            assertEquals("PENDING", resultado.getStatus());
+            assertNotNull(resultado.getReservationCode());
+        }
     }
 
 
@@ -131,14 +143,18 @@ class AppointmentServiceTest{
         appointment.setStatus("PENDING");
         appointment.setScheduledAt(OffsetDateTime.now().plusDays(3));
 
-        when(appointmentRepo.findById(appointmentId))
-                .thenReturn(Optional.of(appointment));
+        try (MockedStatic<TenantContext> ctx = mockStatic(TenantContext.class)) {
+            ctx.when(TenantContext::currentTenantId).thenReturn(TENANT_ID);
 
-        appointmentService.cancel(appointmentId, "Paciente reporta imposibilidad de asistir");
+            when(appointmentRepo.findByIdAndTenantId(appointmentId, TENANT_ID))
+                    .thenReturn(Optional.of(appointment));
 
-        assertEquals("CANCELLED", appointment.getStatus());
-        assertEquals("Paciente reporta imposibilidad de asistir", appointment.getCancelReason());
-        assertNotNull(appointment.getCancelledAt());
+            appointmentService.cancel(appointmentId, "Paciente reporta imposibilidad de asistir");
+
+            assertEquals("CANCELLED", appointment.getStatus());
+            assertEquals("Paciente reporta imposibilidad de asistir", appointment.getCancelReason());
+            assertNotNull(appointment.getCancelledAt());
+        }
     }
 
     @Test
@@ -158,11 +174,15 @@ class AppointmentServiceTest{
         appointment.setStatus("PENDING");
         appointment.setScheduledAt(OffsetDateTime.now().plusDays(5));
 
-        when(appointmentRepo.findById(appointmentId))
-                .thenReturn(Optional.of(appointment));
+        try (MockedStatic<TenantContext> ctx = mockStatic(TenantContext.class)) {
+            ctx.when(TenantContext::currentTenantId).thenReturn(TENANT_ID);
 
-        assertThrows(BusinessException.class, () ->
-                appointmentService.complete(appointmentId));
+            when(appointmentRepo.findByIdAndTenantId(appointmentId, TENANT_ID))
+                    .thenReturn(Optional.of(appointment));
+
+            assertThrows(BusinessException.class, () ->
+                    appointmentService.complete(appointmentId));
+        }
     }
 
     @Test
@@ -170,15 +190,19 @@ class AppointmentServiceTest{
         Long appointmentId = 1L;
         Appointment appointment = new Appointment();
         appointment.setStatus("PENDING");
-        appointment.setScheduledAt(OffsetDateTime.now().plusHours(2));
+        appointment.setScheduledAt(OffsetDateTime.now());
 
-        when(appointmentRepo.findById(appointmentId))
-                .thenReturn(Optional.of(appointment));
+        try (MockedStatic<TenantContext> ctx = mockStatic(TenantContext.class)) {
+            ctx.when(TenantContext::currentTenantId).thenReturn(TENANT_ID);
 
-        Appointment result = appointmentService.complete(appointmentId);
+            when(appointmentRepo.findByIdAndTenantId(appointmentId, TENANT_ID))
+                    .thenReturn(Optional.of(appointment));
 
-        assertEquals("COMPLETED", result.getStatus());
-        assertNotNull(result.getCompletedAt());
+            Appointment result = appointmentService.complete(appointmentId);
+
+            assertEquals("COMPLETED", result.getStatus());
+            assertNotNull(result.getCompletedAt());
+        }
     }
 
 }

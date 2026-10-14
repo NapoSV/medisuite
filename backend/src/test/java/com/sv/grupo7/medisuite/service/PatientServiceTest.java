@@ -68,23 +68,29 @@ class PatientServiceTest {
     void findById_pacienteExistente_debeRetornarPaciente() {
         Patient patient = new Patient();
 
-        when(repo.findById(1L)).thenReturn(Optional.of(patient));
+        try (MockedStatic<TenantContext> ctx = mockStatic(TenantContext.class)) {
+            ctx.when(TenantContext::currentTenantId).thenReturn(TENANT_ID);
+            when(repo.findByIdAndTenantId(1L, TENANT_ID)).thenReturn(Optional.of(patient));
 
-        Patient result = patientService.findById(1L);
+            Patient result = patientService.findById(1L);
 
-        assertSame(patient, result);
+            assertSame(patient, result);
+        }
     }
 
     @Test
     void findById_pacienteNoExiste_debeLanzarRuntimeException() {
-        when(repo.findById(99L)).thenReturn(Optional.empty());
+        try (MockedStatic<TenantContext> ctx = mockStatic(TenantContext.class)) {
+            ctx.when(TenantContext::currentTenantId).thenReturn(TENANT_ID);
+            when(repo.findByIdAndTenantId(99L, TENANT_ID)).thenReturn(Optional.empty());
 
-        RuntimeException exception = assertThrows(
-                RuntimeException.class,
-                () -> patientService.findById(99L)
-        );
+            RuntimeException exception = assertThrows(
+                    RuntimeException.class,
+                    () -> patientService.findById(99L)
+            );
 
-        assertEquals("Paciente 99 no existe", exception.getMessage());
+            assertEquals("Paciente 99 no existe", exception.getMessage());
+        }
     }
 
     @Test
@@ -98,14 +104,17 @@ class PatientServiceTest {
         data.setPhone("7777-7777");
         data.setAddress("Sonsonate");
 
-        when(repo.findById(1L)).thenReturn(Optional.of(existing));
+        try (MockedStatic<TenantContext> ctx = mockStatic(TenantContext.class)) {
+            ctx.when(TenantContext::currentTenantId).thenReturn(TENANT_ID);
+            when(repo.findByIdAndTenantId(1L, TENANT_ID)).thenReturn(Optional.of(existing));
 
-        Patient result = patientService.update(1L, data);
+            Patient result = patientService.update(1L, data);
 
-        assertEquals("Nicole", result.getFirstName());
-        assertEquals("Sanchez", result.getLastName());
-        assertEquals("06123456-7", result.getDui());
-        assertEquals("7777-7777", result.getPhone());
-        assertEquals("Sonsonate", result.getAddress());
+            assertEquals("Nicole", result.getFirstName());
+            assertEquals("Sanchez", result.getLastName());
+            assertEquals("06123456-7", result.getDui());
+            assertEquals("7777-7777", result.getPhone());
+            assertEquals("Sonsonate", result.getAddress());
+        }
     }
 }

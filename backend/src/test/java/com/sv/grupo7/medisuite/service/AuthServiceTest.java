@@ -167,15 +167,26 @@ class AuthServiceTest{
                 () -> authService.login(request)
         );
 
+
         assertNotNull(reponse);
+        assertEquals("token-prueba", reponse.accessToken());
+        assertEquals("Bearer", reponse.tokenType());
+        assertEquals(3600L, reponse.expiresIn());
+
+        assertEquals(10L, reponse.user().id());
+        assertEquals("Fatima Bosch", reponse.user().fullName());
+        assertEquals("ADMIN", reponse.user().role());
+        assertEquals(1L, reponse.user().tenantId());
 
         verify(userRepository).resetFailedAttempts(10L);
+
 
         verify(jwtTokenProvider).generateToken(10L, "ADMIN", 1L);
 
         verify(userRepository, never()).incrementFailedAttempts(any(),anyInt(),any(OffsetDateTime.class));
 
     }
+
 
 
     @Test

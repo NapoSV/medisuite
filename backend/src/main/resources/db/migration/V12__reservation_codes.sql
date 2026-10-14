@@ -67,3 +67,11 @@ BEGIN
         PERFORM setval('reservation_code_seq', mayor, TRUE);
     END IF;
 END $$;
+
+-- clinica_app no es owner: sin esto nextval() falla en runtime.
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'clinica_app') THEN
+        GRANT USAGE, SELECT ON SEQUENCE reservation_code_seq TO clinica_app;
+    END IF;
+END $$;

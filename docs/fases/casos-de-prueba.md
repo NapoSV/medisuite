@@ -378,3 +378,22 @@ Esta ejecución no certifica V12 ni completa las pruebas manuales pendientes.
 - No se observaron datos clínicos de A en estas dos respuestas.
 - Manejo de error al consultar receta de otro tenant: FAIL.
 - Alcance: dos consultas de lectura B→A; no certifica todo el aislamiento.
+### Dashboard por rol: revisión visual — 15/10/2026
+
+- Entorno: QA local. Tenant: clinica-san-rafael.
+- DOCTOR: 0 citas hoy, 0 alertas y 1 receta.
+  Acciones visibles: Mis citas y Pacientes.
+- RECEPTIONIST: 0 citas hoy y 3 pacientes.
+  Acciones: Agendar cita, Nuevo paciente y Ver agenda.
+  Sin tarjetas de recetas ni alertas.
+- ADMIN: 0 citas hoy, 3 pacientes, 0 alertas y 1 receta.
+  Acciones: Gestionar pacientes, Gestionar doctores y Nueva cita.
+- NURSE: 0 citas hoy, 3 pacientes y 0 alertas.
+  Acciones: Pacientes y Citas del día. Sin tarjeta de recetas.
+- SQL confirmó 3 pacientes, una receta del doctor 2 del 15/10,
+  dos citas para fechas posteriores y un triaje LOW.
+- Resultado: PASS para visualización y valores observados con estos datos.
+- El DAO cuenta recetas de la semana; la tarjeta no indica ese período.
+- Pendientes: confirmar Actualizar, navegación de acciones,
+  alerta positiva y separación de métricas entre médicos y tenants.
+- Esta revisión no certifica permisos de API por ocultar tarjetas.

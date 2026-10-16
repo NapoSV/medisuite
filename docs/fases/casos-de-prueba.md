@@ -411,3 +411,21 @@ Esta ejecución no certifica V12 ni completa las pruebas manuales pendientes.
 - Resultado: PASS para separación de recetas entre las cuentas probadas.
 - Alcance: no certifica todo el aislamiento entre tenants.
 - Observación: appointmentsToday incluye la cita cancelada de A1.
+
+### Validación tras integrar V12 y V13 — 16/10/2026
+
+- Validación integral tras el merge: 115 pruebas, 0 fallos,
+  0 errores y 0 omitidas; build y lint del frontend aprobados.
+- Se agregó un caso a ReminderMigrationIT.
+- Ejecución con Java 21 y PostgreSQL 16 descartable:
+  3 pruebas, 0 fallos, 0 errores y 0 omitidas; BUILD SUCCESS.
+- Preparación: schema.sql con baseline V9; avance hasta V11
+  y posterior aplicación de V12 y V13.
+- V12: conservó COD-6088 y R-00000042; siguiente valor
+  de secuencia=43; máximo=99999999 y sin ciclo.
+- Se rechazó un código duplicado del mismo tenant con SQLState 23505.
+- Reejecutar Flyway no aplicó migraciones nuevas.
+- V13: confirmó la ruta de omisión sin rol clinica_app.
+  No se validaron sus permisos efectivos ni la política por owner.
+- No se probó la cadena V1–V13 desde una base vacía.
+- No se modificó la base compartida.

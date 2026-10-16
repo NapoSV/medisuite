@@ -72,6 +72,70 @@ class ReminderMigrationIT {
         }
     }
 
+
+    @Test
+    @DisplayName("V11 a V13: conserva códigos, continúa secuencia y rechaza duplicados")
+    void desdeV11_debeMigrarHastaV13() throws Exception {
+        try (PostgreSQLContainer<?> pg = nuevoContenedor()) {
+            pg.start();
+            migrador(pg, "11").migrate();
+
+            try (Connection connection = conectar(pg)) {
+                crearDatosSinteticos(connection);
+                ejecutar(connection, """
+                        UPDATE appointments SET reservation_code = 'COD-6088'
+                        WHERE id = 1
+                        """);
+                ejecutar(connection, """
+                        INSERT INTO appointments
+                            (id, tenant_id, patient_id, doctor_id,
+                             scheduled_at, status, reservation_code)
+                        VALUES (2, 1, 1, 1, '2030-01-02 09:00:00-06',
+                                'PENDING', 'R-00000042')
+                        """);
+                assertEquals(0, contar(connection,
+                        "SELECT COUNT(*) FROM pg_roles WHERE rolname = 'clinica_app'"));
+            }
+
+            Flyway hastaV13 = migrador(pg, "13");
+            assertEquals(2, hastaV13.migrate().migrationsExecuted);
+            assertEquals("13", hastaV13.info().current().getVersion().toString());
+
+            try (Connection connection = conectar(pg)) {
+                assertEquals(2, contar(connection, "SELECT COUNT(*) FROM appointments"));
+                assertEquals(1, contar(connection, """
+                        SELECT COUNT(*) FROM appointments
+                        WHERE id = 1 AND reservation_code = 'COD-6088'
+                        """));
+                assertEquals(1, contar(connection, """
+                        SELECT COUNT(*) FROM appointments
+                        WHERE id = 2 AND reservation_code = 'R-00000042'
+                        """));
+                assertEquals(43, contar(connection,
+                        "SELECT nextval('reservation_code_seq')"));
+                assertEquals(1, contar(connection, """
+                        SELECT COUNT(*) FROM pg_sequences
+                        WHERE schemaname = 'public'
+                          AND sequencename = 'reservation_code_seq'
+                          AND max_value = 99999999 AND cycle = false
+                        """));
+
+                SQLException duplicado = assertThrows(SQLException.class,
+                        () -> ejecutar(connection, """
+                                INSERT INTO appointments
+                                    (id, tenant_id, patient_id, doctor_id,
+                                     scheduled_at, status, reservation_code)
+                                VALUES (3, 1, 1, 1, '2030-01-03 09:00:00-06',
+                                        'PENDING', 'R-00000042')
+                                """));
+                assertEquals("23505", duplicado.getSQLState());
+                assertEquals(2, contar(connection, "SELECT COUNT(*) FROM appointments"));
+            }
+
+            assertEquals(0, hastaV13.migrate().migrationsExecuted);
+        }
+    }
+
     private PostgreSQLContainer<?> nuevoContenedor() {
         return new PostgreSQLContainer<>("postgres:16-alpine")
                 .withInitScript("schema.sql");

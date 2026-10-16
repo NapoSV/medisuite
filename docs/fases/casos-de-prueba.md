@@ -328,3 +328,17 @@ Esta ejecución no certifica V12 ni completa las pruebas manuales pendientes.
 - SQL confirmó scheduled_at=2026-10-20 14:00:00+00,
   status=SCHEDULED y reservation_code=COD-6088.
 - Resultado: PASS.
+
+### B8-M08: revalidación de cancelación — 15/10/2026
+
+- Entorno: QA local. Rol: ADMIN.
+- Cita: ID 2, COD-6088.
+- Se canceló desde la interfaz con el motivo:
+  "Cancelación sintética para revalidación QA B8".
+- Interfaz y SQL confirmaron estado CANCELLED.
+- SQL confirmó cancel_reason con el texto ingresado,
+  cancelled_at=2026-10-16 04:28:45.427983+00
+  y conservación del código COD-6088.
+- Resultado: PASS para cancelación con sesión recién iniciada.
+- Incidencia: el intento anterior devolvió HTTP 403.
+  Tras volver a iniciar sesión funcionó; causa pendiente de confirmar.

@@ -294,3 +294,14 @@ El intento previo con Java 26 falló durante la compilación del backend.
 Al seleccionar Java 21, el script terminó correctamente.
 
 Esta ejecución no certifica V12 ni completa las pruebas manuales pendientes.
+### Validación manual: enfermería no puede crear recetas — 15/10/2026
+
+- Entorno: QA local, contenedor medisuite-b8-qa.
+- Usuario: Enfermería A QA, rol NURSE.
+- Paciente A3: patient_id=4, medical_record_id=1.
+- Interfaz: muestra Registrar signos vitales y oculta Nueva receta.
+- Prueba directa: POST /api/prescriptions con sesión de enfermería y datos sintéticos.
+- Respuesta: HTTP 422, "El usuario autenticado no es un doctor".
+- Base de datos: 0 recetas del expediente antes y 0 después.
+- Resultado: el intento fue rechazado sin crear una receta.
+- Observación: el rechazo usa una regla de negocio (422); no demuestra una restricción explícita por rol con HTTP 403.

@@ -6,13 +6,13 @@ import com.sv.grupo7.medisuite.dao.PatientRepository;
 import com.sv.grupo7.medisuite.exception.BusinessException;
 import com.sv.grupo7.medisuite.model.medical.Appointment;
 import com.sv.grupo7.medisuite.security.TenantContext;
+import com.sv.grupo7.medisuite.service.concurrent.ReservationCodeGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Random;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -25,6 +25,7 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepo;
     private final PatientRepository patientRepo;
     private final DoctorRepository doctorRepo;
+    private final ReservationCodeGenerator reservationCodeGenerator;
 
     @Transactional
     public Appointment create(Long patientId, Long doctorId,
@@ -51,7 +52,7 @@ public class AppointmentService {
         a.setScheduledAt(scheduledAt);
         a.setReason(reason);
         a.setStatus("PENDING");
-        a.setReservationCode("COD-" + String.format("%04d", new Random().nextInt(10000)));
+        a.setReservationCode(reservationCodeGenerator.next());
         return appointmentRepo.save(a);
     }
 

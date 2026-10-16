@@ -362,3 +362,19 @@ Esta ejecución no certifica V12 ni completa las pruebas manuales pendientes.
 - El botón Imprimir abre una vista previa de una página y no sale impreso.
 - Vista de impresión: FAIL por datos del paciente ausentes y fecha incorrecta.
 - No se imprimió en papel ni se guardó un PDF.
+
+### Aislamiento: clínica B consulta recursos de A — 15/10/2026
+
+- Entorno: QA local, datos sintéticos.
+- Sesión temporal: doctor.b@medisuite.test, tenant_id=2.
+- GET /api/users/me: HTTP 200; confirmó usuario de clínica B.
+- GET /api/patients/4/medical-record: HTTP 422,
+  "Paciente no existe", sin devolver el expediente de A.
+- GET /api/prescriptions/1: HTTP 500,
+  "Error interno del servidor", sin devolver datos de la receta de A.
+- PrescriptionService.findById utiliza findByIdAndTenantId.
+  Si no encuentra la receta, lanza RuntimeException genérica;
+  posible causa del 500, pendiente de confirmar con logs.
+- No se observaron datos clínicos de A en estas dos respuestas.
+- Manejo de error al consultar receta de otro tenant: FAIL.
+- Alcance: dos consultas de lectura B→A; no certifica todo el aislamiento.

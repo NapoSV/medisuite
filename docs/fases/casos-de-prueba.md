@@ -305,3 +305,15 @@ Esta ejecución no certifica V12 ni completa las pruebas manuales pendientes.
 - Base de datos: 0 recetas del expediente antes y 0 después.
 - Resultado: el intento fue rechazado sin crear una receta.
 - Observación: el rechazo usa una regla de negocio (422); no demuestra una restricción explícita por rol con HTTP 403.
+
+### B8-M06: rechazo directo de doble reserva — 15/10/2026
+
+- Entorno: QA local. Rol: ADMIN.
+- Reserva inicial creada desde el formulario: ID 2, COD-6088, PENDING.
+- Paciente: 4. Doctor: 2.
+- Horario: 19/10/2026 a las 08:00 de El Salvador (14:00 UTC).
+- Se envió un segundo POST /api/appointments con el mismo doctor y horario.
+- Respuesta: HTTP 422, "El doctor ya tiene una cita en ese horario".
+- SQL posterior confirmó una sola fila: ID 2, COD-6088.
+- Resultado: PASS para el rechazo secuencial de doble reserva.
+- Alcance: no se probaron solicitudes concurrentes.

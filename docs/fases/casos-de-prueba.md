@@ -317,3 +317,14 @@ Esta ejecución no certifica V12 ni completa las pruebas manuales pendientes.
 - SQL posterior confirmó una sola fila: ID 2, COD-6088.
 - Resultado: PASS para el rechazo secuencial de doble reserva.
 - Alcance: no se probaron solicitudes concurrentes.
+
+ ### B8-M07: revalidación de reprogramación — 15/10/2026
+
+- Entorno: QA local. Rol: ADMIN.
+- Desde Citas se reprogramó la cita ID 2, COD-6088.
+- Fecha anterior: 19/10/2026 a las 08:00 de El Salvador.
+- Fecha nueva: 20/10/2026 a las 08:00 de El Salvador.
+- Interfaz: mostró la nueva fecha, estado SCHEDULED y el mismo código.
+- SQL confirmó scheduled_at=2026-10-20 14:00:00+00,
+  status=SCHEDULED y reservation_code=COD-6088.
+- Resultado: PASS.

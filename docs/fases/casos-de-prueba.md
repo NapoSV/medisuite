@@ -429,3 +429,38 @@ Esta ejecución no certifica V12 ni completa las pruebas manuales pendientes.
   No se validaron sus permisos efectivos ni la política por owner.
 - No se probó la cadena V1–V13 desde una base vacía.
 - No se modificó la base compartida.
+
+### Estado consolidado de B8 — 16/10/2026
+
+Este resumen actualiza los pendientes históricos de las secciones anteriores.
+
+- Lint del frontend: resuelto; build y validación integral aprobados.
+- Suite general tras integrar fase-b: 115 pruebas aprobadas.
+- ReminderMigrationIT ampliado: 3 pruebas aprobadas.
+- V12: validada localmente con baseline V9 y actualización V11→V13.
+- V13: verificada únicamente su omisión sin clinica_app.
+- Manuales ejecutadas: login válido, alta y búsqueda de pacientes,
+  citas, doble reserva secuencial, reprogramación, cancelación,
+  triaje, consulta de expediente, restricciones de enfermería,
+  creación e impresión de recetas y dashboard por rol.
+- Seguridad: dos consultas B→A sin exposición observada de datos;
+  comparación de recetas entre médicos A1, A2 y B aprobada.
+  Esta cobertura no certifica todo el aislamiento multi-tenant.
+
+Hallazgos abiertos:
+- Alta con DUI duplicado devuelve HTTP 500.
+- Triaje guarda LOW en lugar del contrato NORMAL.
+- Impresión de receta con paciente ausente y fecha incorrecta.
+- Consulta de receta de otro tenant devuelve HTTP 500.
+- Cancelación con HTTP 403 previo: causa sin confirmar.
+- Dashboard incluye citas canceladas en appointmentsToday;
+  comportamiento pendiente de contrastar con el contrato.
+
+Sin ejecución manual confirmada:
+- Bloqueo de login, flujo de recordatorios, fallo de base de datos
+  y arranque completo mediante Docker.
+- Dashboard: Actualizar, navegación de acciones y alerta positiva.
+- Permisos efectivos de V13 con los roles presentes.
+
+El export database/schema.sql está documentado como obsoleto.
+La aprobación de B8 y el tratamiento de los pendientes requieren revisión.

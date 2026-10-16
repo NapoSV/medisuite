@@ -397,3 +397,17 @@ Esta ejecución no certifica V12 ni completa las pruebas manuales pendientes.
 - Pendientes: confirmar Actualizar, navegación de acciones,
   alerta positiva y separación de métricas entre médicos y tenants.
 - Esta revisión no certifica permisos de API por ocultar tarjetas.
+
+### Dashboard: comparación entre médicos — 16/10/2026
+
+- Entorno: QA local, datos sintéticos.
+- Se consultó GET /api/dashboard/metrics con tres cuentas.
+- Doctor A1, clínica A: HTTP 200; prescriptionsIssued=1,
+  prescriptionsThisWeek=1 y appointmentsToday=1.
+- Doctor A2, clínica A: HTTP 200; ambos contadores de recetas=0
+  y appointmentsToday=0.
+- Doctor B, clínica B: HTTP 200; ambos contadores de recetas=0
+  y appointmentsToday=0.
+- Resultado: PASS para separación de recetas entre las cuentas probadas.
+- Alcance: no certifica todo el aislamiento entre tenants.
+- Observación: appointmentsToday incluye la cita cancelada de A1.

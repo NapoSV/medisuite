@@ -342,3 +342,23 @@ Esta ejecución no certifica V12 ni completa las pruebas manuales pendientes.
 - Resultado: PASS para cancelación con sesión recién iniciada.
 - Incidencia: el intento anterior devolvió HTTP 403.
   Tras volver a iniciar sesión funcionó; causa pendiente de confirmar.
+
+  ### Receta e impresión — 15/10/2026
+
+- Entorno: QA local. Rol: DOCTOR, Doctor A1 QA.
+- Paciente A3: ID 4. Expediente: ID 1.
+- Se emitió la receta ID 1 desde el formulario.
+- SQL confirmó tenant_id=1, medical_record_id=1, doctor_id=2
+  e issued_on=2026-10-15.
+- Se guardaron diagnóstico e indicaciones, además del medicamento
+  sintético, dosis, frecuencia y duración de 3 días.
+- Creación y persistencia: PASS.
+- El historial muestra la receta, el médico, medicamento y dosis.
+- Hallazgo: historial y vista de impresión muestran 14/10/2026,
+  aunque issued_on contiene 15/10/2026.
+- No se observó acceso a impresión desde la tarjeta del historial.
+- Se abrió directamente /receta-print/1.
+- Paciente y DUI aparecen vacíos; duración e indicaciones no se muestran.
+- El botón Imprimir abre una vista previa de una página y no sale impreso.
+- Vista de impresión: FAIL por datos del paciente ausentes y fecha incorrecta.
+- No se imprimió en papel ni se guardó un PDF.

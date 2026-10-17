@@ -79,11 +79,8 @@ export default function Expediente() {
 
   const [rec, setRec] = useState<Exp | null>(null)
   const [loading, setLoading] = useState(true)
-<<<<<<< HEAD
   const [loadError, setLoadError] = useState<LoadError | null>(null)
-=======
   const [loadedPatientId, setLoadedPatientId] = useState<number | null>(null)
->>>>>>> feature/avance3-fase-b
   const [showTriaje, setShowTriaje] = useState(false)
   const [triajeForm, setTriajeForm] = useState<TriajeForm>(INITIAL_TRIAJE)
   const [saving, setSaving] = useState(false)
@@ -121,8 +118,11 @@ export default function Expediente() {
       .then(data => {
         if (activo) setRec(data)
       })
-      .catch(() => {
-        if (activo) setRec(null)
+      .catch((err) => {
+        if (activo) {
+            setRec(null)
+            setLoadError(toLoadError(err))
+        }
       })
       .finally(() => {
         if (!activo) return
@@ -134,6 +134,7 @@ export default function Expediente() {
       activo = false
     }
   }, [patientId])
+
   const setT = (k: string, v: string) => setTriajeForm(f => ({ ...f, [k]: v }))
 
   const submitTriaje = async (e: React.FormEvent) => {
@@ -165,20 +166,15 @@ export default function Expediente() {
     }
   }
 
-<<<<<<< HEAD
-  if (loading) return <LoadingSpinner label="Cargando expediente..." />
+  if (loading || loadedPatientId !== patientId) {
+    return <LoadingSpinner label="Cargando expediente..." />
+  }
   if (loadError === 'unauthorized') {
     return <LoadingSpinner label="Sesión expirada. Redirigiendo al inicio de sesión..." />
   }
   if (loadError || !rec) {
-    return <p role="alert" className="p-4 text-red-600">{LOAD_ERROR_TEXT[loadError ?? 'error']}</p>
+    return <p role="alert" className="p-4 text-red-600">{LOAD_ERROR_TEXT[loadError ?? 'error'] || 'No se encontró el expediente.'}</p>
   }
-=======
-    if (loading || loadedPatientId !== patientId) {
-    return <LoadingSpinner label="Cargando expediente..." />
-  }
-  if (!rec) return <p className="p-4 text-red-600">No se encontró el expediente.</p>
->>>>>>> feature/avance3-fase-b
 
   const { patient } = rec
 

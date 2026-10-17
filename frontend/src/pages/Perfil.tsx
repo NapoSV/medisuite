@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { isAxiosError } from 'axios';
 import type { FormEvent } from 'react';
 import { api } from '../api/client';
 import { useAuth } from '../auth/useAuth';
@@ -36,8 +37,28 @@ export default function Perfil() {
   };
 
   useEffect(() => {
-    loadProfile();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    let activo = true;
+
+    api.get<ProfileUser>('/api/users/me')
+      .then(res => {
+        if (activo) setProfile(res.data);
+      })
+      .catch((err: unknown) => {
+        if (!activo) return;
+
+        const mensaje = isAxiosError<{ error?: string; message?: string }>(err)
+          ? err.response?.data?.error ?? err.response?.data?.message
+          : undefined;
+
+        setProfileError(mensaje ?? 'No se pudo cargar el perfil');
+      })
+      .finally(() => {
+        if (activo) setLoadingProfile(false);
+      });
+
+    return () => {
+      activo = false;
+    };
   }, []);
 
   // --- Formulario de cambio de contraseña ---
@@ -72,10 +93,13 @@ export default function Perfil() {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    } catch (err: any) {
-      setFormError(
-        err.response?.data?.error ?? 'No se pudo actualizar la contraseña.'
-      );
+    } catch (err: unknown) {
+      const mensaje = isAxiosError<{ error?: string; message?: string }>(err)
+        ? err.response?.data?.error ?? err.response?.data?.message
+        : undefined;
+
+      setFormError(mensaje ?? 'No se pudo actualizar la contraseña.');
+
     } finally {
       setSubmitting(false);
     }

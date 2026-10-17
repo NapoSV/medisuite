@@ -4,6 +4,8 @@ import com.sv.grupo7.medisuite.dao.MedicalRecordRepository;
 import com.sv.grupo7.medisuite.dao.PatientRepository;
 import com.sv.grupo7.medisuite.dao.PrescriptionRepository;
 import com.sv.grupo7.medisuite.dao.VitalSignRepository;
+import com.sv.grupo7.medisuite.dao.TenantRepository;
+import com.sv.grupo7.medisuite.exception.BusinessException;
 import com.sv.grupo7.medisuite.model.medical.MedicalRecord;
 import com.sv.grupo7.medisuite.model.medical.Patient;
 import com.sv.grupo7.medisuite.model.medical.Prescription;
@@ -12,6 +14,8 @@ import com.sv.grupo7.medisuite.model.tenant.Tenant;
 import com.sv.grupo7.medisuite.security.TenantContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -23,8 +27,11 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
+@Tag("regression")
+@DisplayName("Pruebas unitarias del servicio de expedientes médicos")
 @ExtendWith(MockitoExtension.class)
 class MedicalRecordServiceTest {
 
@@ -39,6 +46,9 @@ class MedicalRecordServiceTest {
 
     @Mock
     private VitalSignRepository vitalSignRepo;
+
+    @Mock
+    private TenantRepository tenantRepo;
 
     @InjectMocks
     private MedicalRecordService medicalRecordService;
@@ -115,6 +125,91 @@ class MedicalRecordServiceTest {
 
             verify(patientRepo).findByIdAndTenantId(10L, 1L);
             verify(recordRepo).save(any(MedicalRecord.class));
+        }
+    }
+@Test
+    void findFullByPatientId_pacienteDeOtroTenant_debeLanzarBusinessException() {
+
+        Long patientId = 50L;
+        Long tenantActualId = 1L;
+
+        try (MockedStatic<TenantContext> tenantContext =
+                     mockStatic(TenantContext.class)) {
+
+            tenantContext.when(TenantContext::currentTenantId)
+                    .thenReturn(tenantActualId);
+
+            when(recordRepo.findByPatientIdAndTenantId(
+                    patientId, tenantActualId))
+                    .thenReturn(Optional.empty());
+
+            when(patientRepo.findByIdAndTenantId(
+                    patientId, tenantActualId))
+                    .thenReturn(Optional.empty());
+
+            BusinessException exception = assertThrows(
+                    BusinessException.class,
+                    () -> medicalRecordService.findFullByPatientId(patientId)
+            );
+
+            assertEquals("Paciente no existe", exception.getMessage());
+
+            verify(recordRepo).findByPatientIdAndTenantId(
+                    patientId, tenantActualId);
+
+            verify(patientRepo).findByIdAndTenantId(
+                    patientId, tenantActualId);
+
+            verify(recordRepo, never()).save(any(MedicalRecord.class));
+            verifyNoInteractions(prescriptionRepo, vitalSignRepo);
+        }
+    }
+        @Test
+    void addVitalSign_pacienteDeOtroTenant_debeLanzarBusinessException() {
+
+        Long patientId = 50L;
+        Long tenantActualId = 1L;
+
+        Tenant tenantActual = new Tenant();
+        tenantActual.setId(tenantActualId);
+
+        MedicalRecordService.VitalSignRequest request =
+                new MedicalRecordService.VitalSignRequest(
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        "Dolor de cabeza",
+                        "NORMAL"
+                );
+
+        try (MockedStatic<TenantContext> tenantContext =
+                     mockStatic(TenantContext.class)) {
+
+            tenantContext.when(TenantContext::currentTenantId)
+                    .thenReturn(tenantActualId);
+
+            when(tenantRepo.findById(tenantActualId))
+                    .thenReturn(Optional.of(tenantActual));
+
+            when(patientRepo.findByIdAndTenantId(
+                    patientId, tenantActualId))
+                    .thenReturn(Optional.empty());
+
+            BusinessException exception = assertThrows(
+                    BusinessException.class,
+                    () -> medicalRecordService.addVitalSign(
+                            patientId, request)
+            );
+
+            assertEquals("Paciente no existe", exception.getMessage());
+
+            verify(tenantRepo).findById(tenantActualId);
+            verify(patientRepo).findByIdAndTenantId(
+                    patientId, tenantActualId);
+
+            verifyNoInteractions(recordRepo, vitalSignRepo);
         }
     }
 }

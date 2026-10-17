@@ -45,7 +45,31 @@ export default function Doctores() {
         }
     };
 
-    useEffect(() => { load(); }, []);
+        useEffect(() => {
+        let activo = true;
+
+        Promise.all([
+            api.get<Doctor[]>('/api/doctors'),
+            api.get<Specialty[]>('/api/specialties'),
+        ])
+            .then(([docRes, spRes]) => {
+                if (!activo) return;
+                setDoctors(docRes.data);
+                setSpecialties(spRes.data);
+            })
+            .catch(() => {
+                if (activo) {
+                    setError('No se pudo cargar la lista de doctores.');
+                }
+            })
+            .finally(() => {
+                if (activo) setLoading(false);
+            });
+
+        return () => {
+            activo = false;
+        };
+    }, []);
 
     const openModal = () => { setForm(EMPTY_FORM); setFormError(null); setModalOpen(true); };
     const closeModal = () => setModalOpen(false);

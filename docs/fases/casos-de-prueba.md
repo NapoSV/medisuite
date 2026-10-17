@@ -529,3 +529,20 @@ La aprobación de B8 y el tratamiento de los pendientes requieren revisión.
 - Resultado: PASS para este arranque con configuración aislada.
 - No certifica el Compose original con su .env ni instalación desde cero.
 - No se comprobaron permisos efectivos de V13 con clinica_app.
+
+### Dashboard: caída y recuperación de BD — 17/10/2026
+
+- Entorno: Compose aislado medisuite-b8-docker.
+- Sesión: ADMIN de clinica-san-rafael.
+- Se detuvo únicamente el servicio db de la copia de QA.
+- Con la BD detenida, Actualizar mostró:
+  "No se pudieron cargar las métricas — Error 500".
+- La interfaz conservó los valores anteriores y ofreció Reintentar.
+- No se observaron detalles SQL ni credenciales en el mensaje visible.
+- Se arrancó nuevamente db y se pulsó Reintentar.
+- El error desapareció y se mostraron las métricas:
+  0 citas hoy, 3 pacientes, 0 alertas y 1 receta.
+- No fue necesario reiniciar el backend.
+- Resultado: PASS para aviso visual de fallo y recuperación.
+- Alcance: no se inspeccionó el cuerpo HTTP completo del error.
+- La base original medisuite-b8-qa permaneció encendida.

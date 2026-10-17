@@ -464,3 +464,20 @@ Sin ejecución manual confirmada:
 
 El export database/schema.sql está documentado como obsoleto.
 La aprobación de B8 y el tratamiento de los pendientes requieren revisión.
+
+### Bloqueo de login por cuenta — 16/10/2026
+
+- Entorno: QA local. Tenant: clinica-san-rafael.
+- Cuenta sintética: doctor.a2@medisuite.test, usuario ID 3.
+- Estado inicial: failed_login_attempts=0 y locked_until=NULL.
+- Se enviaron cinco contraseñas incorrectas, con pausas de 15 segundos.
+- Las cinco respuestas fueron HTTP 401, "Credenciales inválidas",
+  sin token. No se recibieron respuestas HTTP 429.
+- SQL posterior: failed_login_attempts=0 y locked_until=NULL.
+- Un intento posterior con contraseña correcta respondió HTTP 200
+  y entregó token, sin imprimirlo ni guardarlo en la evidencia.
+- Esperado según AuthService: bloqueo de 15 minutos tras cinco fallos.
+- Resultado: FAIL para el bloqueo por cuenta.
+- Hipótesis: la transacción de login revierte el incremento al lanzar
+  BadCredentialsException; pendiente confirmar con una prueba específica.
+- Esta ejecución no valida el límite de solicitudes por IP.

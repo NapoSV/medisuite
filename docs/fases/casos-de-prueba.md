@@ -481,3 +481,35 @@ La aprobación de B8 y el tratamiento de los pendientes requieren revisión.
 - Hipótesis: la transacción de login revierte el incremento al lanzar
   BadCredentialsException; pendiente confirmar con una prueba específica.
 - Esta ejecución no valida el límite de solicitudes por IP.
+
+### Dashboard: actualización y navegación ADMIN — 16/10/2026
+
+- Entorno: QA local, tenant clinica-san-rafael, rol ADMIN.
+- Al pulsar Actualizar aumentaron las solicitudes GET
+  /api/dashboard/metrics en Network.
+- La solicitud inspeccionada respondió HTTP 200.
+- Las tarjetas terminaron mostrando sus valores:
+  1 cita hoy, 3 pacientes, 0 alertas y 1 receta.
+- Gestionar pacientes abrió Pacientes.
+- Gestionar doctores abrió Doctores.
+- Nueva cita abrió el formulario /citas/nueva.
+- Resultado: PASS para actualización y navegación ADMIN.
+- No se verificaron aquí las acciones de los demás roles
+  ni una alerta positiva.
+
+### Recordatorios: generación y reprogramación — 16/10/2026
+
+- Entorno: QA local, base con baseline V9 y migraciones V10/V11.
+- Rol ADMIN, tenant_id=1, datos sintéticos.
+- Cola inicialmente vacía.
+- Se creó cita ID 3, COD-5809, para 17/10/2026 08:00 de El Salvador.
+- El worker generó recordatorio ID 1, PENDING,
+  scheduled_for=2026-10-16 14:00:00+00: 24 horas antes de la cita.
+- Cancelar la cita fue rechazado por la regla de 24 horas de anticipación.
+- Se reprogramó al 19/10/2026 08:00, conservando COD-5809.
+- SQL confirmó cita SCHEDULED y recordatorio anterior CANCELLED,
+  processed_at=2026-10-17 00:57:07.263099+00.
+- Resultado: PASS para generación y cancelación del recordatorio
+  obsoleto por reprogramación.
+- No se certifican envío real, cancelación directa de la cita,
+  idempotencia entre ciclos ni permisos de clinica_app.

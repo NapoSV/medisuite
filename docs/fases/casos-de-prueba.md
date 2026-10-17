@@ -546,3 +546,14 @@ La aprobación de B8 y el tratamiento de los pendientes requieren revisión.
 - Resultado: PASS para aviso visual de fallo y recuperación.
 - Alcance: no se inspeccionó el cuerpo HTTP completo del error.
 - La base original medisuite-b8-qa permaneció encendida.
+
+### Dashboard: alerta positiva — 17/10/2026
+
+- Entorno: Docker QA aislado, http://localhost:15173.
+- Sesión: Doctor A1 QA, tenant clinica-san-rafael.
+- Se registraron signos vitales sintéticos con prioridad EMERGENCIA
+  para el paciente ID 4, expediente ID 1.
+- El historial mostró EMERGENCIA y confirmó el registro.
+- El dashboard mostró Alertas clínicas=1; antes mostraba 0.
+- Resultado: PASS para visualización de una alerta positiva.
+- Alcance: no se verificó aquí su separación entre médicos o tenants.

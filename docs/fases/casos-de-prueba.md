@@ -430,40 +430,54 @@ Esta ejecución no certifica V12 ni completa las pruebas manuales pendientes.
 - No se probó la cadena V1–V13 desde una base vacía.
 - No se modificó la base compartida.
 
-### Estado consolidado de B8 — 16/10/2026
+### Estado consolidado de B8 — 17/10/2026
 
-Este resumen actualiza los pendientes históricos de las secciones anteriores.
+Este resumen sustituye los pendientes históricos de las secciones anteriores.
+Las evidencias detalladas conservan sus fechas y alcances originales.
 
-- Lint del frontend: resuelto; build y validación integral aprobados.
-- Suite general tras integrar fase-b: 115 pruebas aprobadas.
-- ReminderMigrationIT ampliado: 3 pruebas aprobadas.
-- V12: validada localmente con baseline V9 y actualización V11→V13.
-- V13: verificada únicamente su omisión sin clinica_app.
-- Manuales ejecutadas: login válido, alta y búsqueda de pacientes,
-  citas, doble reserva secuencial, reprogramación, cancelación,
-  triaje, consulta de expediente, restricciones de enfermería,
-  creación e impresión de recetas y dashboard por rol.
-- Seguridad: dos consultas B→A sin exposición observada de datos;
-  comparación de recetas entre médicos A1, A2 y B aprobada.
-  Esta cobertura no certifica todo el aislamiento multi-tenant.
+Validaciones ejecutadas:
+- Lint corregido; validación integral del 16/10 aprobada:
+  115 pruebas, 0 fallos, 0 errores y 0 omitidas; build y lint aprobados.
+- ReminderMigrationIT: 3 pruebas aprobadas en PostgreSQL descartable.
+- V12: actualización desde baseline V9, conservación de códigos,
+  secuencia y rechazo de duplicados del mismo tenant verificados.
+- Manuales: login válido, alta y búsqueda de pacientes, citas,
+  doble reserva secuencial, reprogramación, cancelación, triaje,
+  expediente, restricción de recetas para enfermería y emisión de recetas.
+- Dashboard: revisión visual de cuatro roles, comparación de recetas
+  entre A1, A2 y B, Actualizar y navegación ADMIN aprobados.
+- Alerta positiva: EMERGENCIA en expediente y contador de Doctor A1=1.
+- Recordatorios: generación y cancelación del recordatorio obsoleto
+  tras reprogramar, verificadas mediante SQL.
+- Docker aislado: imágenes construidas, acceso funcional y
+  baseline V9 con V10–V13 aplicadas correctamente.
+- Caída de BD: aviso visual y recuperación con Reintentar aprobados.
+- Dos consultas B→A no expusieron datos clínicos en las respuestas.
 
 Hallazgos abiertos:
+- Bloqueo de login: cinco fallos no persistieron el contador ni
+  bloquearon la cuenta; el login correcto posterior fue aceptado.
 - Alta con DUI duplicado devuelve HTTP 500.
 - Triaje guarda LOW en lugar del contrato NORMAL.
-- Impresión de receta con paciente ausente y fecha incorrecta.
+- Impresión: paciente y DUI ausentes, fecha incorrecta;
+  duración e indicaciones no aparecen.
 - Consulta de receta de otro tenant devuelve HTTP 500.
-- Cancelación con HTTP 403 previo: causa sin confirmar.
-- Dashboard incluye citas canceladas en appointmentsToday;
-  comportamiento pendiente de contrastar con el contrato.
+- Cancelación: un HTTP 403 previo tiene causa sin confirmar.
+- Dashboard: incluye citas canceladas en appointmentsToday;
+  pendiente contrastarlo con el contrato. La tarjeta de recetas
+  tampoco indica que su contador corresponde a la semana.
 
-Sin ejecución manual confirmada:
-- Bloqueo de login, flujo de recordatorios, fallo de base de datos
-  y arranque completo mediante Docker.
-- Dashboard: Actualizar, navegación de acciones y alerta positiva.
-- Permisos efectivos de V13 con los roles presentes.
+Límites de cobertura:
+- V13: se comprobó su omisión sin clinica_app; no permisos efectivos.
+- No se probó instalación V1–V13 desde cero ni el Compose original con .env.
+- No se certifican todo el aislamiento multi-tenant, concurrencia manual,
+  límite de login por IP ni separación de alertas entre médicos y tenants.
+- Recordatorios: sin envío real, cancelación directa ni idempotencia manual.
+- El fallo de BD se evaluó visualmente; no se inspeccionó todo el cuerpo HTTP.
+- El export database/schema.sql continúa documentado como obsoleto.
 
-El export database/schema.sql está documentado como obsoleto.
-La aprobación de B8 y el tratamiento de los pendientes requieren revisión.
+Estado: resultados preparados para revisión de B8, con fallos y límites
+declarados. Esto no constituye aprobación para merge ni cierre de incidencias.
 
 ### Bloqueo de login por cuenta — 16/10/2026
 

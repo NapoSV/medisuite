@@ -513,3 +513,19 @@ La aprobación de B8 y el tratamiento de los pendientes requieren revisión.
   obsoleto por reprogramación.
 - No se certifican envío real, cancelación directa de la cita,
   idempotencia entre ciclos ni permisos de clinica_app.
+
+### Arranque con Docker en QA aislado — 17/10/2026
+
+- Se construyeron las imágenes backend y frontend sin errores.
+- Se utilizó un Compose temporal de QA con PostgreSQL 16,
+  backend Java 21 y frontend Nginx.
+- La BD se inicializó con una copia de medisuite_qa.
+- PostgreSQL y backend alcanzaron estado healthy;
+  GET /actuator/health respondió {"status":"UP"}.
+- Frontend disponible en http://localhost:15173.
+- Login con ADMIN de clinica-san-rafael: correcto.
+- Dashboard cargó y Pacientes mostró los tres pacientes sintéticos.
+- Flyway confirmó baseline V9 y V10–V13 con success=true.
+- Resultado: PASS para este arranque con configuración aislada.
+- No certifica el Compose original con su .env ni instalación desde cero.
+- No se comprobaron permisos efectivos de V13 con clinica_app.

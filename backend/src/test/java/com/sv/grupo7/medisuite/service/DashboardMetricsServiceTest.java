@@ -2,7 +2,7 @@ package com.sv.grupo7.medisuite.service;
 
 import com.sv.grupo7.medisuite.dao.DoctorRepository;
 import com.sv.grupo7.medisuite.dao.UserRepository;
-import com.sv.grupo7.medisuite.dao.jdbc.DashboardMetricsReader;
+import com.sv.grupo7.medisuite.service.port.MetricsPort;
 import com.sv.grupo7.medisuite.dto.dashboard.DashboardQuery;
 import com.sv.grupo7.medisuite.dto.dashboard.DashboardResponse;
 import com.sv.grupo7.medisuite.model.medical.Doctor;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class DashboardMetricsServiceTest {
 
-    @Mock DashboardMetricsReader metrics;
+    @Mock MetricsPort metrics;
     @Mock UserRepository users;
     @Mock DoctorRepository doctors;
 
@@ -50,7 +50,7 @@ class DashboardMetricsServiceTest {
     @Test
     void adminUsesOnlyItsAuthenticatedTenantAndLocalWeek() {
         when(users.findById(7L)).thenReturn(Optional.of(user(1L, "ADMIN")));
-        when(metrics.read(any())).thenReturn(emptyResponse());
+        when(metrics.getMetrics(any())).thenReturn(emptyResponse());
 
         service.getMetrics(1L, auth(7L, "ADMIN"));
 
@@ -70,7 +70,7 @@ class DashboardMetricsServiceTest {
         doctor.setId(31L);
         doctor.setTenantId(1L);
         when(doctors.findByUserId(7L)).thenReturn(Optional.of(doctor));
-        when(metrics.read(any())).thenReturn(emptyResponse());
+        when(metrics.getMetrics(any())).thenReturn(emptyResponse());
 
         service.getMetrics(1L, auth(7L, "DOCTOR"));
 
@@ -84,7 +84,7 @@ class DashboardMetricsServiceTest {
         when(users.findById(7L)).thenReturn(Optional.of(user(2L, "ADMIN")));
         assertThatThrownBy(() -> service.getMetrics(1L, auth(7L, "ADMIN")))
                 .isInstanceOf(AccessDeniedException.class);
-        verify(metrics, never()).read(any());
+        verify(metrics, never()).getMetrics(any());
     }
 
     @Test
@@ -96,7 +96,7 @@ class DashboardMetricsServiceTest {
         when(doctors.findByUserId(7L)).thenReturn(Optional.of(doctor));
         assertThatThrownBy(() -> service.getMetrics(1L, auth(7L, "DOCTOR")))
                 .isInstanceOf(AccessDeniedException.class);
-        verify(metrics, never()).read(any());
+        verify(metrics, never()).getMetrics(any());
     }
 
     @Test
@@ -109,26 +109,26 @@ class DashboardMetricsServiceTest {
         when(users.findById(7L)).thenReturn(Optional.of(inactive));
         assertThatThrownBy(() -> service.getMetrics(1L, auth(7L, "NURSE")))
                 .isInstanceOf(AccessDeniedException.class);
-        verify(metrics, never()).read(any());
+        verify(metrics, never()).getMetrics(any());
     }
 
     @Test
     void passesNurseAndReceptionistRolesWithoutDoctorScope() {
         when(users.findById(7L)).thenReturn(Optional.of(user(1L, "NURSE")));
-        when(metrics.read(any())).thenReturn(emptyResponse());
+        when(metrics.getMetrics(any())).thenReturn(emptyResponse());
         service.getMetrics(1L, auth(7L, "NURSE"));
         assertThat(captureQuery().role()).isEqualTo(DashboardQuery.Role.NURSE);
 
         when(users.findById(7L)).thenReturn(Optional.of(user(1L, "RECEPTIONIST")));
         service.getMetrics(1L, auth(7L, "RECEPTIONIST"));
         ArgumentCaptor<DashboardQuery> all = ArgumentCaptor.forClass(DashboardQuery.class);
-        verify(metrics, org.mockito.Mockito.times(2)).read(all.capture());
+        verify(metrics, org.mockito.Mockito.times(2)).getMetrics(all.capture());
         assertThat(all.getAllValues().get(1).role()).isEqualTo(DashboardQuery.Role.RECEPTIONIST);
     }
 
     private DashboardQuery captureQuery() {
         ArgumentCaptor<DashboardQuery> captor = ArgumentCaptor.forClass(DashboardQuery.class);
-        verify(metrics).read(captor.capture());
+        verify(metrics).getMetrics(captor.capture());
         return captor.getValue();
     }
 

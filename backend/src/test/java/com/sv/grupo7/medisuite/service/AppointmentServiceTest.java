@@ -9,6 +9,7 @@ import com.sv.grupo7.medisuite.model.medical.Doctor;
 import com.sv.grupo7.medisuite.model.medical.Patient;
 import com.sv.grupo7.medisuite.model.tenant.Tenant;
 import com.sv.grupo7.medisuite.security.TenantContext;
+import com.sv.grupo7.medisuite.service.concurrent.ReservationCodeGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,6 +37,9 @@ class AppointmentServiceTest{
 
     @Mock
     private DoctorRepository doctorRepo;
+
+    @Mock
+    private ReservationCodeGenerator reservationCodeGenerator;
 
     @InjectMocks
     private AppointmentService appointmentService;
@@ -116,6 +120,8 @@ class AppointmentServiceTest{
             when(appointmentRepo.existsByDoctorIdAndScheduledAtAndStatusNot(
                     doctorId, fecha, "CANCELLED"))
                     .thenReturn(false);
+
+            when(reservationCodeGenerator.next()).thenReturn("R-00000001");
 
             when(appointmentRepo.save(any(Appointment.class)))
                     .thenAnswer(invocation -> invocation.getArgument(0));

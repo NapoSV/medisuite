@@ -23,6 +23,7 @@ export default function Expediente() {
 
   const [rec, setRec] = useState<Exp | null>(null)
   const [loading, setLoading] = useState(true)
+  const [loadedPatientId, setLoadedPatientId] = useState<number | null>(null)
   const [showTriaje, setShowTriaje] = useState(false)
   const [triajeForm, setTriajeForm] = useState({
     temperatureC: '', heartRate: '', bloodPressure: '',
@@ -42,8 +43,26 @@ export default function Expediente() {
       .finally(() => setLoading(false))
   }
 
-  useEffect(() => { load() }, [patientId])
+  useEffect(() => {
+    let activo = true
 
+    getMedicalRecord(patientId)
+      .then(data => {
+        if (activo) setRec(data)
+      })
+      .catch(() => {
+        if (activo) setRec(null)
+      })
+      .finally(() => {
+        if (!activo) return
+        setLoadedPatientId(patientId)
+        setLoading(false)
+      })
+
+    return () => {
+      activo = false
+    }
+  }, [patientId])
   const setT = (k: string, v: string) => setTriajeForm(f => ({ ...f, [k]: v }))
 
   const submitTriaje = async (e: React.FormEvent) => {
@@ -70,7 +89,9 @@ export default function Expediente() {
     }
   }
 
-  if (loading) return <LoadingSpinner label="Cargando expediente..." />
+    if (loading || loadedPatientId !== patientId) {
+    return <LoadingSpinner label="Cargando expediente..." />
+  }
   if (!rec) return <p className="p-4 text-red-600">No se encontró el expediente.</p>
 
   const { patient } = rec

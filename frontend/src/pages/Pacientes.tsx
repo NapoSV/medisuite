@@ -32,7 +32,18 @@ export default function Pacientes() {
     const [editId, setEditId] = useState<number | undefined>(undefined);
 
     const load = () => api.get<{ content: Patient[] }>(`/api/patients?search=${q}`).then(r => setRows(r.data.content));
-    useEffect(() => { load(); }, []);
+        useEffect(() => {
+        let activo = true;
+
+        api.get<{ content: Patient[] }>('/api/patients?search=')
+            .then(r => {
+                if (activo) setRows(r.data.content);
+            });
+
+        return () => {
+            activo = false;
+        };
+    }, []);
 
     const openCreate = () => { setEditId(undefined); setModalOpen(true); };
     const openEdit   = (id: number) => { setEditId(id); setModalOpen(true); };

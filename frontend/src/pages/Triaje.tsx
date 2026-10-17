@@ -149,9 +149,11 @@ export default function Triaje() {
   useEffect(() => {
     if (!preselectedPatientId || selected || patients.length === 0) return
     const p = patients.find(x => x.id === Number(preselectedPatientId))
-    if (p) selectPatient(p)
-  }, [preselectedPatientId, patients])
-
+    if (p) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      selectPatient(p)
+    }
+  }, [preselectedPatientId, patients, selected])
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
   const aplicarPresetNormal = () => { setForm(PRESET_NORMAL); setError(null) }
   const limpiar = () => { setForm(EMPTY_FORM); setError(null); setOk(null) }

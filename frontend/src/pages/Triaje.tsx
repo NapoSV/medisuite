@@ -81,10 +81,44 @@ export default function Triaje() {
   const [ok, setOk] = useState<string | null>(null)
 
   useEffect(() => {
+    let activo = true
+
     api.get<{ content: Patient[] }>('/api/patients?size=200')
-        .then(r => setPatients(r.data.content))
-        .catch(() => setPatients([]))
-  }, [])
+      .then(async r => {
+        if (!activo) return
+        setPatients(r.data.content)
+
+        if (!preselectedPatientId) return
+
+        const p = r.data.content.find(
+          patient => patient.id === Number(preselectedPatientId)
+        )
+        if (!p) return
+
+        setSelected(p)
+        setForm(EMPTY_FORM)
+        setOk(null)
+        setError(null)
+        setRecent([])
+        setLoadingHistory(true)
+
+        try {
+          const exp = await getMedicalRecord(p.id)
+          if (activo) setRecent(exp.vitalSigns.slice(0, 5))
+        } catch {
+          if (activo) setRecent([])
+        } finally {
+          if (activo) setLoadingHistory(false)
+        }
+      })
+      .catch(() => {
+        if (activo) setPatients([])
+      })
+
+    return () => {
+      activo = false
+    }
+  }, [preselectedPatientId])
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
@@ -112,7 +146,6 @@ export default function Triaje() {
     }
   }
 
-
   useEffect(() => {
     if (!preselectedPatientId || selected || patients.length === 0) return
     const p = patients.find(x => x.id === Number(preselectedPatientId))
@@ -131,10 +164,10 @@ export default function Triaje() {
     if (!Number.isFinite(v)) return null
     let etiqueta: string
     let color: string
-    if (v < 18.5)    { etiqueta = 'Bajo peso'; color = 'text-amber-700 bg-amber-50' }
-    else if (v < 25) { etiqueta = 'Normal';    color = 'text-emerald-700 bg-emerald-50' }
-    else if (v < 30) { etiqueta = 'Sobrepeso'; color = 'text-amber-700 bg-amber-50' }
-    else             { etiqueta = 'Obesidad';  color = 'text-red-700 bg-red-50' }
+    if (v < 18.5)      { etiqueta = 'Bajo peso';   color = 'text-amber-700 bg-amber-50' }
+    else if (v < 25)   { etiqueta = 'Normal';      color = 'text-emerald-700 bg-emerald-50' }
+    else if (v < 30)   { etiqueta = 'Sobrepeso';   color = 'text-amber-700 bg-amber-50' }
+    else               { etiqueta = 'Obesidad';    color = 'text-red-700 bg-red-50' }
     return { valor: v.toFixed(1), etiqueta, color }
   }, [form.weightKg, form.heightCm])
 

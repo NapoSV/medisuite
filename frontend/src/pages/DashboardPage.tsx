@@ -115,8 +115,29 @@ export default function DashboardPage() {
       .finally(() => setLoading(false))
   }
 
-  useEffect(load, [])
+  useEffect(() => {
+    let activo = true
 
+    fetchDashboardMetrics()
+      .then(data => {
+        if (activo) setMetrics(data)
+      })
+      .catch((err: unknown) => {
+        if (!activo) return
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'No se pudieron cargar las métricas.'
+        )
+      })
+      .finally(() => {
+        if (activo) setLoading(false)
+      })
+
+    return () => {
+      activo = false
+    }
+  }, [])
   const role = user?.role ?? 'ADMIN'
   const config = ROLE_CONFIG[role] ?? ROLE_CONFIG.ADMIN
 

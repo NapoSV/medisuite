@@ -5,6 +5,8 @@ import { useAuth } from '../auth/useAuth'
 import { getTenantSlug } from '../lib/tenant'
 import Logo from '../components/Logo'
 import ErrorAlert from '../components/ErrorAlert'
+import { isAxiosError } from 'axios'
+
 
 export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' })
@@ -32,7 +34,13 @@ export default function LoginPage() {
       const next = params.get('next')
       navigate(next && next.startsWith('/') ? next : '/dashboard', { replace: true })
     } catch (err: unknown) {
-      const msg = (err as any)?.response?.data?.message ?? (err as Error)?.message ?? 'Error al iniciar sesión'
+      let msg = 'Error al iniciar sesión'
+
+      if (isAxiosError<{ message?: string }>(err)) {
+        msg = err.response?.data?.message ?? err.message ?? msg
+      } else if (err instanceof Error) {
+        msg = err.message
+      }
       setError(msg)
     } finally {
       setLoading(false)

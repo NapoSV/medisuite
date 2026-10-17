@@ -68,7 +68,7 @@ class DashboardJdbcDaoTest {
         }
 
         DashboardJdbcDao dao = new DashboardJdbcDao(source);
-        DashboardResponse admin = dao.read(query(1L, null, DashboardQuery.Role.ADMIN));
+        DashboardResponse admin = dao.getMetrics(query(1L, null, DashboardQuery.Role.ADMIN));
         assertThat(admin.appointmentsToday()).isEqualTo(2);
         assertThat(admin.activePatients()).isEqualTo(2);
         assertThat(admin.prescriptionsThisWeek()).isEqualTo(2);
@@ -77,7 +77,7 @@ class DashboardJdbcDaoTest {
         assertThat(admin.occupancyByHour()).extracting("hour").containsExactly(0, 10);
         assertThat(admin.clinicalAlerts()).isNull();
 
-        DashboardResponse doctor = dao.read(query(1L, 11L, DashboardQuery.Role.DOCTOR));
+        DashboardResponse doctor = dao.getMetrics(query(1L, 11L, DashboardQuery.Role.DOCTOR));
         assertThat(doctor.appointmentsToday()).isEqualTo(1);
         assertThat(doctor.activePatients()).isNull();
         assertThat(doctor.prescriptionsThisWeek()).isEqualTo(1);
@@ -85,19 +85,19 @@ class DashboardJdbcDaoTest {
         assertThat(doctor.waitingRoom()).hasSize(1);
         assertThat(doctor.clinicalAlerts()).extracting("patientId").containsExactly(1L);
 
-        DashboardResponse nurse = dao.read(query(1L, null, DashboardQuery.Role.NURSE));
+        DashboardResponse nurse = dao.getMetrics(query(1L, null, DashboardQuery.Role.NURSE));
         assertThat(nurse.prescriptionsIssued()).isNull();
         assertThat(nurse.occupancyByHour()).isNull();
         assertThat(nurse.clinicalAlerts()).hasSize(2);
 
-        DashboardResponse receptionist = dao.read(query(1L, null, DashboardQuery.Role.RECEPTIONIST));
+        DashboardResponse receptionist = dao.getMetrics(query(1L, null, DashboardQuery.Role.RECEPTIONIST));
         assertThat(receptionist.alerts()).isNull();
         assertThat(receptionist.clinicalAlerts()).isNull();
         assertThat(receptionist.prescriptionsIssued()).isNull();
         String receptionistJson = new ObjectMapper().findAndRegisterModules().writeValueAsString(receptionist);
         assertThat(receptionistJson).doesNotContain("\"alerts\"", "\"clinicalAlerts\"", "\"prescriptionsIssued\"");
 
-        DashboardResponse empty = dao.read(query(99L, null, DashboardQuery.Role.ADMIN));
+        DashboardResponse empty = dao.getMetrics(query(99L, null, DashboardQuery.Role.ADMIN));
         assertThat(empty.appointmentsToday()).isZero();
         assertThat(empty.waitingRoom()).isEmpty();
         assertThat(empty.occupancyByHour()).isEmpty();

@@ -112,11 +112,16 @@ export default function Expediente() {
   }
 
   useEffect(() => {
+    if (patientId === null) return
+
     let activo = true
 
     getMedicalRecord(patientId)
       .then(data => {
-        if (activo) setRec(data)
+        if (activo) {
+          setRec(data)
+          setLoadError(null)
+        }
       })
       .catch((err) => {
         if (activo) {
@@ -166,6 +171,9 @@ export default function Expediente() {
     }
   }
 
+  if (patientId === null) {
+    return <p role="alert" className="p-4 text-red-600">{LOAD_ERROR_TEXT['invalid-id']}</p>
+  }
   if (loading || loadedPatientId !== patientId) {
     return <LoadingSpinner label="Cargando expediente..." />
   }

@@ -31,9 +31,22 @@ export default function CitaNueva() {
     listPatients().then(setPatients).catch(() => setPatients([]))
   }, [])
 
-  useEffect(() => {
-    if (!doctorId || !date) { setSlots([]); return }
-    listSlots(+doctorId, date).then(setSlots).catch(() => setSlots([]))
+    useEffect(() => {
+    if (!doctorId || !date) return
+
+    let activo = true
+
+    listSlots(+doctorId, date)
+      .then(data => {
+        if (activo) setSlots(data)
+      })
+      .catch(() => {
+        if (activo) setSlots([])
+      })
+
+    return () => {
+      activo = false
+    }
   }, [doctorId, date])
 
   useEffect(() => {
@@ -120,10 +133,16 @@ export default function CitaNueva() {
       {/* 1. Especialidad */}
       <div className="flex flex-col gap-1">
         <label className="text-sm font-medium text-slate-700">1. Especialidad</label>
-        <select
+                <select
           value={specialtyName}
-          onChange={e => { setSpecialtyName(e.target.value); setDoctorId('') }}
+          onChange={e => {
+            setSpecialtyName(e.target.value)
+            setDoctorId('')
+            setSlot('')
+            setSlots([])
+          }}
           className="border p-2 rounded"
+
         >
           <option value="">Todas las especialidades</option>
           {specialties.map(s => <option key={s} value={s}>{s}</option>)}
@@ -133,9 +152,13 @@ export default function CitaNueva() {
       {/* 2. Doctor */}
       <div className="flex flex-col gap-1">
         <label className="text-sm font-medium text-slate-700">2. Doctor</label>
-        <select
+                <select
           value={doctorId}
-          onChange={e => { setDoctorId(e.target.value); setSlot('') }}
+          onChange={e => {
+            setDoctorId(e.target.value)
+            setSlot('')
+            setSlots([])
+          }}
           className="border p-2 rounded"
           required
         >
@@ -211,11 +234,15 @@ export default function CitaNueva() {
       {/* 4. Fecha */}
       <div className="flex flex-col gap-1">
         <label className="text-sm font-medium text-slate-700">4. Fecha</label>
-        <input
+                <input
           type="date"
           min={hoy}
           value={date}
-          onChange={e => { setDate(e.target.value); setSlot('') }}
+          onChange={e => {
+            setDate(e.target.value)
+            setSlot('')
+            setSlots([])
+          }}
           className="border p-2 rounded"
           required
         />

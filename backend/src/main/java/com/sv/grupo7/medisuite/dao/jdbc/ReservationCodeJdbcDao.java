@@ -9,10 +9,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
  * DAO JDBC de la secuencia de códigos de reserva (V12).
@@ -38,21 +34,15 @@ public class ReservationCodeJdbcDao extends BaseJdbcDao implements ReservationCo
         super(dataSource);
     }
 
+    /** {@code nextval()} es atómico entre hilos e instancias: nunca repite un valor. */
     public long nextValue() {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement ps = connection.prepareStatement(SQL_NEXT_VALUE);
-             ResultSet rs = ps.executeQuery()) {
-            if (!rs.next()) {
-                throw new DataAccessException("siguiente código de reserva", JdbcErrorCode.UNKNOWN, null);
-            }
-            return rs.getLong(1);
-        } catch (SQLException e) {
-            throw new DataAccessException("siguiente código de reserva", JdbcErrorCode.from(e), e);
-        }
+        return queryOne(SQL_NEXT_VALUE, rs -> rs.getLong(1))
+                .orElseThrow(() -> new DataAccessException(
+                        "siguiente código de reserva", JdbcErrorCode.UNKNOWN, null));
     }
 
     @Override
-    public String nextCode(Long tenantId) {
+    public String nextCode() {
         long value = nextValue();
         if (value < 1 || value > MAX_SEQUENCE_VALUE) {
             throw new IllegalStateException(

@@ -1,16 +1,15 @@
 package com.sv.grupo7.medisuite.service.concurrent;
 
-import com.sv.grupo7.medisuite.dao.jdbc.ReminderJdbcDao;
-import com.sv.grupo7.medisuite.dao.jdbc.ReminderReader;
+import com.sv.grupo7.medisuite.service.port.ReminderPort;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
+import java.time.ZoneId;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -36,19 +35,22 @@ public class AppointmentReminderService {
     static final long INITIAL_DELAY_MINUTES = 2;
     static final long PERIOD_MINUTES = 10;
 
-    private final ReminderReader reminderReader;
+    /** Zona operativa de la clínica para calcular la ventana de 24 h. */
+    static final ZoneId CLINIC_ZONE = ZoneId.of("America/El_Salvador");
+
+    private final ReminderPort reminderPort;
     private final Clock clock;
     private final AtomicInteger cycleCount = new AtomicInteger();
     private ScheduledExecutorService executor;
 
     @Autowired
-    public AppointmentReminderService(ReminderReader reminderReader) {
-        this(reminderReader, Clock.systemDefaultZone());
+    public AppointmentReminderService(ReminderPort reminderPort) {
+        this(reminderPort, Clock.systemDefaultZone());
     }
 
     /** Constructor para test con Clock inyectable y puerto simulado. */
-    public AppointmentReminderService(ReminderReader reminderReader, Clock clock) {
-        this.reminderReader = reminderReader;
+    public AppointmentReminderService(ReminderPort reminderPort, Clock clock) {
+        this.reminderPort = reminderPort;
         this.clock = clock;
     }
 
@@ -96,8 +98,8 @@ public class AppointmentReminderService {
     /** Un ciclo: cancelar obsoletos y luego encolar los próximos. */
     void runOnce() {
         int cycle = cycleCount.incrementAndGet();
-        int cancelled = reminderReader.cancelStaleReminders(clock, ReminderJdbcDao.DEFAULT_ZONE);
-        int inserted = reminderReader.enqueueDueReminders(clock, ReminderJdbcDao.DEFAULT_ZONE);
+        int cancelled = reminderPort.cancelStaleReminders(clock, CLINIC_ZONE);
+        int inserted = reminderPort.enqueueDueReminders(clock, CLINIC_ZONE);
         log.info("Recordatorios ciclo {}: cancelados={} insertados={}", cycle, cancelled, inserted);
     }
 

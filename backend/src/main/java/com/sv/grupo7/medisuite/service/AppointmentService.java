@@ -5,6 +5,7 @@ import com.sv.grupo7.medisuite.dao.DoctorRepository;
 import com.sv.grupo7.medisuite.dao.PatientRepository;
 import com.sv.grupo7.medisuite.exception.BusinessException;
 import com.sv.grupo7.medisuite.model.medical.Appointment;
+import com.sv.grupo7.medisuite.model.medical.AppointmentStatus;
 import com.sv.grupo7.medisuite.security.TenantContext;
 import com.sv.grupo7.medisuite.service.concurrent.ReservationCodeGenerator;
 import lombok.RequiredArgsConstructor;
@@ -13,10 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -39,11 +36,7 @@ public class AppointmentService {
         var patient = patientRepo.findByIdAndTenantId(patientId, tid)
             .orElseThrow(() -> new BusinessException("Paciente no existe"));
 
-        boolean occupied = appointmentRepo
-            .existsByDoctorIdAndScheduledAtAndStatusNot(doctorId, scheduledAt, "CANCELLED");
-        if (occupied) {
-            throw new BusinessException("El doctor ya tiene una cita en ese horario");
-        }
+        ensureSlotFree(doctorId, scheduledAt);
 
         Appointment a = new Appointment();
         a.setTenant(doctor.getTenant());   // tenant desde entidad relacionada (o TenantContext)
@@ -51,7 +44,7 @@ public class AppointmentService {
         a.setDoctor(doctor);
         a.setScheduledAt(scheduledAt);
         a.setReason(reason);
-        a.setStatus("PENDING");
+        a.setStatus(AppointmentStatus.PENDING.name());
         a.setReservationCode(reservationCodeGenerator.next());
         return appointmentRepo.save(a);
     }
@@ -69,26 +62,20 @@ public class AppointmentService {
         if (reason.length() > 500) {
             throw new BusinessException("El motivo de cancelacion no puede exceder 500 caracteres");
         }
-        Appointment a = appointmentRepo.findByIdAndTenantId(appointmentId, TenantContext.currentTenantId())
-            .orElseThrow(() -> new BusinessException("Cita no existe"));
-        if ("CANCELLED".equals(a.getStatus()) || "COMPLETED".equals(a.getStatus())) {
-            throw new BusinessException("La cita ya esta " + a.getStatus().toLowerCase());
-        }
+        Appointment a = findOwnedOrThrow(appointmentId);
+        ensureOpen(a, "La cita ya esta ");
         if (a.getScheduledAt().minusHours(24).isBefore(OffsetDateTime.now())) {
             throw new BusinessException("Solo se puede cancelar con 24h de anticipacion");
         }
-        a.setStatus("CANCELLED");
+        a.setStatus(AppointmentStatus.CANCELLED.name());
         a.setCancelReason(reason.trim());
         a.setCancelledAt(OffsetDateTime.now());
     }
 
     @Transactional
     public Appointment complete(Long appointmentId) {
-        Appointment a = appointmentRepo.findByIdAndTenantId(appointmentId, TenantContext.currentTenantId())
-            .orElseThrow(() -> new BusinessException("Cita no existe"));
-        if ("CANCELLED".equals(a.getStatus()) || "COMPLETED".equals(a.getStatus())) {
-            throw new BusinessException("La cita ya esta " + a.getStatus().toLowerCase());
-        }
+        Appointment a = findOwnedOrThrow(appointmentId);
+        ensureOpen(a, "La cita ya esta ");
         // Validacion: no se puede completar una cita antes de su fecha agendada.
         // Permitimos completar desde el inicio del dia de la cita (00:00) hasta siempre.
         OffsetDateTime now = OffsetDateTime.now();
@@ -99,7 +86,7 @@ public class AppointmentService {
                 "No se puede completar una cita antes de su fecha agendada (" +
                 a.getScheduledAt().toLocalDate() + ")");
         }
-        a.setStatus("COMPLETED");
+        a.setStatus(AppointmentStatus.COMPLETED.name());
         a.setCompletedAt(now);
         return a;
     }
@@ -109,33 +96,36 @@ public class AppointmentService {
         if (newTime.isBefore(OffsetDateTime.now())) {
             throw new BusinessException("La nueva hora no puede ser en el pasado");
         }
-        Appointment a = appointmentRepo.findByIdAndTenantId(appointmentId, TenantContext.currentTenantId())
-            .orElseThrow(() -> new BusinessException("Cita no existe"));
-        if ("CANCELLED".equals(a.getStatus()) || "COMPLETED".equals(a.getStatus())) {
-            throw new BusinessException("No se puede reprogramar una cita " + a.getStatus().toLowerCase());
-        }
-        boolean occupied = appointmentRepo.existsByDoctorIdAndScheduledAtAndStatusNot(
-            a.getDoctorId(), newTime, "CANCELLED");
-        if (occupied) {
-            throw new BusinessException("El doctor ya tiene una cita en ese horario");
-        }
+        Appointment a = findOwnedOrThrow(appointmentId);
+        ensureOpen(a, "No se puede reprogramar una cita ");
+        ensureSlotFree(a.getDoctorId(), newTime);
         a.setScheduledAt(newTime);
-        a.setStatus("SCHEDULED");
+        a.setStatus(AppointmentStatus.SCHEDULED.name());
         return a;
     }
 
-    public List<OffsetDateTime> availableSlots(Long doctorId, LocalDate date) {
-        OffsetDateTime now = OffsetDateTime.now(ZoneOffset.of("-06:00"));
-        List<OffsetDateTime> all = new ArrayList<>();
-        for (int h = 8; h < 17; h++) {
-            all.add(date.atTime(h, 0).atOffset(ZoneOffset.of("-06:00")));
-        }
-        return all.stream().filter(s ->
-            s.isAfter(now) &&
-            !appointmentRepo.existsByDoctorIdAndScheduledAtAndStatusNot(doctorId, s, "CANCELLED")
-        ).toList();
+    /** Cita del tenant actual; una cita de otra clínica se trata como inexistente. */
+    private Appointment findOwnedOrThrow(Long appointmentId) {
+        return appointmentRepo.findByIdAndTenantId(appointmentId, TenantContext.currentTenantId())
+            .orElseThrow(() -> new BusinessException("Cita no existe"));
     }
 
+    /** Una cita cancelada o completada ya no admite cambios. */
+    private void ensureOpen(Appointment a, String messagePrefix) {
+        if (AppointmentStatus.isClosed(a.getStatus())) {
+            throw new BusinessException(messagePrefix + a.getStatus().toLowerCase());
+        }
+    }
 
-
+    /**
+     * Validación rápida con mensaje claro. La garantía ante dos peticiones simultáneas es
+     * el índice único {@code ux_appt_doctor_slot} (V5) más los reintentos del controlador.
+     */
+    private void ensureSlotFree(Long doctorId, OffsetDateTime when) {
+        boolean occupied = appointmentRepo.existsByDoctorIdAndScheduledAtAndStatusNot(
+            doctorId, when, AppointmentStatus.CANCELLED.name());
+        if (occupied) {
+            throw new BusinessException("El doctor ya tiene una cita en ese horario");
+        }
+    }
 }

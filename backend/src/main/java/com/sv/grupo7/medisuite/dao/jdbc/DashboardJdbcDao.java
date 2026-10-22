@@ -5,11 +5,12 @@ import com.sv.grupo7.medisuite.dto.dashboard.DashboardQuery;
 import com.sv.grupo7.medisuite.dto.dashboard.DashboardResponse;
 import com.sv.grupo7.medisuite.dto.dashboard.OccupancySlot;
 import com.sv.grupo7.medisuite.dto.dashboard.WaitingRoomEntry;
+import com.sv.grupo7.medisuite.exception.DataAccessException;
+import com.sv.grupo7.medisuite.exception.JdbcErrorCode;
 import com.sv.grupo7.medisuite.service.port.MetricsPort;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -21,7 +22,13 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/** PostgreSQL read model for the authenticated dashboard. Every query is tenant-scoped. */
+/**
+ * PostgreSQL read model for the authenticated dashboard. Every query is tenant-scoped.
+ *
+ * <p>Las siete consultas se ejecutan sobre una sola conexión prestada por el pool:
+ * se pide una vez y se devuelve al final, en vez de siete préstamos seguidos.
+ * Por eso esta clase no usa los métodos por consulta de {@link BaseJdbcDao}.</p>
+ */
 @Repository
 public class DashboardJdbcDao implements MetricsPort {
 
@@ -61,7 +68,7 @@ public class DashboardJdbcDao implements MetricsPort {
             return new DashboardResponse(appointments, patients, prescriptions, alerts,
                     prescriptions, alerts, waiting, occupancy, clinical);
         } catch (SQLException ex) {
-            throw new DataAccessResourceFailureException("No se pudieron consultar las métricas", ex);
+            throw new DataAccessException("dashboard.metrics", JdbcErrorCode.from(ex), ex);
         }
     }
 

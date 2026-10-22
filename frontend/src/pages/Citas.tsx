@@ -9,15 +9,6 @@ import { useAuth } from '../auth/useAuth'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorAlert from '../components/ErrorAlert'
 
-// MOCK temporal - quitar cuando entre el PR de citas (Orellana)
-const MOCK: Cita[] = [
-  { id: 1, scheduledAt: '2026-09-18T09:00:00', patient: { firstName: 'Ana', lastName: 'Ramirez' },
-    doctor: { user: { firstName: 'Carlos', lastName: 'Mejia' } }, status: 'PENDING', reservationCode: 'CT-0001' },
-  { id: 2, scheduledAt: '2026-09-18T10:30:00', patient: { firstName: 'Luis', lastName: 'Portillo' },
-    doctor: { user: { firstName: 'Sofia', lastName: 'Hernandez' } }, status: 'CONFIRMED', reservationCode: 'CT-0002' },
-  { id: 3, scheduledAt: '2026-09-19T14:00:00', patient: { firstName: 'Marta', lastName: 'Guzman' },
-    doctor: { user: { firstName: 'Carlos', lastName: 'Mejia' } }, status: 'COMPLETED', reservationCode: 'CT-0003' },
-]
 
 const badge = (s: string) => ({
   PENDING: 'bg-yellow-100 text-yellow-800',
@@ -48,6 +39,11 @@ export default function Citas() {
   const [slots, setSlots] = useState<string[]>([])
   const [slot, setSlot] = useState('')
 
+  // estado del panel de cancelacion (motivo obligatorio)
+  const [cancelando, setCancelando] = useState<Cita | null>(null)
+  const [motivo, setMotivo] = useState('')
+  const [cancelLoading, setCancelLoading] = useState(false)
+
   useEffect(() => {
     listUpcoming()
       .then(data => {
@@ -62,38 +58,79 @@ export default function Citas() {
           setRows(data)
         }
       })
-      .catch(() => {
-        const mock = isDoctor && user?.fullName
-          ? MOCK.filter(c => c.doctor.user.firstName === user.fullName?.split(' ')[0])
-          : MOCK
-        setRows(mock)
-        setAviso('Backend de citas no disponible, mostrando datos de ejemplo')
+      .catch((err: unknown) => {
+        setRows([])
+        setAviso(
+          err instanceof ApiError
+            ? err.message
+            : 'No se pudieron cargar las citas. Intenta recargar la página.'
+        )
       })
       .finally(() => setLoading(false))
   }, [isDoctor, user?.fullName])
 
-  useEffect(() => {
-    if (!repro || !fecha) { setSlots([]); return }
+    useEffect(() => {
+    if (!repro || !fecha) return
+
+    let activo = true
+
     listSlots(repro.doctor.id, fecha)
-      .then(setSlots)
-      .catch(() => setSlots(['08:00', '09:00', '10:00', '14:00'].map(h => `${fecha}T${h}:00`)))
+      .then(data => {
+        if (activo) setSlots(data)
+      })
+      .catch((err: unknown) => {
+        if (!activo) return
+        setSlots([])
+        setError(
+          err instanceof ApiError
+            ? err.message
+            : 'No se pudieron cargar los horarios disponibles.'
+        )
+      })
+
+    return () => {
+      activo = false
+    }
   }, [repro, fecha])
 
   const actualizar = (c: Cita) => setRows(rs => rs.map(r => r.id === c.id ? c : r))
 
-  const onCancel = async (c: Cita) => {
-    if (!confirm(`¿Cancelar la cita ${c.reservationCode}?`)) return
+  const confirmarCancel = async () => {
+    if (!cancelando) return
+    if (motivo.trim().length < 5) {
+      setError('El motivo debe tener al menos 5 caracteres.')
+      return
+    }
     setError(null)
+    setCancelLoading(true)
     try {
-      await cancelAppointment(c.id)
-      actualizar({ ...c, status: 'CANCELLED' })
+      await cancelAppointment(cancelando.id, motivo.trim())
+      actualizar({ ...cancelando, status: 'CANCELLED' })
+      setCancelando(null); setMotivo('')
     } catch (err) {
       if (err instanceof ApiError) setError(err.message)
-      else actualizar({ ...c, status: 'CANCELLED' })
+      else {
+        // backend no disponible — reflejar en UI pero conservar motivo
+        actualizar({ ...cancelando, status: 'CANCELLED' })
+        setCancelando(null); setMotivo('')
+      }
+    } finally {
+      setCancelLoading(false)
     }
   }
 
+  const puedeCompletar = (c: Cita) => {
+    // No permitir completar antes del dia agendado (bug reportado por Ing. Guevara).
+    const diaCita = new Date(c.scheduledAt); diaCita.setHours(0, 0, 0, 0)
+    const hoyLocal = new Date(); hoyLocal.setHours(0, 0, 0, 0)
+    return diaCita.getTime() <= hoyLocal.getTime()
+  }
+
   const onComplete = async (c: Cita) => {
+    if (!puedeCompletar(c)) {
+      setError(`No se puede completar la cita ${c.reservationCode}: su fecha es ${new Date(c.scheduledAt).toLocaleDateString('es-SV')}.`)
+      return
+    }
     if (!confirm(`¿Marcar como completada la cita ${c.reservationCode}?`)) return
     setError(null)
     try {
@@ -164,13 +201,28 @@ export default function Citas() {
                 {!FINALES.includes(c.status) && (
                   <>
                     {!isDoctor && (
-                      <button onClick={() => { setRepro(c); setFecha(''); setSlot('') }}
-                              className="text-blue-600 text-sm mr-3">Reprogramar</button>
-                    )}
-                    <button onClick={() => onComplete(c)}
-                            className="text-green-700 text-sm mr-3">Completar</button>
+                                        <button
+                        onClick={() => {
+                          setRepro(c)
+                          setFecha('')
+                          setSlot('')
+                          setSlots([])
+                          setError(null)
+                        }}
+                        className="text-blue-600 text-sm mr-3"
+                      >
+                        Reprogramar
+                      </button>
+                    )}                    <button onClick={() => onComplete(c)}
+                            disabled={!puedeCompletar(c)}
+                            title={puedeCompletar(c)
+                              ? 'Marcar como completada'
+                              : `Solo se puede completar desde la fecha agendada (${new Date(c.scheduledAt).toLocaleDateString('es-SV')})`}
+                            className="text-green-700 text-sm mr-3 disabled:text-slate-400 disabled:cursor-not-allowed">
+                      Completar
+                    </button>
                     {!isDoctor && (
-                      <button onClick={() => onCancel(c)}
+                      <button onClick={() => { setCancelando(c); setMotivo(''); setError(null) }}
                               className="text-red-600 text-sm">Cancelar</button>
                     )}
                   </>
@@ -181,6 +233,42 @@ export default function Citas() {
         </tbody>
       </table>
 
+      {cancelando && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+          <div className="bg-white p-6 rounded shadow max-w-md w-full flex flex-col gap-3">
+            <h3 className="text-lg font-semibold text-red-700">Cancelar cita {cancelando.reservationCode}</h3>
+            <p className="text-sm text-slate-600">
+              Paciente: <b>{cancelando.patient.firstName} {cancelando.patient.lastName}</b><br/>
+              Fecha: {new Date(cancelando.scheduledAt).toLocaleString('es-SV')}
+            </p>
+            <label className="text-sm font-medium text-slate-700">
+              Motivo de cancelación <span className="text-red-600">*</span>
+            </label>
+            <textarea
+              value={motivo}
+              onChange={e => setMotivo(e.target.value)}
+              rows={3}
+              maxLength={500}
+              placeholder="Ej. Paciente notificó que no podrá asistir por emergencia familiar"
+              className="border p-2 rounded resize-none"
+            />
+            <p className="text-xs text-slate-500">
+              Mínimo 5 caracteres. {motivo.length}/500
+            </p>
+            {error && <p className="text-sm text-red-600">{error}</p>}
+            <div className="flex gap-2 justify-end mt-2">
+              <button type="button" onClick={() => { setCancelando(null); setMotivo(''); setError(null) }}
+                      className="px-3 py-2 text-slate-600">Volver</button>
+              <button type="button" onClick={confirmarCancel}
+                      disabled={cancelLoading || motivo.trim().length < 5}
+                      className="bg-red-600 text-white px-4 py-2 rounded disabled:opacity-50">
+                {cancelLoading ? 'Cancelando...' : 'Confirmar cancelación'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {repro && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
           <div className="bg-white p-6 rounded shadow max-w-sm w-full flex flex-col gap-3">
@@ -189,9 +277,18 @@ export default function Citas() {
               Actual: {new Date(repro.scheduledAt).toLocaleString('es-SV')}
             </p>
 
-            <input type="date" min={hoy} value={fecha}
-                   onChange={e => { setFecha(e.target.value); setSlot('') }}
-                   className="border p-2 rounded" />
+                        <input
+              type="date"
+              min={hoy}
+              value={fecha}
+              onChange={e => {
+                setFecha(e.target.value)
+                setSlot('')
+                setSlots([])
+                setError(null)
+              }}
+              className="border p-2 rounded"
+            />
 
             <select value={slot} onChange={e => setSlot(e.target.value)}
                     className="border p-2 rounded" disabled={!fecha}>

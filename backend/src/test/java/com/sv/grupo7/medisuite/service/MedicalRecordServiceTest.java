@@ -22,7 +22,6 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -75,14 +74,14 @@ class MedicalRecordServiceTest {
             when(vitalSignRepo.findByMedicalRecordIdOrderByRecordedAtDesc(1L))
                     .thenReturn(vitalSigns);
 
-            Map<String, Object> result =
+            MedicalRecordService.MedicalRecordView result =
                     medicalRecordService.findFullByPatientId(10L);
 
-            assertEquals(1L, result.get("id"));
-            assertSame(patient, result.get("patient"));
-            assertEquals("Paciente estable", result.get("generalNotes"));
-            assertSame(prescriptions, result.get("prescriptions"));
-            assertSame(vitalSigns, result.get("vitalSigns"));
+            assertEquals(1L, result.id());
+            assertSame(patient, result.patient());
+            assertEquals("Paciente estable", result.generalNotes());
+            assertSame(prescriptions, result.prescriptions());
+            assertSame(vitalSigns, result.vitalSigns());
 
             verify(recordRepo).findByPatientIdAndTenantId(10L, 1L);
             verify(patientRepo, never()).findByIdAndTenantId(anyLong(), anyLong());
@@ -116,12 +115,12 @@ class MedicalRecordServiceTest {
             when(vitalSignRepo.findByMedicalRecordIdOrderByRecordedAtDesc(5L))
                     .thenReturn(List.of());
 
-            Map<String, Object> result =
+            MedicalRecordService.MedicalRecordView result =
                     medicalRecordService.findFullByPatientId(10L);
 
-            assertEquals(5L, result.get("id"));
-            assertSame(patient, result.get("patient"));
-            assertEquals("", result.get("generalNotes"));
+            assertEquals(5L, result.id());
+            assertSame(patient, result.patient());
+            assertEquals("", result.generalNotes());
 
             verify(patientRepo).findByIdAndTenantId(10L, 1L);
             verify(recordRepo).save(any(MedicalRecord.class));

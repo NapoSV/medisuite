@@ -1,8 +1,8 @@
 package com.sv.grupo7.medisuite.service.concurrent;
 
 import com.sv.grupo7.medisuite.dao.jdbc.ReminderJdbcDao;
-import com.sv.grupo7.medisuite.dao.jdbc.ReminderReader;
 import com.sv.grupo7.medisuite.dto.reminders.AppointmentReminder;
+import com.sv.grupo7.medisuite.service.port.ReminderPort;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,7 +51,7 @@ class AppointmentReminderServiceTest {
     // SERVICIO con puerto simulado (no requiere Docker)
     // =========================================================================
 
-    static final class FakeReminderReader implements ReminderReader {
+    static final class FakeReminderPort implements ReminderPort {
         int cancelCalls;
         int enqueueCalls;
         RuntimeException cancelThrow;
@@ -83,7 +83,7 @@ class AppointmentReminderServiceTest {
 
     @Test
     void service_cycleCallsCancelThenEnqueue() {
-        FakeReminderReader port = new FakeReminderReader();
+        FakeReminderPort port = new FakeReminderPort();
         AppointmentReminderService svc = new AppointmentReminderService(port, FIXED_CLOCK);
 
         svc.runOnce();
@@ -94,7 +94,7 @@ class AppointmentReminderServiceTest {
 
     @Test
     void service_exceptionIsCaught_andNextCycleStillRuns() {
-        FakeReminderReader port = new FakeReminderReader();
+        FakeReminderPort port = new FakeReminderPort();
         port.enqueueThrow = new RuntimeException("boom");
         AppointmentReminderService svc = new AppointmentReminderService(port, FIXED_CLOCK);
 
@@ -108,7 +108,7 @@ class AppointmentReminderServiceTest {
 
     @Test
     void service_shutdownClosesExecutor() {
-        FakeReminderReader port = new FakeReminderReader();
+        FakeReminderPort port = new FakeReminderPort();
         AppointmentReminderService svc = new AppointmentReminderService(port, FIXED_CLOCK);
 
         svc.start();

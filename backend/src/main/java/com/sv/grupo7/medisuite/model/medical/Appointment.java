@@ -51,4 +51,9 @@ public class Appointment extends BaseEntity {
 
     @Column(name = "completed_at")
     private OffsetDateTime completedAt;
+
+    /** Bloqueo optimista (V15): cada UPDATE exige que nadie haya cambiado la cita antes. */
+    @Version
+    @Column(nullable = false)
+    private Long version;
 }

@@ -1,6 +1,7 @@
 package com.sv.grupo7.medisuite.service;
 
 import com.sv.grupo7.medisuite.dao.PatientRepository;
+import com.sv.grupo7.medisuite.exception.BusinessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import com.sv.grupo7.medisuite.model.medical.Patient;
 import com.sv.grupo7.medisuite.security.TenantContext;
@@ -84,13 +85,13 @@ class PatientServiceTest {
     }
 
     @Test
-    void findById_pacienteNoExiste_debeLanzarRuntimeException() {
+    void findById_pacienteNoExiste_debeLanzarBusinessException() {
         try (MockedStatic<TenantContext> ctx = mockStatic(TenantContext.class)) {
             ctx.when(TenantContext::currentTenantId).thenReturn(TENANT_ID);
             when(repo.findByIdAndTenantId(99L, TENANT_ID)).thenReturn(Optional.empty());
 
-            RuntimeException exception = assertThrows(
-                    RuntimeException.class,
+            BusinessException exception = assertThrows(
+                    BusinessException.class,
                     () -> patientService.findById(99L)
             );
 
@@ -123,7 +124,7 @@ class PatientServiceTest {
         }
     }
         @Test
-    void findById_pacienteDeOtroTenant_debeLanzarRuntimeException() {
+    void findById_pacienteDeOtroTenant_debeLanzarBusinessException() {
 
         Long pacienteDeOtroTenantId = 50L;
 
@@ -134,8 +135,8 @@ class PatientServiceTest {
                     pacienteDeOtroTenantId, TENANT_ID))
                     .thenReturn(Optional.empty());
 
-            RuntimeException exception = assertThrows(
-                    RuntimeException.class,
+            BusinessException exception = assertThrows(
+                    BusinessException.class,
                     () -> patientService.findById(pacienteDeOtroTenantId)
             );
 

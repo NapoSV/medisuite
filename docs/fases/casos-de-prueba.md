@@ -588,3 +588,22 @@ declarados. Esto no constituye aprobación para merge ni cierre de incidencias.
   doctor con cita = 1 alerta EMERGENCIA.
 - Pruebas: `VitalSignsPriorityMigrationIT` (Testcontainers) y dos casos
   nuevos en `MedicalRecordServiceTest`. Resultado: PASS.
+
+### Base caída, bloqueo optimista y refactor de citas — 22/10/2026
+
+- Entorno: copia descartable PostgreSQL 18 con la estructura exacta de Neon
+  (solo esquema) y datos sintéticos; backend construido desde la rama del cambio.
+- Flyway aplicó V15 (`appointments.version`) sobre V14; Hibernate validó la columna.
+- Expediente: la respuesta conserva las claves `id`, `patient`, `generalNotes`,
+  `prescriptions` y `vitalSigns` tras pasar de `Map` a `MedicalRecordView`.
+- Citas: horarios desde `AgendaService` (9 bloques), creación con código `R-` vía
+  `ReservationCodePort`, doble reserva = HTTP 422, reprogramar y cancelar = 200,
+  completar una cita cancelada = 422 "La cita ya esta cancelled".
+- Base de datos detenida: dashboard y lista de pacientes = HTTP 503
+  `data_access_connection_lost` "Servicio temporalmente no disponible", sin host ni
+  SQL en la respuesta. Tardan ~30 s en responder (espera de conexión).
+- Base de datos encendida de nuevo: dashboard y pacientes = 200 sin reiniciar el backend.
+- Pruebas automáticas: 124 unitarias y 12 de integración en verde, incluida
+  `AppointmentOptimisticLockIT` (dos ediciones simultáneas: la segunda recibe
+  conflicto y la primera se conserva).
+- Resultado: PASS.

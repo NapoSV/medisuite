@@ -49,7 +49,7 @@ class AppointmentServiceTest{
     private AppointmentService appointmentService;
 
     @Test
-    void create_conFechaPasada_debeLanzarBussinessException(){
+    void create_conFechaPasada_debeLanzarBusinessException(){
         OffsetDateTime fechaPasada = OffsetDateTime.now().minusDays(1);
 
         assertThrows(BusinessException.class, () ->

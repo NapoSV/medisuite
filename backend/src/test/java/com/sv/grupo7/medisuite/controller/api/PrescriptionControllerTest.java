@@ -23,7 +23,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
@@ -69,12 +68,12 @@ class PrescriptionControllerTest {
     void createWithoutOrInvalidJwtNeverReachesService() throws Exception {
         mvc.perform(post("/api/prescriptions")
                         .contentType(MediaType.APPLICATION_JSON).content(BODY))
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().isUnauthorized());
         when(tokenProvider.parse("invalid")).thenThrow(new MalformedJwtException("invalid token"));
         mvc.perform(post("/api/prescriptions")
                         .header("Authorization", "Bearer invalid")
                         .contentType(MediaType.APPLICATION_JSON).content(BODY))
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().isUnauthorized());
         verifyNoInteractions(service);
     }
 
@@ -106,16 +105,15 @@ class PrescriptionControllerTest {
     void getPrescriptionOfOtherTenantIsNotReturned() throws Exception {
         jwt(7L, "DOCTOR", 1L);
         when(users.findById(7L)).thenReturn(Optional.of(user(1L, "DOCTOR")));
-        when(service.findById(8L)).thenThrow(new RuntimeException("Receta 8 no existe"));
+        when(service.findById(8L)).thenThrow(new BusinessException("Receta 8 no existe"));
 
         mvc.perform(get("/api/prescriptions/8").header("Authorization", "Bearer valid"))
-                .andExpect(result -> assertThat(result.getResponse().getStatus())
-                        .isGreaterThanOrEqualTo(400));
+                .andExpect(status().isUnprocessableEntity());
     }
 
     @Test
     void getWithoutJwtNeverReachesService() throws Exception {
-        mvc.perform(get("/api/prescriptions/7")).andExpect(status().is4xxClientError());
+        mvc.perform(get("/api/prescriptions/7")).andExpect(status().isUnauthorized());
         verifyNoInteractions(service);
     }
 

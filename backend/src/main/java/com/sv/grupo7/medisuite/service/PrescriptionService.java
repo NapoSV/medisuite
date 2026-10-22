@@ -51,6 +51,6 @@ public class PrescriptionService {
     public Prescription findById(Long id) {
         Long tid = TenantContext.currentTenantId();
         return repo.findByIdAndTenantId(id, tid).orElseThrow(() ->
-                new RuntimeException("Receta " + id + " no existe"));
+                new BusinessException("Receta " + id + " no existe"));
     }
 }

@@ -1,6 +1,7 @@
 package com.sv.grupo7.medisuite.service;
 
 import com.sv.grupo7.medisuite.dao.PatientRepository;
+import com.sv.grupo7.medisuite.exception.BusinessException;
 import com.sv.grupo7.medisuite.model.medical.Patient;
 import com.sv.grupo7.medisuite.security.TenantContext;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class PatientService {
     @Transactional(readOnly = true)
     public Patient findById(Long id) {
         return repo.findByIdAndTenantId(id, TenantContext.currentTenantId()).orElseThrow(() ->
-            new RuntimeException("Paciente " + id + " no existe"));
+            new BusinessException("Paciente " + id + " no existe"));
     }
 
     @Transactional

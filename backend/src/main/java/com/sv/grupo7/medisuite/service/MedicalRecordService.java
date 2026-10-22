@@ -10,8 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -24,30 +24,29 @@ public class MedicalRecordService {
     private final VitalSignRepository vitalSignRepo;
     private final TenantRepository tenantRepo;
 
+    /** Vista del expediente que devuelve la API (mismas claves JSON que la versión anterior). */
+    public record MedicalRecordView(
+        Long id,
+        Patient patient,
+        String generalNotes,
+        List<Prescription> prescriptions,
+        List<VitalSign> vitalSigns
+    ) {}
+
+    /**
+     * Expediente completo del paciente. Todo paciente tiene expediente: si aún no existe
+     * se crea en este momento (por eso el método es transaccional de escritura).
+     */
     @Transactional
-    public Map<String, Object> findFullByPatientId(Long patientId) {
+    public MedicalRecordView findFullByPatientId(Long patientId) {
         Long tid = TenantContext.currentTenantId();
-        MedicalRecord mr = recordRepo.findByPatientIdAndTenantId(patientId, tid)
-                .orElseGet(() -> {
-                    Patient p = patientRepo.findByIdAndTenantId(patientId, tid)
-                            .orElseThrow(() -> new BusinessException("Paciente no existe"));
-                    MedicalRecord nuevo = new MedicalRecord();
-                    nuevo.setPatient(p);
-                    nuevo.setTenant(p.getTenant());
-                    nuevo.setCreatedOn(java.time.LocalDate.now());
-                    return recordRepo.save(nuevo);
-                });
-        List<Prescription> prescriptions =
-                prescriptionRepo.findByMedicalRecordIdOrderByIssuedOnDesc(mr.getId());
-        List<VitalSign> vitalSigns =
-                vitalSignRepo.findByMedicalRecordIdOrderByRecordedAtDesc(mr.getId());
-        return Map.of(
-                "id", mr.getId(),
-                "patient", mr.getPatient(),
-                "generalNotes", mr.getGeneralNotes() == null ? "" : mr.getGeneralNotes(),
-                "prescriptions", prescriptions,
-                "vitalSigns", vitalSigns
-        );
+        MedicalRecord mr = getOrCreateRecord(patientId, tid);
+        return new MedicalRecordView(
+                mr.getId(),
+                mr.getPatient(),
+                mr.getGeneralNotes() == null ? "" : mr.getGeneralNotes(),
+                prescriptionRepo.findByMedicalRecordIdOrderByIssuedOnDesc(mr.getId()),
+                vitalSignRepo.findByMedicalRecordIdOrderByRecordedAtDesc(mr.getId()));
     }
 
     public record VitalSignRequest(
@@ -73,16 +72,10 @@ public class MedicalRecordService {
         Long tid = TenantContext.currentTenantId();
         Tenant tenant = tenantRepo.findById(tid)
                 .orElseThrow(() -> new BusinessException("Tenant no encontrado"));
-        Patient patient = patientRepo.findByIdAndTenantId(patientId, tid)
+        // El paciente debe pertenecer al tenant antes de tocar su expediente.
+        patientRepo.findByIdAndTenantId(patientId, tid)
                 .orElseThrow(() -> new BusinessException("Paciente no existe"));
-
-        MedicalRecord mr = recordRepo.findByPatientIdAndTenantId(patientId, tid)
-                .orElseGet(() -> {
-                    MedicalRecord nuevo = new MedicalRecord();
-                    nuevo.setPatient(patient);
-                    nuevo.setTenant(tenant);
-                    return recordRepo.save(nuevo);
-                });
+        MedicalRecord mr = getOrCreateRecord(patientId, tid);
 
         VitalSign vs = new VitalSign();
         vs.setMedicalRecord(mr);
@@ -95,5 +88,19 @@ public class MedicalRecordService {
         if (req.symptoms() != null)      vs.setSymptoms(req.symptoms());
         vs.setPriority(priority);
         return vitalSignRepo.save(vs);
+    }
+
+    /** Un solo lugar para "buscar el expediente del tenant o crearlo". */
+    private MedicalRecord getOrCreateRecord(Long patientId, Long tid) {
+        return recordRepo.findByPatientIdAndTenantId(patientId, tid)
+                .orElseGet(() -> {
+                    Patient patient = patientRepo.findByIdAndTenantId(patientId, tid)
+                            .orElseThrow(() -> new BusinessException("Paciente no existe"));
+                    MedicalRecord nuevo = new MedicalRecord();
+                    nuevo.setPatient(patient);
+                    nuevo.setTenant(patient.getTenant());
+                    nuevo.setCreatedOn(LocalDate.now());
+                    return recordRepo.save(nuevo);
+                });
     }
 }

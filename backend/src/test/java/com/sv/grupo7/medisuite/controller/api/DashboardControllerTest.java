@@ -6,6 +6,8 @@ import com.sv.grupo7.medisuite.dao.UserRepository;
 import com.sv.grupo7.medisuite.service.port.MetricsPort;
 import com.sv.grupo7.medisuite.dto.dashboard.DashboardQuery;
 import com.sv.grupo7.medisuite.dto.dashboard.DashboardResponse;
+import com.sv.grupo7.medisuite.exception.DataAccessException;
+import com.sv.grupo7.medisuite.exception.JdbcErrorCode;
 import com.sv.grupo7.medisuite.model.medical.Doctor;
 import com.sv.grupo7.medisuite.model.users.User;
 import com.sv.grupo7.medisuite.security.JwtAuthenticationFilter;
@@ -121,9 +123,27 @@ class DashboardControllerTest {
 
         mvc.perform(get("/api/dashboard/metrics").header("Authorization", "Bearer valid"))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.error").value("Error interno del servidor"))
+                .andExpect(jsonPath("$.error").value("data_access_unknown"))
+                .andExpect(jsonPath("$.message").value("Error interno del servidor"))
                 .andExpect(result -> assertThat(result.getResponse().getContentAsString())
                         .doesNotContain("private SQL details"));
+    }
+
+    @Test
+    void databaseDownReturns503WithoutSqlDetails() throws Exception {
+        jwt(7L, "ADMIN", 1L);
+        when(users.findById(7L)).thenReturn(Optional.of(user(1L, "ADMIN")));
+        SQLException caida = new SQLException("Connection refused to host db.internal:5432", "08001");
+        when(metrics.getMetrics(any())).thenThrow(
+                new DataAccessException("dashboard.metrics", JdbcErrorCode.from(caida), caida));
+
+        mvc.perform(get("/api/dashboard/metrics").header("Authorization", "Bearer valid"))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(jsonPath("$.error").value("data_access_connection_lost"))
+                .andExpect(jsonPath("$.message").value("Servicio temporalmente no disponible"))
+                .andExpect(result -> assertThat(result.getResponse().getContentAsString())
+                        .doesNotContain("db.internal")
+                        .doesNotContain("Connection refused"));
     }
 
     private void jwt(Long userId, String role, Long tenantId) {

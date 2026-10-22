@@ -1,29 +1,27 @@
 package com.sv.grupo7.medisuite.service.concurrent;
 
-import com.sv.grupo7.medisuite.dao.jdbc.ReservationCodeJdbcDao;
+import com.sv.grupo7.medisuite.service.port.ReservationCodePort;
 import org.springframework.stereotype.Component;
 
 /**
- * Genera códigos de reserva de 10 caracteres: {@code R-} + 8 dígitos.
- * La fuente de verdad es la secuencia de PostgreSQL, no un contador en memoria.
+ * Componente de servicio que entrega códigos de reserva de 10 caracteres
+ * ({@code R-} + 8 dígitos) a {@code AppointmentService}.
+ *
+ * <p>Depende del puerto {@link ReservationCodePort}, no de la implementación JDBC.
+ * El formato y el límite de ocho dígitos viven en un solo lugar
+ * ({@code ReservationCodeJdbcDao.nextCode}); la fuente de verdad es la secuencia
+ * de PostgreSQL, no un contador en memoria.</p>
  */
 @Component
 public class ReservationCodeGenerator {
 
-    static final long MAX_SEQUENCE_VALUE = 99_999_999L;
+    private final ReservationCodePort port;
 
-    private final ReservationCodeJdbcDao dao;
-
-    public ReservationCodeGenerator(ReservationCodeJdbcDao dao) {
-        this.dao = dao;
+    public ReservationCodeGenerator(ReservationCodePort port) {
+        this.port = port;
     }
 
     public String next() {
-        long value = dao.nextValue();
-        if (value < 1 || value > MAX_SEQUENCE_VALUE) {
-            throw new IllegalStateException(
-                    "La secuencia de códigos de reserva superó el límite de ocho dígitos");
-        }
-        return String.format("R-%08d", value);
+        return port.nextCode();
     }
 }

@@ -32,12 +32,9 @@ jobs:
           java-version: '21'
           cache: maven
           cache-dependency-path: backend/pom.xml
-      - name: Run backend tests
+      - name: Run backend and PostgreSQL integration tests
         working-directory: backend
-        run: mvn -B -ntp test
-      - name: Run PostgreSQL integration test
-        working-directory: backend
-        run: mvn -B -ntp -Dtest=PatientRepositoryIT test
+        run: mvn -B -ntp '-Dtest=*Test,*Tests,*IT' test
 
   frontend-build:
     name: frontend-build
@@ -64,7 +61,10 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Check TypeScript
         working-directory: frontend
-        run: pnpm exec tsc --noEmit
+        run: pnpm typecheck
+      - name: Lint frontend
+        working-directory: frontend
+        run: pnpm lint
       - name: Build frontend
         working-directory: frontend
         run: pnpm build

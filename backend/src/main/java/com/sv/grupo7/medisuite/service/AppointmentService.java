@@ -5,13 +5,14 @@ import com.sv.grupo7.medisuite.dao.DoctorRepository;
 import com.sv.grupo7.medisuite.dao.PatientRepository;
 import com.sv.grupo7.medisuite.exception.BusinessException;
 import com.sv.grupo7.medisuite.model.medical.Appointment;
+import com.sv.grupo7.medisuite.security.TenantContext;
+import com.sv.grupo7.medisuite.service.concurrent.ReservationCodeGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Random;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -24,6 +25,7 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepo;
     private final PatientRepository patientRepo;
     private final DoctorRepository doctorRepo;
+    private final ReservationCodeGenerator reservationCodeGenerator;
 
     @Transactional
     public Appointment create(Long patientId, Long doctorId,
@@ -31,9 +33,10 @@ public class AppointmentService {
         if (scheduledAt.isBefore(OffsetDateTime.now())) {
             throw new BusinessException("La cita no puede ser en el pasado");
         }
-        var doctor = doctorRepo.findById(doctorId)
+        Long tid = TenantContext.currentTenantId();
+        var doctor = doctorRepo.findByIdAndTenantId(doctorId, tid)
             .orElseThrow(() -> new BusinessException("Doctor no existe"));
-        var patient = patientRepo.findById(patientId)
+        var patient = patientRepo.findByIdAndTenantId(patientId, tid)
             .orElseThrow(() -> new BusinessException("Paciente no existe"));
 
         boolean occupied = appointmentRepo
@@ -49,33 +52,55 @@ public class AppointmentService {
         a.setScheduledAt(scheduledAt);
         a.setReason(reason);
         a.setStatus("PENDING");
-        a.setReservationCode("COD-" + String.format("%04d", new Random().nextInt(10000)));
+        a.setReservationCode(reservationCodeGenerator.next());
         return appointmentRepo.save(a);
     }
 
     public List<Appointment> upcoming() {
-        Long tid = com.sv.grupo7.medisuite.security.TenantContext.currentTenantId();
+        Long tid = TenantContext.currentTenantId();
         return appointmentRepo.findUpcomingByTenant(tid, OffsetDateTime.now());
     }
 
     @Transactional
-    public void cancel(Long appointmentId) {
-        Appointment a = appointmentRepo.findById(appointmentId)
+    public void cancel(Long appointmentId, String reason) {
+        if (reason == null || reason.trim().length() < 5) {
+            throw new BusinessException("Debe indicar un motivo de cancelacion (minimo 5 caracteres)");
+        }
+        if (reason.length() > 500) {
+            throw new BusinessException("El motivo de cancelacion no puede exceder 500 caracteres");
+        }
+        Appointment a = appointmentRepo.findByIdAndTenantId(appointmentId, TenantContext.currentTenantId())
             .orElseThrow(() -> new BusinessException("Cita no existe"));
+        if ("CANCELLED".equals(a.getStatus()) || "COMPLETED".equals(a.getStatus())) {
+            throw new BusinessException("La cita ya esta " + a.getStatus().toLowerCase());
+        }
         if (a.getScheduledAt().minusHours(24).isBefore(OffsetDateTime.now())) {
             throw new BusinessException("Solo se puede cancelar con 24h de anticipacion");
         }
         a.setStatus("CANCELLED");
+        a.setCancelReason(reason.trim());
+        a.setCancelledAt(OffsetDateTime.now());
     }
 
     @Transactional
     public Appointment complete(Long appointmentId) {
-        Appointment a = appointmentRepo.findById(appointmentId)
+        Appointment a = appointmentRepo.findByIdAndTenantId(appointmentId, TenantContext.currentTenantId())
             .orElseThrow(() -> new BusinessException("Cita no existe"));
         if ("CANCELLED".equals(a.getStatus()) || "COMPLETED".equals(a.getStatus())) {
-            throw new BusinessException("La cita ya está " + a.getStatus().toLowerCase());
+            throw new BusinessException("La cita ya esta " + a.getStatus().toLowerCase());
+        }
+        // Validacion: no se puede completar una cita antes de su fecha agendada.
+        // Permitimos completar desde el inicio del dia de la cita (00:00) hasta siempre.
+        OffsetDateTime now = OffsetDateTime.now();
+        OffsetDateTime inicioDelDiaDeCita = a.getScheduledAt().toLocalDate()
+                .atStartOfDay().atOffset(a.getScheduledAt().getOffset());
+        if (now.isBefore(inicioDelDiaDeCita)) {
+            throw new BusinessException(
+                "No se puede completar una cita antes de su fecha agendada (" +
+                a.getScheduledAt().toLocalDate() + ")");
         }
         a.setStatus("COMPLETED");
+        a.setCompletedAt(now);
         return a;
     }
 
@@ -84,7 +109,7 @@ public class AppointmentService {
         if (newTime.isBefore(OffsetDateTime.now())) {
             throw new BusinessException("La nueva hora no puede ser en el pasado");
         }
-        Appointment a = appointmentRepo.findById(appointmentId)
+        Appointment a = appointmentRepo.findByIdAndTenantId(appointmentId, TenantContext.currentTenantId())
             .orElseThrow(() -> new BusinessException("Cita no existe"));
         if ("CANCELLED".equals(a.getStatus()) || "COMPLETED".equals(a.getStatus())) {
             throw new BusinessException("No se puede reprogramar una cita " + a.getStatus().toLowerCase());

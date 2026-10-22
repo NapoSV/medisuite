@@ -42,4 +42,13 @@ public class Appointment extends BaseEntity {
 
     @Column(name = "reservation_code", nullable = false, length = 10)
     private String reservationCode;
+
+    @Column(name = "cancel_reason", length = 500)
+    private String cancelReason;
+
+    @Column(name = "cancelled_at")
+    private OffsetDateTime cancelledAt;
+
+    @Column(name = "completed_at")
+    private OffsetDateTime completedAt;
 }

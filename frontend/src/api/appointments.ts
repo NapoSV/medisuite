@@ -13,8 +13,11 @@ export function listUpcoming() {
   return apiFetch<Cita[]>('/api/appointments?upcoming=true')
 }
 
-export function cancelAppointment(id: number) {
-  return apiFetch<void>(`/api/appointments/${id}/cancel`, { method: 'POST' })
+export function cancelAppointment(id: number, reason: string) {
+  return apiFetch<void>(`/api/appointments/${id}/cancel`, {
+    method: 'POST',
+    body: JSON.stringify({ reason }),
+  })
 }
 
 export type Doctor = {

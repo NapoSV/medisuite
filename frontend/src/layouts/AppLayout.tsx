@@ -1,7 +1,7 @@
 import { Outlet, NavLink } from 'react-router-dom';
 import { useAuth } from '../auth/useAuth';
 import Logo from '../components/Logo';
-import { LogOut, LayoutDashboard, Users, CalendarDays, Stethoscope, UserCircle, CalendarPlus, ClipboardList } from 'lucide-react';
+import { LogOut, LayoutDashboard, Users, CalendarDays, Stethoscope, UserCircle, CalendarPlus, ClipboardList, FileText } from 'lucide-react';
 
 type Role = 'ADMIN' | 'DOCTOR' | 'NURSE' | 'RECEPTIONIST'
 
@@ -15,11 +15,12 @@ function navItems(role: Role | undefined): NavItem[] {
     const nuevaCita  = { to: '/citas/nueva', label: 'Agendar cita', icon: <CalendarPlus className="w-4 h-4" /> }
     const doctores   = { to: '/doctores',  label: 'Doctores',   icon: <Stethoscope className="w-4 h-4" /> }
     const triaje     = { to: '/triaje',    label: 'Triaje',     icon: <ClipboardList className="w-4 h-4" /> }
+    const recetas    = { to: '/recetas',   label: 'Recetas',    icon: <FileText className="w-4 h-4" /> }
     const perfil     = { to: '/perfil',    label: 'Mi perfil',  icon: <UserCircle className="w-4 h-4" /> }
 
     switch (role) {
-        case 'ADMIN':        return [dashboard, pacientes, citas, doctores, perfil]
-        case 'DOCTOR':       return [dashboard, misCitas, pacientes, triaje, perfil]
+        case 'ADMIN':        return [dashboard, pacientes, citas, doctores, recetas, perfil]
+        case 'DOCTOR':       return [dashboard, misCitas, pacientes, triaje, recetas, perfil]
         case 'NURSE':        return [dashboard, pacientes, triaje, citas, perfil]
         case 'RECEPTIONIST': return [dashboard, pacientes, citas, nuevaCita, perfil]
         default:             return [dashboard, perfil]

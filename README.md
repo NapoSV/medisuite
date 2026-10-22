@@ -1,9 +1,7 @@
 # MediSuite — Plataforma de Gestión Clínica SaaS
 
-# MediSuite — Plataforma de Gestión Clínica SaaS
-
 Sistema web multi-empresa (SaaS) para gestión de citas médicas, expediente clínico,
-triaje, recetas, inventario y activos físicos.
+triaje, recetas y dashboard clínico por rol.
 
 Repositorio: https://github.com/NapoSV/medisuite
 

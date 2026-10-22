@@ -3,6 +3,7 @@ package com.sv.grupo7.medisuite.controller.api;
 import com.sv.grupo7.medisuite.exception.DataAccessException;
 import com.sv.grupo7.medisuite.exception.JdbcErrorCode;
 import com.sv.grupo7.medisuite.model.medical.Appointment;
+import com.sv.grupo7.medisuite.service.AgendaService;
 import com.sv.grupo7.medisuite.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ public class AppointmentController {
     private static final int MAX_CREATE_RETRIES = 3;
 
     private final AppointmentService service;
+    private final AgendaService agenda;
 
     public record CreateRequest(Long patientId, Long doctorId,
                                 OffsetDateTime scheduledAt, String reason) {}
@@ -80,9 +82,9 @@ public class AppointmentController {
         return ResponseEntity.ok(service.reschedule(id, r.scheduledAt()));
     }
 
-        @GetMapping("/doctors/{doctorId}/slots")
+    @GetMapping("/doctors/{doctorId}/slots")
     public ResponseEntity<List<OffsetDateTime>> slots(@PathVariable Long doctorId,
                                                       @RequestParam String date) {
-        return ResponseEntity.ok(service.availableSlots(doctorId, LocalDate.parse(date)));
+        return ResponseEntity.ok(agenda.availableSlots(doctorId, LocalDate.parse(date)));
     }
 }

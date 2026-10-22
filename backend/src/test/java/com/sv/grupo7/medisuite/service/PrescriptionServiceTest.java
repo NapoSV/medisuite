@@ -168,10 +168,10 @@ class PrescriptionServiceTest {
 
     // 7. findById ausente
     @Test
-    void findById_missing_throwsRuntimeException() {
+    void findById_missing_throwsBusinessException() {
         when(repo.findByIdAndTenantId(404L, TENANT_A)).thenReturn(Optional.empty());
 
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> service.findById(404L));
+        BusinessException ex = assertThrows(BusinessException.class, () -> service.findById(404L));
         assertEquals("Receta 404 no existe", ex.getMessage());
     }
 
@@ -180,7 +180,7 @@ class PrescriptionServiceTest {
     void findById_prescriptionOfOtherTenant_isRejected() {
         when(repo.findByIdAndTenantId(8L, TENANT_A)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> service.findById(8L));
+        assertThrows(BusinessException.class, () -> service.findById(8L));
         verify(repo).findByIdAndTenantId(8L, TENANT_A);
         verify(repo, never()).findById(any());
     }

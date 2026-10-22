@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -59,8 +60,16 @@ public class MedicalRecordService {
         String priority
     ) {}
 
+    /** Escala vigente de triaje; la BD la impone desde V14. */
+    private static final Set<String> PRIORIDADES = Set.of("NORMAL", "URGENTE", "EMERGENCIA");
+
     @Transactional
     public VitalSign addVitalSign(Long patientId, VitalSignRequest req) {
+        String priority = req.priority() == null || req.priority().isBlank()
+                ? "NORMAL" : req.priority().trim().toUpperCase();
+        if (!PRIORIDADES.contains(priority)) {
+            throw new BusinessException("Prioridad no valida: use NORMAL, URGENTE o EMERGENCIA");
+        }
         Long tid = TenantContext.currentTenantId();
         Tenant tenant = tenantRepo.findById(tid)
                 .orElseThrow(() -> new BusinessException("Tenant no encontrado"));
@@ -84,7 +93,7 @@ public class MedicalRecordService {
         if (req.weightKg() != null)      vs.setWeightKg(req.weightKg());
         if (req.heightCm() != null)      vs.setHeightCm(req.heightCm());
         if (req.symptoms() != null)      vs.setSymptoms(req.symptoms());
-        vs.setPriority(req.priority() != null ? req.priority() : "NORMAL");
+        vs.setPriority(priority);
         return vitalSignRepo.save(vs);
     }
 }

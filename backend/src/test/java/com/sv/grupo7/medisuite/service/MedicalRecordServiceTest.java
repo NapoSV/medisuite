@@ -212,4 +212,43 @@ class MedicalRecordServiceTest {
             verifyNoInteractions(recordRepo, vitalSignRepo);
         }
     }
+
+    @Test
+    @DisplayName("addVitalSign rechaza prioridades fuera de la escala NORMAL/URGENTE/EMERGENCIA")
+    void addVitalSign_prioridadInvalida_debeLanzarBusinessException() {
+        MedicalRecordService.VitalSignRequest request =
+                new MedicalRecordService.VitalSignRequest(null, null, null, null, null, null, "CRITICAL");
+
+        BusinessException exception = assertThrows(
+                BusinessException.class,
+                () -> medicalRecordService.addVitalSign(1L, request)
+        );
+
+        assertEquals("Prioridad no valida: use NORMAL, URGENTE o EMERGENCIA", exception.getMessage());
+        verifyNoInteractions(tenantRepo, patientRepo, recordRepo, vitalSignRepo);
+    }
+
+    @Test
+    @DisplayName("addVitalSign normaliza mayusculas y guarda la prioridad en la escala vigente")
+    void addVitalSign_prioridadEnMinusculas_debeGuardarseNormalizada() {
+        Long tenantId = 1L;
+        Tenant tenant = new Tenant();
+        tenant.setId(tenantId);
+        Patient patient = new Patient();
+        MedicalRecord record = new MedicalRecord();
+        MedicalRecordService.VitalSignRequest request =
+                new MedicalRecordService.VitalSignRequest(null, null, null, null, null, null, " emergencia ");
+
+        try (MockedStatic<TenantContext> tenantContext = mockStatic(TenantContext.class)) {
+            tenantContext.when(TenantContext::currentTenantId).thenReturn(tenantId);
+            when(tenantRepo.findById(tenantId)).thenReturn(Optional.of(tenant));
+            when(patientRepo.findByIdAndTenantId(1L, tenantId)).thenReturn(Optional.of(patient));
+            when(recordRepo.findByPatientIdAndTenantId(1L, tenantId)).thenReturn(Optional.of(record));
+            when(vitalSignRepo.save(any(VitalSign.class))).thenAnswer(inv -> inv.getArgument(0));
+
+            VitalSign saved = medicalRecordService.addVitalSign(1L, request);
+
+            assertEquals("EMERGENCIA", saved.getPriority());
+        }
+    }
 }

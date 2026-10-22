@@ -151,11 +151,10 @@ pasos, resultado esperado, resultado observado, evidencia y estado.
   No se probó una cadena V1–V11 partiendo de una base completamente vacía.
 - V12: pendiente; el archivo no está disponible en esta copia de la rama.
 - Contrato de `priority`: resuelto documentalmente el 09/10/2026.
-  La escala vigente es `NORMAL/URGENTE/EMERGENCIA`, según
-  `docs/avances/fase-b/SEGUIMIENTO_PR_FASE_B.md`.
-  Ese documento indica que las migraciones V1–V10 no imponen un CHECK
-  sobre esta columna y que `database/schema.sql` es un export obsoleto
-  que contiene `LOW/MEDIUM/HIGH/CRITICAL`.
+  La escala vigente es `NORMAL/URGENTE/EMERGENCIA`, según la decisión
+  de coordinación de esa fecha. Esa decisión asumió que ninguna base
+  imponía un CHECK sobre la columna; la verificación del 22/10/2026
+  (ver al final) demostró lo contrario y se corrigió con V14.
   Se propone regenerar el export desde el esquema vigente, revisando
   sus consumidores, o eliminarlo si deja de ser necesario.
   Pendiente: verificar el constraint efectivo en QA y la alineación
@@ -571,3 +570,21 @@ declarados. Esto no constituye aprobación para merge ni cierre de incidencias.
 - El dashboard mostró Alertas clínicas=1; antes mostraba 0.
 - Resultado: PASS para visualización de una alerta positiva.
 - Alcance: no se verificó aquí su separación entre médicos o tenants.
+
+### Prioridad de triaje contra el esquema real de Neon — 22/10/2026
+
+- Entorno: copia descartable PostgreSQL 18 con la estructura exacta de Neon
+  (volcado solo de esquema, sin datos) y datos sintéticos.
+- Hallazgo: Neon conserva `vital_signs_priority_check` con
+  `LOW/MEDIUM/HIGH/CRITICAL`, creado por `database/schema.sql`.
+  El sistema envía `NORMAL/URGENTE/EMERGENCIA`, por lo que registrar
+  signos vitales fallaba y el dashboard nunca contaba alertas.
+- Corrección: migración `V14__vital_signs_priority_scale.sql` convierte
+  LOW→NORMAL, MEDIUM/HIGH→URGENTE, CRITICAL→EMERGENCIA y reemplaza la
+  restricción por la escala vigente. `MedicalRecordService` valida la
+  prioridad y responde 422 ante un valor fuera de la escala.
+- Resultado tras V14: Flyway 13→14 aplicado; triaje NORMAL, URGENTE y
+  EMERGENCIA = HTTP 201; valor `CRITICAL` = HTTP 422; dashboard del
+  doctor con cita = 1 alerta EMERGENCIA.
+- Pruebas: `VitalSignsPriorityMigrationIT` (Testcontainers) y dos casos
+  nuevos en `MedicalRecordServiceTest`. Resultado: PASS.

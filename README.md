@@ -9,19 +9,19 @@ Repositorio: https://github.com/NapoSV/medisuite
 
 ## Integrantes
 
-| # | Nombre | CIF | Rol técnico actual |
-|---|--------|-----|--------------------|
-| 1 | Erika Alexandra Fuentes Ortiz | 2026011709 | Pruebas de recetas, README y QA clínica (B9) |
-| 2 | [completar] | [completar] | [completar] |
-| 3 | [completar] | [completar] | [completar] |
-| 4 | [completar] | [completar] | [completar] |
-| 5 | [completar] | [completar] | [completar] |
-| 6 | [completar] | [completar] | [completar] |
-| 7 | [completar] | [completar] | [completar] |
-| 8 | [completar] | [completar] | [completar] |
-| 9 | [completar] | [completar] | [completar] |
-| 10 | [completar] | [completar] | [completar] |
-| 11 | [completar] | [completar] | [completar] |
+| # | Nombre | CIF | GitHub | Rol |
+|---|--------|-----|--------|-----|
+| 1 | Héctor Napoleon López Ruiz | 2026010132 | @NapoSV | PM / Arquitecto |
+| 2 | Walter Amilcar Vásquez Amaya | 2026010068 | @WaltArt94 | QA |
+| 3 | Alejandro Antonio Vigil Ramírez | 2026010204 | @Alejandro08vigil-dotcom | Scrum Master |
+| 4 | Zair Benett Díaz Santos | 2026010796 | @Djmaanco | Frontend |
+| 5 | Nicole Nohemy Sánchez Menjívar | 2026010813 | @nicolenohemysanchez | BA / Documentación |
+| 6 | Walter Alejandro Flores Hernández | 2026011012 | @floreswa90 | Documentación |
+| 7 | Carlos Mario Ventura Velásquez | 2026011585 | @mdealerdude | Backend |
+| 8 | Bayron Alexander Orellana Rojas | 2026011707 | @crislomsu | Backend |
+| 9 | Erika Alexandra Fuentes Ortiz | 2026011709 | @fuenteserika221-spec | QA |
+| 10 | William Ariel Melgar Rivas | 2026011736 | @wamr01 | Frontend |
+| 11 | Alejandro Sebastián Merino Ventura | 2026020122 | @mknz05 | BD / Entidades |
 
 ---
 

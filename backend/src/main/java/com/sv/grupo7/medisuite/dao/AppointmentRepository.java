@@ -10,6 +10,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
+    @Query("SELECT a FROM Appointment a JOIN FETCH a.patient JOIN FETCH a.doctor d JOIN FETCH d.user "
+            + "WHERE a.tenant.id = :tid AND (:doctorId IS NULL OR d.id = :doctorId) "
+            + "AND a.scheduledAt >= :from ORDER BY a.scheduledAt ASC")
+    List<Appointment> findVisible(@Param("tid") Long tenantId, @Param("doctorId") Long doctorId,
+                                  @Param("from") OffsetDateTime from);
     List<Appointment> findByTenantIdOrderByScheduledAtAsc(Long tenantId);
     List<Appointment> findByPatientIdAndTenantId(Long patientId, Long tenantId);
     List<Appointment> findByDoctorIdAndTenantId(Long doctorId, Long tenantId);

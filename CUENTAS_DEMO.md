@@ -1,73 +1,36 @@
-# MediSuite — Instrucciones de ejecución y cuentas de acceso
+# MediSuite — Ejecución y cuentas de demostración
 
----
+Sigue la instalación local de [README.md](README.md#ejecución-local-desde-cero).
+Solo necesitas Docker Desktop y Git Bash para levantar la aplicación completa.
+Abre http://localhost:5173 cuando los servicios estén saludables.
 
-## Requisito previo: Docker Desktop
-
-El proyecto se ejecuta completamente con Docker. No se requiere instalar Java, Node.js ni ninguna otra herramienta.
-
-1. Descargar Docker Desktop desde: https://www.docker.com/products/docker-desktop/
-2. Instalar y reiniciar el equipo si lo solicita.
-3. Abrir Docker Desktop y esperar a que el ícono en la barra de tareas quede verde (indica que está listo).
-4. Verificar desde una terminal:
-   ```
-   docker --version
-   docker compose version
-   ```
-   Ambos comandos deben responder con una versión sin errores.
-
----
-
-## Cómo ejecutar el proyecto
-
-**Paso 1 — Descomprimir el ZIP**
-
-Extraer el contenido del ZIP en una carpeta de su preferencia, por ejemplo:
-```
-C:\Proyectos\medisuite\
-```
-
-**Paso 2 — Abrir una terminal en esa carpeta**
-
-En Windows: hacer clic derecho dentro de la carpeta → "Abrir en Terminal" (o abrir PowerShell y navegar hasta la carpeta).
-
-**Paso 3 — Ejecutar el proyecto**
-
-```bash
-docker compose up --build
-```
-
-- La **primera vez** tarda aproximadamente 3–5 minutos (descarga imágenes de Java y Node, compila el código).
-- Las veces siguientes tarda menos de 1 minuto.
-- Cuando aparezca el mensaje `Started MediSuiteApplication in X seconds` en los logs, el sistema está listo.
-
-**Paso 4 — Abrir en el navegador**
-
-| Componente | URL |
-|-----------|-----|
-| Aplicación (frontend) | http://localhost:5173 |
-| API REST (backend) | http://localhost:8097 |
-| Documentación API (Swagger) | http://localhost:8097/swagger-ui/index.html |
-
-**Para detener el proyecto**, presionar `Ctrl + C` en la terminal donde se ejecuta.
-
----
-
-## Cuentas de acceso — Tenant: `clinica-san-rafael`
+El tenant del formulario de acceso es `clinica-san-rafael`.
+Estas cuentas se crean con `database/seed.sql` únicamente al inicializar una base local vacía:
 
 | Rol | Email | Contraseña |
-|-----|-------|-----------|
+|---|---|---|
 | Administrador | beatriz.reyes.demo@medisuite.test | Demo2026! |
 | Doctor | ana.martinez.demo@medisuite.test | Demo2026! |
 | Enfermero/a | carlos.gomez.demo@medisuite.test | Demo2026! |
 | Recepcionista | jorge.alas.demo@medisuite.test | Demo2026! |
 
-> Cada cuenta tiene acceso a las funcionalidades correspondientes a su rol dentro del sistema.
+Son credenciales públicas de demostración para datos sintéticos. Una base externa
+puede tener usuarios o contraseñas diferentes. No se distribuyen credenciales de
+Neon ni secretos de conexión dentro del repositorio o del ZIP.
 
----
+## Prueba manual básica
 
-## Notas técnicas
+1. Recepcionista: crear un paciente, editar su fecha de nacimiento y recargar para verificarla.
+2. Recepcionista: agendar, reprogramar o cancelar una cita con motivo.
+3. Enfermería: abrir el paciente y guardar el triaje; verificarlo en el expediente.
+4. Doctor: consultar sus citas, emitir una receta desde el expediente e imprimirla.
+5. Administrador: crear un doctor con especialidad y una contraseña inicial de al menos 12 caracteres.
+6. El doctor nuevo puede cambiar su contraseña desde Perfil.
 
-- La base de datos está alojada en Neon (PostgreSQL en la nube). No se requiere instalación local de base de datos.
-- Las credenciales de conexión a la base de datos ya están incluidas en el archivo `.env` dentro del ZIP.
-- El sistema implementa multi-tenancy: los datos de cada clínica están completamente aislados.
+La impresión debe mostrar paciente, DUI, fecha, médico, medicamentos, frecuencia,
+duración e indicaciones. Ante un error de red, verifica el estado en el servidor
+antes de repetir una operación para evitar duplicados.
+
+Cinco contraseñas incorrectas bloquean temporalmente la cuenta. Espera el plazo
+indicado antes de reintentar. Detén los servicios con el comando `down` del README
+para conservar los datos y poder continuar posteriormente.

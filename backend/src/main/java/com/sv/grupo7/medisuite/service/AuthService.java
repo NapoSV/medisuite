@@ -29,7 +29,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @Transactional
+    // El incremento debe persistir aunque la autenticacion termine con HTTP 401.
+    @Transactional(noRollbackFor = BadCredentialsException.class)
     public LoginResponse login(LoginRequest req) {
         Tenant tenant = tenantRepository.findBySlug(req.tenantSlug())
                 .orElseThrow(() -> new BadCredentialsException("Credenciales inválidas"));
@@ -75,5 +76,6 @@ public class AuthService {
         }
 
         user.setPasswordHash(passwordEncoder.encode(req.newPassword()));
+        user.setMustChangePassword(false);
     }
 }

@@ -1,4 +1,7 @@
 -- MediSuite — Datos de demostración
+-- Solo para una base vacia con schema.sql (V9), antes de arrancar Flyway.
+-- Una transaccion evita dejar usuarios a medias si falla la carga.
+BEGIN;
 
 -- ─── Tenants demo ────────────────────────────────────────────────────────
 INSERT INTO tenants (slug, commercial_name, legal_name, tax_id, country, plan, status, max_users, max_patients, max_doctors)
@@ -38,20 +41,20 @@ INSERT INTO receptionists (tenant_id, user_id, shift, assigned_office) VALUES
     (1, 4, 'MATUTINO', 'Recepción Principal');
 
 -- Pacientes sin cuenta de usuario (gestionados por personal clínico — MVP)
-INSERT INTO patients (tenant_id, first_name, last_name, cif, birth_date, phone, address, emergency_contact, blood_type, allergies) VALUES
-    (1, 'Maria',  'Lopez',    '04141199009999', '1990-05-12', '7000-1111', 'Col. Escalón, San Salvador', 'Juan Lopez - 7000-2222',     'O+', 'Ninguna conocida'),
-    (1, 'Pedro',  'Hernandez','04141198512345', '1985-11-03', '7000-3333', 'Santa Tecla, La Libertad',   'Ana Hernandez - 7000-4444',  'A-', 'Penicilina');
+INSERT INTO patients (tenant_id, first_name, last_name, dui, birth_date, phone, address, emergency_contact, blood_type, allergies) VALUES
+    (1, 'Maria',  'Lopez',    '01234567-8', '1990-05-12', '7000-1111', 'Col. Escalón, San Salvador', 'Juan Lopez - 7000-2222',     'O+', 'Ninguna conocida'),
+    (1, 'Pedro',  'Hernandez','02345678-9', '1985-11-03', '7000-3333', 'Santa Tecla, La Libertad',   'Ana Hernandez - 7000-4444',  'A-', 'Penicilina');
 
 -- Rol específico (tenant 2 — datos mínimos para probar que tenant 1 no los ve)
 INSERT INTO doctors (tenant_id, user_id, specialty_id, license_number, available_schedule) VALUES
     (2, 5, 4, 'MED-2019-0789', '{"tue":["09:00-13:00"]}');
-INSERT INTO patients (tenant_id, first_name, last_name, cif, birth_date, phone, address, emergency_contact, blood_type, allergies) VALUES
-    (2, 'Silvia', 'Portillo', '06141199907890', '2001-02-20', '7000-5555', 'Santa Ana', 'Marta Portillo - 7000-6666', 'B+', 'Ninguna conocida');
+INSERT INTO patients (tenant_id, first_name, last_name, dui, birth_date, phone, address, emergency_contact, blood_type, allergies) VALUES
+    (2, 'Silvia', 'Portillo', '03456789-0', '2001-02-20', '7000-5555', 'Santa Ana', 'Marta Portillo - 7000-6666', 'B+', 'Ninguna conocida');
 
 -- ─── Citas (tenant 1) — v2: con reservation_code ─────────────────────────
 INSERT INTO appointments (tenant_id, patient_id, doctor_id, scheduled_at, status, reason, office, reservation_code) VALUES
-    (1, 1, 1, '2026-08-01 09:00:00-06', 'SCHEDULED', 'Control de rutina', 'Consultorio 1', 'RSV-0001'),
-    (1, 2, 1, '2026-08-01 10:00:00-06', 'WAITING',   'Dolor abdominal',   'Consultorio 1', 'RSV-0002');
+    (1, 1, 1, ((now() AT TIME ZONE 'America/El_Salvador')::date + TIME '09:00') AT TIME ZONE 'America/El_Salvador', 'SCHEDULED', 'Control de rutina', 'Consultorio 1', 'RSV-0001'),
+    (1, 2, 1, ((now() AT TIME ZONE 'America/El_Salvador')::date + TIME '10:00') AT TIME ZONE 'America/El_Salvador', 'WAITING', 'Dolor abdominal', 'Consultorio 1', 'RSV-0002');
 
 -- ─── Expedientes (tenant 1) ───────────────────────────────────────────────
 INSERT INTO medical_records (tenant_id, patient_id, general_notes) VALUES
@@ -64,9 +67,13 @@ INSERT INTO vital_signs (tenant_id, medical_record_id, weight_kg, height_cm, blo
     (1, 2, 74.2, 172.0, '130/85', 37.2, 88, 'Dolor abdominal leve', 'MEDIUM');
 
 -- ─── Recetas (tenant 1) ───────────────────────────────────────────────────
-INSERT INTO prescriptions (tenant_id, medical_record_id, doctor_id, medications, dosage, duration, instructions) VALUES
-    (1, 2, 1, 'Butilhioscina 10mg', '1 tableta cada 8 horas', '3 días', 'Tomar con alimentos.');
+INSERT INTO prescriptions (tenant_id, medical_record_id, doctor_id, issued_on, instructions) VALUES
+    (1, 2, 1, (now() AT TIME ZONE 'America/El_Salvador')::date, 'Tomar con alimentos.');
+INSERT INTO prescription_items (prescription_id, order_idx, medication, dose, frequency, duration_days) VALUES
+    (1, 0, 'Butilhioscina 10mg', '1 tableta', 'Cada 8 horas', 3);
 
 -- ─── Auditoría (ejemplo de registro automático) ──────────────────────────
 INSERT INTO audit_logs (tenant_id, user_id, action, entity_name, entity_id, data_after, ip_address) VALUES
-    (1, 3, 'CREATE', 'patients', 1, '{"first_name":"Maria","last_name":"Lopez","cif":"04141199009999"}', '190.10.20.30');
+    (1, 3, 'CREATE', 'patients', 1, '{"first_name":"Maria","last_name":"Lopez","dui":"01234567-8"}', '192.0.2.1');
+
+COMMIT;

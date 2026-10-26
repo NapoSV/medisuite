@@ -8,7 +8,8 @@ import ErrorAlert from '../components/ErrorAlert';
 
 type ProfileUser = {
   id: number;
-  fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   role: string;
   tenantId: number;
@@ -107,6 +108,9 @@ export default function Perfil() {
 
   // Mientras carga /me, usamos lo que ya tengamos en el contexto de auth como respaldo
   const displayUser = profile ?? authUser;
+  const displayName = profile
+    ? `${profile.firstName} ${profile.lastName}`.trim()
+    : authUser?.fullName;
 
   return (
     <div className="min-h-screen bg-background">
@@ -126,11 +130,11 @@ export default function Perfil() {
           ) : (
             <div className="flex items-center gap-4">
               <div className="h-14 w-14 rounded-full bg-primary-light flex items-center justify-center text-primary font-semibold text-xl flex-shrink-0">
-                {displayUser?.fullName?.charAt(0).toUpperCase() ?? '?'}
+                  {displayName?.charAt(0).toUpperCase() ?? '?'}
               </div>
               <div className="min-w-0">
                 <p className="text-lg font-semibold text-text truncate">
-                  {displayUser?.fullName}
+                  {displayName}
                 </p>
                 <p className="text-sm text-muted uppercase tracking-wide">
                   {displayUser?.role}

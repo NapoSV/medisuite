@@ -10,6 +10,7 @@ import com.sv.grupo7.medisuite.model.medical.Specialty;
 import com.sv.grupo7.medisuite.model.tenant.Tenant;
 import com.sv.grupo7.medisuite.model.users.User;
 import com.sv.grupo7.medisuite.security.TenantContext;
+import com.sv.grupo7.medisuite.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,15 +35,18 @@ public class DoctorService {
     @Transactional(readOnly = true)
     public Doctor findById(Long id) {
         return doctorRepo.findByIdAndTenantId(id, TenantContext.currentTenantId())
-                .orElseThrow(() -> new RuntimeException("Doctor no encontrado"));
+                .orElseThrow(() -> new BusinessException("Doctor no encontrado"));
     }
 
     @Transactional
     public Doctor create(CreateDoctorRequest req) {
         Long tenantId = TenantContext.currentTenantId();
 
-        Specialty specialty = specialtyRepo.findById(req.specialtyId())
-                .orElseThrow(() -> new RuntimeException("Especialidad no encontrada"));
+        Specialty specialty = specialtyRepo.findByIdAndTenantIdAndActiveTrue(req.specialtyId(), tenantId)
+                .orElseThrow(() -> new BusinessException("Especialidad no encontrada en esta clinica"));
+        if (req.initialPassword().getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72) {
+            throw new BusinessException("La contrasena excede el limite de 72 bytes UTF-8");
+        }
 
         Tenant tenant = new Tenant();
         tenant.setId(tenantId);
@@ -53,7 +57,7 @@ public class DoctorService {
         user.setLastName(req.lastName());
         user.setEmail(req.email());
         user.setCif(req.cif());
-        user.setPasswordHash(passwordEncoder.encode("Demo2026!"));
+        user.setPasswordHash(passwordEncoder.encode(req.initialPassword()));
         user.setRole("DOCTOR");
         user.setActive(true);
         user.setFailedLoginAttempts(0);
@@ -72,8 +76,9 @@ public class DoctorService {
     public Doctor update(Long id, UpdateDoctorRequest req) {
         Doctor doctor = findById(id);
         if (req.specialtyId() != null) {
-            Specialty specialty = specialtyRepo.findById(req.specialtyId())
-                    .orElseThrow(() -> new RuntimeException("Especialidad no encontrada"));
+            Specialty specialty = specialtyRepo.findByIdAndTenantIdAndActiveTrue(
+                            req.specialtyId(), TenantContext.currentTenantId())
+                    .orElseThrow(() -> new BusinessException("Especialidad no encontrada en esta clinica"));
             doctor.setSpecialty(specialty);
         }
         if (req.licenseNumber() != null && !req.licenseNumber().isBlank()) {

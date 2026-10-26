@@ -23,7 +23,8 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     @Query("SELECT p FROM Patient p WHERE p.tenantId = :tid AND (" +
            " REPLACE(LOWER(p.dui), '-', '') LIKE %:q% OR " +
            " LOWER(p.firstName) LIKE %:q% OR " +
-           " LOWER(p.lastName) LIKE %:q%)")
+           " LOWER(p.lastName) LIKE %:q% OR " +
+           " LOWER(CONCAT(p.firstName, ' ', p.lastName)) LIKE %:q%)")
     Page<Patient> searchByDuiOrName(@Param("tid") Long tid, @Param("q") String q, Pageable pageable);
 }
 

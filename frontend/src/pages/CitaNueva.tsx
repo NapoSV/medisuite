@@ -1,3 +1,4 @@
+import { clinicToday } from '../lib/dates'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import ErrorAlert from '../components/ErrorAlert'
 import { ApiError } from '../api/http'
@@ -27,9 +28,17 @@ export default function CitaNueva() {
   const comboRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    listDoctors().then(setDoctors).catch(() => setDoctors([]))
-    listPatients().then(setPatients).catch(() => setPatients([]))
+    listDoctors().then(setDoctors).catch(() => setError('No se pudieron cargar los doctores. Recarga la página.'))
   }, [])
+
+  useEffect(() => {
+    let active = true
+    const timer = setTimeout(() => {
+      listPatients(patientQuery).then(data => { if (active) setPatients(data) })
+        .catch(() => { if (active) setError('No se pudieron buscar los pacientes. Verifica la conexión.') })
+    }, 250)
+    return () => { active = false; clearTimeout(timer) }
+  }, [patientQuery])
 
     useEffect(() => {
     if (!doctorId || !date) return
@@ -41,7 +50,10 @@ export default function CitaNueva() {
         if (activo) setSlots(data)
       })
       .catch(() => {
-        if (activo) setSlots([])
+        if (activo) {
+          setSlots([])
+          setError('No se pudieron cargar los horarios. Vuelve a seleccionar la fecha.')
+        }
       })
 
     return () => {
@@ -121,7 +133,7 @@ export default function CitaNueva() {
     }
   }
 
-  const hoy = new Date().toISOString().slice(0, 10)
+  const hoy = clinicToday()
 
   return (
     <form onSubmit={submit} className="max-w-lg flex flex-col gap-5">

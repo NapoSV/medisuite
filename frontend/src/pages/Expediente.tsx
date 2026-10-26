@@ -1,3 +1,4 @@
+import { ageOn, formatDateOnly } from '../lib/dates'
 import { useEffect, useState } from 'react'
 import LoadingSpinner from '../components/LoadingSpinner'
 import { useParams, useNavigate } from 'react-router-dom'
@@ -186,16 +187,7 @@ export default function Expediente() {
 
   const { patient } = rec
 
-  const calcAge = () => {
-    if (!patient.birthDate) return null
-    const today = new Date()
-    const birth = new Date(patient.birthDate)
-    let age = today.getFullYear() - birth.getFullYear()
-    const m = today.getMonth() - birth.getMonth()
-    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--
-    return age
-  }
-  const age = calcAge()
+  const age = patient.birthDate ? ageOn(patient.birthDate) : null
 
   const eventos: Evento[] = [
     ...rec.prescriptions.map(p => ({ tipo: 'receta' as const, fecha: p.issuedOn, data: p })),
@@ -323,7 +315,7 @@ export default function Expediente() {
                     <span className={`absolute -left-[7px] top-1 w-3 h-3 rounded-full
                       ${ev.tipo === 'receta' ? 'bg-blue-500' : 'bg-emerald-500'}`} />
                             <p className="text-xs text-slate-500">
-                              {new Date(ev.fecha).toLocaleString('es-SV')}
+                              {ev.tipo === 'receta' ? formatDateOnly(ev.fecha) : new Date(ev.fecha).toLocaleString('es-SV')}
                             </p>
 
                             {ev.tipo === 'receta' ? (

@@ -1,16 +1,24 @@
 # Base de datos
 
-- `schema.sql`: esquema base del proyecto (equivale a la versión 9 de Flyway).
-  Las pruebas de integración lo usan como punto de partida.
-- `seed.sql`: datos de demostración (tenants, usuarios, pacientes y citas sintéticas).
-- `00_create_database.sql`: creación de la base y del usuario de la aplicación.
+La opción recomendada para desarrollo es `compose.local.yml`, descrita en el
+[README principal](../README.md). Inicializa una base PostgreSQL local y aplica
+estos pasos automáticamente, sin conectarse a Neon.
 
-Los cambios posteriores viven en las migraciones Flyway de
-`backend/src/main/resources/db/migration` (V10 a V14) y se aplican solos al
-arrancar el backend. Por eso `schema.sql` no incluye, por ejemplo,
-`appointment_reminders` (V11), la secuencia de códigos de reserva (V12) ni la
-escala de prioridad `NORMAL/URGENTE/EMERGENCIA` (V14).
+- `00_create_database.sql`: crea `clinica_dev`; requiere un usuario PostgreSQL
+  autorizado y no crea el usuario de aplicación ni su contraseña.
+- `schema.sql`: esquema base equivalente a Flyway V9.
+- `seed.sql`: datos sintéticos y cuentas de demostración, para una base recién
+  creada. Debe ejecutarse después del esquema y antes del primer arranque del backend.
+- `backend/src/main/resources/db/migration`: migraciones V10–V15, ejecutadas por Flyway.
 
-Instalación desde cero: ejecutar `00_create_database.sql`, `schema.sql` y
-`seed.sql` en ese orden, y luego arrancar el backend para que Flyway aplique
-V10 a V14.
+Para instalación manual: crea la base y un usuario de desarrollo propio; conectado
+a esa base, ejecuta `schema.sql`, después `seed.sql` y luego inicia el backend.
+No repitas el seed sobre una base existente: usa identificadores iniciales y las
+prioridades del esquema V9. V14 convierte esas prioridades a `NORMAL/URGENTE/EMERGENCIA`.
+
+Las migraciones agregan, entre otros elementos, recordatorios (V11), secuencia de
+reservas (V12), permisos (V13), prioridades (V14) e índices del dashboard (V15).
+El usuario de migraciones debe tener permisos para aplicar esos cambios.
+
+`DemoInstallationIT` comprueba el recorrido esquema → seed → migraciones, las
+cuentas demo y los datos clínicos. Las pruebas usan una base PostgreSQL desechable.

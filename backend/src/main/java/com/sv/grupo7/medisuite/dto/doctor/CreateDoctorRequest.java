@@ -11,5 +11,6 @@ public record CreateDoctorRequest(
         @NotBlank @Email @Size(max = 150) String email,
         @NotBlank @Size(max = 20) String cif,
         @NotNull Long specialtyId,
-        @NotBlank @Size(max = 30) String licenseNumber
+        @NotBlank @Size(max = 30) String licenseNumber,
+        @NotBlank @Size(min = 12, max = 64) String initialPassword
 ) {}

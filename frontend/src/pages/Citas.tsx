@@ -8,6 +8,7 @@ import {
 import { useAuth } from '../auth/useAuth'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorAlert from '../components/ErrorAlert'
+import { clinicToday } from '../lib/dates'
 
 
 const badge = (s: string) => ({
@@ -46,18 +47,7 @@ export default function Citas() {
 
   useEffect(() => {
     listUpcoming()
-      .then(data => {
-        if (isDoctor && user?.fullName) {
-          const [first, ...rest] = user.fullName.split(' ')
-          const last = rest.join(' ')
-          setRows(data.filter(c =>
-            c.doctor.user.firstName.toLowerCase() === first.toLowerCase() ||
-            c.doctor.user.lastName.toLowerCase() === last.toLowerCase()
-          ))
-        } else {
-          setRows(data)
-        }
-      })
+      .then(setRows)
       .catch((err: unknown) => {
         setRows([])
         setAviso(
@@ -67,7 +57,7 @@ export default function Citas() {
         )
       })
       .finally(() => setLoading(false))
-  }, [isDoctor, user?.fullName])
+  }, [user?.id])
 
     useEffect(() => {
     if (!repro || !fecha) return
@@ -108,12 +98,8 @@ export default function Citas() {
       actualizar({ ...cancelando, status: 'CANCELLED' })
       setCancelando(null); setMotivo('')
     } catch (err) {
-      if (err instanceof ApiError) setError(err.message)
-      else {
-        // backend no disponible — reflejar en UI pero conservar motivo
-        actualizar({ ...cancelando, status: 'CANCELLED' })
-        setCancelando(null); setMotivo('')
-      }
+      setError(err instanceof ApiError ? err.message
+        : 'No se pudo confirmar la cancelación. Verifica la conexión y recarga las citas antes de reintentar.')
     } finally {
       setCancelLoading(false)
     }
@@ -121,9 +107,7 @@ export default function Citas() {
 
   const puedeCompletar = (c: Cita) => {
     // No permitir completar antes del dia agendado (bug reportado por Ing. Guevara).
-    const diaCita = new Date(c.scheduledAt); diaCita.setHours(0, 0, 0, 0)
-    const hoyLocal = new Date(); hoyLocal.setHours(0, 0, 0, 0)
-    return diaCita.getTime() <= hoyLocal.getTime()
+    return clinicToday(new Date(c.scheduledAt)) <= clinicToday()
   }
 
   const onComplete = async (c: Cita) => {
@@ -136,8 +120,8 @@ export default function Citas() {
     try {
       actualizar(await completeAppointment(c.id))
     } catch (err) {
-      if (err instanceof ApiError) setError(err.message)
-      else actualizar({ ...c, status: 'COMPLETED' })
+      setError(err instanceof ApiError ? err.message
+        : 'No se pudo confirmar que la cita se completó. Recarga las citas antes de reintentar.')
     }
   }
 
@@ -147,15 +131,16 @@ export default function Citas() {
     try {
       actualizar(await rescheduleAppointment(repro.id, slot))
     } catch (err) {
-      if (err instanceof ApiError) { setError(err.message); return }
-      actualizar({ ...repro, scheduledAt: slot })
+      setError(err instanceof ApiError ? err.message
+        : 'No se pudo confirmar la reprogramación. Recarga las citas antes de reintentar.')
+      return
     }
     setRepro(null); setFecha(''); setSlot('')
   }
 
   if (loading) return <LoadingSpinner label="Cargando citas..." />
 
-  const hoy = new Date().toISOString().slice(0, 10)
+  const hoy = clinicToday()
 
   return (
     <div>

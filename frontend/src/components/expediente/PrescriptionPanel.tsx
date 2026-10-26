@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import type { Receta } from '../../api/medicalRecords'
+import { formatDateOnly } from '../../lib/dates'
 
 type Props = { prescriptions: Receta[]; limit?: number }
 
@@ -21,7 +22,7 @@ export default function PrescriptionPanel({ prescriptions, limit }: Props) {
                                 Receta · Dr. {r.doctor.user.firstName} {r.doctor.user.lastName}
                             </p>
                             <p className="text-xs text-slate-500">
-                                {new Date(r.issuedOn).toLocaleString('es-SV')}
+                                {formatDateOnly(r.issuedOn)}
                             </p>
                         </div>
                         <Link to={`/receta-print/${r.id}`}

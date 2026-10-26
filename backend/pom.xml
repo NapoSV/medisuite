@@ -134,6 +134,7 @@
                 <directory>../database</directory>
                 <includes>
                     <include>schema.sql</include>
+                    <include>seed.sql</include>
                 </includes>
             </testResource>
         </testResources>

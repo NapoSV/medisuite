@@ -32,19 +32,22 @@ export default function Recetas() {
 
     const limpios = items.filter(i => i.medication.trim() !== '')
     if (limpios.length === 0) { setError('Agrega al menos un medicamento.'); return }
+    const medicalRecordId = Number(id)
+    if (!Number.isSafeInteger(medicalRecordId) || medicalRecordId <= 0) {
+      setError('Abre la receta desde el expediente del paciente.'); return
+    }
 
     setSaving(true)
     try {
       const receta = await createPrescription({
-        medicalRecordId: Number(id ?? 1),
+        medicalRecordId,
         diagnosis, notes, items: limpios,
       })
       setOk(`Receta #${receta.id} emitida con ${limpios.length} medicamento(s).`)
       setDiagnosis(''); setNotes(''); setItems([{ ...ITEM_VACIO }])
     } catch (err) {
-      if (err instanceof ApiError) setError(err.message)
-      else { setOk(`Receta registrada localmente con ${limpios.length} medicamento(s) (backend no disponible).`)
-             setDiagnosis(''); setNotes(''); setItems([{ ...ITEM_VACIO }]) }
+      setError(err instanceof ApiError ? err.message
+        : 'No se pudo confirmar el guardado. Revisa el expediente antes de reintentar; tus datos siguen en el formulario.')
     } finally {
       setSaving(false)
     }

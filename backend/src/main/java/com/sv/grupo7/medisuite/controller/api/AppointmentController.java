@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -33,10 +34,8 @@ public class AppointmentController {
 
     @GetMapping
     public ResponseEntity<List<Appointment>> list(
-            @RequestParam(defaultValue = "false") boolean upcoming) {
-        // Nota: hoy el service solo expone upcoming(); el flag se preserva
-        // para extender a historico en Fase 3.
-        return ResponseEntity.ok(service.upcoming());
+            @RequestParam(defaultValue = "false") boolean upcoming, Authentication auth) {
+        return ResponseEntity.ok(service.list(upcoming, auth));
     }
 
     @PostMapping
@@ -85,6 +84,7 @@ public class AppointmentController {
     @GetMapping("/doctors/{doctorId}/slots")
     public ResponseEntity<List<OffsetDateTime>> slots(@PathVariable Long doctorId,
                                                       @RequestParam String date) {
+        service.requireDoctorInTenant(doctorId);
         return ResponseEntity.ok(agenda.availableSlots(doctorId, LocalDate.parse(date)));
     }
 }

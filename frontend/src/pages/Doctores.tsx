@@ -10,10 +10,10 @@ type Doctor = { id: number; user: DoctorUser; specialty: Specialty; licenseNumbe
 
 type CreateForm = {
     firstName: string; lastName: string; email: string; cif: string;
-    licenseNumber: string; specialtyId: string;
+    licenseNumber: string; specialtyId: string; initialPassword: string;
 };
 
-const EMPTY_FORM: CreateForm = { firstName: '', lastName: '', email: '', cif: '', licenseNumber: '', specialtyId: '' };
+const EMPTY_FORM: CreateForm = { firstName: '', lastName: '', email: '', cif: '', licenseNumber: '', specialtyId: '', initialPassword: '' };
 
 export default function Doctores() {
     const { user: authUser } = useAuth();
@@ -90,6 +90,7 @@ export default function Doctores() {
                 cif: form.cif,
                 licenseNumber: form.licenseNumber,
                 specialtyId: Number(form.specialtyId),
+                initialPassword: form.initialPassword,
             });
             closeModal();
             load();
@@ -168,9 +169,13 @@ export default function Doctores() {
                             ))}
                         </select>
 
-                        <p className="text-xs text-slate-400">
-                            Contraseña inicial: <span className="font-mono">Demo2026!</span> (debe cambiarla al primer ingreso)
-                        </p>
+                        <label className="block text-sm">
+                            Contraseña inicial (mínimo 12 caracteres)
+                            <input name="initialPassword" type="password" autoComplete="new-password"
+                                value={form.initialPassword} onChange={handleChange} required minLength={12} maxLength={64}
+                                className="border rounded p-2 w-full" />
+                        </label>
+                        <p className="text-xs text-slate-500">Entrega esta contraseña al doctor por un canal privado. Puede cambiarla desde su perfil.</p>
 
                         <div className="flex gap-2 justify-end pt-2">
                             <button type="button" onClick={closeModal} className="border rounded px-4 py-2">Cancelar</button>

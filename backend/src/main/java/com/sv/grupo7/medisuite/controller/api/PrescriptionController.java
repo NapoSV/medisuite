@@ -1,6 +1,7 @@
 package com.sv.grupo7.medisuite.controller.api;
 
 import com.sv.grupo7.medisuite.model.medical.Prescription;
+import com.sv.grupo7.medisuite.dto.PrescriptionPrintResponse;
 import com.sv.grupo7.medisuite.model.medical.PrescriptionItem;
 import com.sv.grupo7.medisuite.service.PrescriptionService;
 import lombok.RequiredArgsConstructor;
@@ -32,5 +33,10 @@ public class PrescriptionController {
     @GetMapping("/{id}")
     public ResponseEntity<Prescription> get(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
+    }
+
+    @GetMapping("/{id}/print")
+    public ResponseEntity<PrescriptionPrintResponse> print(@PathVariable Long id) {
+        return ResponseEntity.ok(service.forPrint(id));
     }
 }

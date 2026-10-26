@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -50,11 +51,25 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/login", "/actuator/health").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/doctors", "/api/doctors/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/doctors/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/prescriptions", "/api/prescriptions/**").hasRole("DOCTOR")
+                .requestMatchers(HttpMethod.POST, "/api/patients/*/vital-signs").hasAnyRole("DOCTOR", "NURSE")
+                .requestMatchers(HttpMethod.POST, "/api/appointments", "/api/appointments/*/cancel",
+                        "/api/appointments/*/reschedule").hasAnyRole("ADMIN", "RECEPTIONIST", "NURSE")
                 .anyRequest().authenticated()
             )
             // Sin token o con token invalido/expirado responde 401 (sesion caducada);
             // 403 queda reservado para usuarios autenticados sin el rol requerido.
-            .exceptionHandling(e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+            .exceptionHandling(e -> e
+                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                .accessDeniedHandler((request, response, denied) -> {
+                    // No usar sendError: el redispatch a /error pierde el contexto JWT
+                    // stateless y convierte un rechazo de permisos en un falso 401.
+                    response.setStatus(HttpStatus.FORBIDDEN.value());
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"message\":\"No tienes permiso para realizar esta accion\"}");
+                }))
             .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .build();

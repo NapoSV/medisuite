@@ -11,6 +11,9 @@ import com.sv.grupo7.medisuite.service.concurrent.ReservationCodeGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -27,7 +30,7 @@ public class AppointmentService {
     @Transactional
     public Appointment create(Long patientId, Long doctorId,
                               OffsetDateTime scheduledAt, String reason) {
-        if (scheduledAt.isBefore(OffsetDateTime.now())) {
+        if (scheduledAt == null || scheduledAt.isBefore(OffsetDateTime.now())) {
             throw new BusinessException("La cita no puede ser en el pasado");
         }
         Long tid = TenantContext.currentTenantId();
@@ -49,9 +52,19 @@ public class AppointmentService {
         return appointmentRepo.save(a);
     }
 
-    public List<Appointment> upcoming() {
+    @Transactional(readOnly = true)
+    public List<Appointment> list(boolean upcoming, Authentication auth) {
         Long tid = TenantContext.currentTenantId();
-        return appointmentRepo.findUpcomingByTenant(tid, OffsetDateTime.now());
+        Long doctorId = null;
+        if (isDoctor(auth)) {
+            doctorId = doctorRepo.findByUserId((Long) auth.getPrincipal())
+                    .filter(d -> tid.equals(d.getTenantId()))
+                    .orElseThrow(() -> new AccessDeniedException("Medico no autorizado")).getId();
+        }
+        OffsetDateTime from = upcoming
+                ? java.time.LocalDate.now(AgendaService.CLINIC_ZONE).atStartOfDay(AgendaService.CLINIC_ZONE).toOffsetDateTime()
+                : OffsetDateTime.parse("0001-01-01T00:00:00Z");
+        return appointmentRepo.findVisible(tid, doctorId, from);
     }
 
     @Transactional
@@ -79,8 +92,8 @@ public class AppointmentService {
         // Validacion: no se puede completar una cita antes de su fecha agendada.
         // Permitimos completar desde el inicio del dia de la cita (00:00) hasta siempre.
         OffsetDateTime now = OffsetDateTime.now();
-        OffsetDateTime inicioDelDiaDeCita = a.getScheduledAt().toLocalDate()
-                .atStartOfDay().atOffset(a.getScheduledAt().getOffset());
+        OffsetDateTime inicioDelDiaDeCita = a.getScheduledAt().atZoneSameInstant(AgendaService.CLINIC_ZONE)
+                .toLocalDate().atStartOfDay(AgendaService.CLINIC_ZONE).toOffsetDateTime();
         if (now.isBefore(inicioDelDiaDeCita)) {
             throw new BusinessException(
                 "No se puede completar una cita antes de su fecha agendada (" +
@@ -93,7 +106,7 @@ public class AppointmentService {
 
     @Transactional
     public Appointment reschedule(Long appointmentId, OffsetDateTime newTime) {
-        if (newTime.isBefore(OffsetDateTime.now())) {
+        if (newTime == null || newTime.isBefore(OffsetDateTime.now())) {
             throw new BusinessException("La nueva hora no puede ser en el pasado");
         }
         Appointment a = findOwnedOrThrow(appointmentId);
@@ -106,8 +119,22 @@ public class AppointmentService {
 
     /** Cita del tenant actual; una cita de otra clínica se trata como inexistente. */
     private Appointment findOwnedOrThrow(Long appointmentId) {
-        return appointmentRepo.findByIdAndTenantId(appointmentId, TenantContext.currentTenantId())
+        Appointment a = appointmentRepo.findByIdAndTenantId(appointmentId, TenantContext.currentTenantId())
             .orElseThrow(() -> new BusinessException("Cita no existe"));
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (isDoctor(auth) && !a.getDoctor().getUser().getId().equals(auth.getPrincipal())) {
+            throw new AccessDeniedException("La cita pertenece a otro medico");
+        }
+        return a;
+    }
+
+    private boolean isDoctor(Authentication auth) {
+        return auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"));
+    }
+
+    public void requireDoctorInTenant(Long doctorId) {
+        doctorRepo.findByIdAndTenantId(doctorId, TenantContext.currentTenantId())
+                .orElseThrow(() -> new BusinessException("Doctor no existe"));
     }
 
     /** Una cita cancelada o completada ya no admite cambios. */

@@ -44,8 +44,8 @@ export function listDoctors() {
   return apiFetch<Doctor[]>('/api/doctors')
 }
 
-export function listPatients() {
-  return apiFetch<{ content: Paciente[] }>('/api/patients?size=100')
+export function listPatients(search = '') {
+  return apiFetch<{ content: Paciente[] }>(`/api/patients?size=100&search=${encodeURIComponent(search)}`)
     .then(r => r.content)
 }
 

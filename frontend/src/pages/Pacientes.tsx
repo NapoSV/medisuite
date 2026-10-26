@@ -1,7 +1,9 @@
+import { ageOn } from '../lib/dates'
 import { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import PatientModal from '../components/patients/PatientModal';
 import { useAuth } from '../auth/useAuth';
+import ErrorAlert from '../components/ErrorAlert';
 
 type Patient = {
     id: number;
@@ -13,14 +15,7 @@ type Patient = {
     address: string;
 };
 
-function calcAge(birthDate: string): number {
-    const today = new Date();
-    const birth = new Date(birthDate);
-    let age = today.getFullYear() - birth.getFullYear();
-    const m = today.getMonth() - birth.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
-    return age;
-}
+const calcAge = ageOn
 
 export default function Pacientes() {
     const { user } = useAuth();
@@ -30,15 +25,21 @@ export default function Pacientes() {
     const [q, setQ] = useState('');
     const [modalOpen, setModalOpen] = useState(false);
     const [editId, setEditId] = useState<number | undefined>(undefined);
+    const [error, setError] = useState<string | null>(null);
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
 
-    const load = () => api.get<{ content: Patient[] }>(`/api/patients?search=${q}`).then(r => setRows(r.data.content));
+    const load = (nextPage = 0) => api.get<{ content: Patient[]; totalPages: number }>(
+        '/api/patients', { params: { search: q, page: nextPage, size: 20, sort: 'id,asc' } })
+        .then(r => { setRows(r.data.content); setPage(nextPage); setTotalPages(r.data.totalPages); setError(null); })
+        .catch(() => setError('No se pudieron cargar los pacientes. Intenta buscar nuevamente.'));
         useEffect(() => {
         let activo = true;
 
-        api.get<{ content: Patient[] }>('/api/patients?search=')
+        api.get<{ content: Patient[]; totalPages: number }>('/api/patients?sort=id,asc')
             .then(r => {
-                if (activo) setRows(r.data.content);
-            });
+                if (activo) { setRows(r.data.content); setTotalPages(r.data.totalPages); }
+            }).catch(() => { if (activo) setError('No se pudieron cargar los pacientes. Intenta buscar nuevamente.'); });
 
         return () => {
             activo = false;
@@ -59,8 +60,9 @@ export default function Pacientes() {
                 <input value={q} onChange={e => setQ(e.target.value)}
                        placeholder="Buscar por nombre o DUI (########-#)"
                        className="flex-1 border rounded px-3 py-2"/>
-                <button onClick={load} className="bg-slate-800 text-white px-4 rounded">Buscar</button>
+                <button onClick={() => load()} className="bg-slate-800 text-white px-4 rounded">Buscar</button>
             </div>
+            {error && <ErrorAlert message={error} />}
             <table className="w-full bg-white rounded shadow">
                 <thead>
                 <tr className="border-b">
@@ -94,6 +96,11 @@ export default function Pacientes() {
                 ))}
                 </tbody>
             </table>
+            {totalPages > 1 && <div className="flex gap-3 items-center mt-3">
+                <button disabled={page === 0} onClick={() => load(page - 1)} className="disabled:opacity-50">Anterior</button>
+                <span>Página {page + 1} de {totalPages}</span>
+                <button disabled={page + 1 >= totalPages} onClick={() => load(page + 1)} className="disabled:opacity-50">Siguiente</button>
+            </div>}
 
             {modalOpen && (
                 <PatientModal

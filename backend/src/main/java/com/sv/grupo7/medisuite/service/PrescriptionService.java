@@ -1,6 +1,7 @@
 package com.sv.grupo7.medisuite.service;
 
 import com.sv.grupo7.medisuite.dao.*;
+import com.sv.grupo7.medisuite.dto.PrescriptionPrintResponse;
 import com.sv.grupo7.medisuite.exception.BusinessException;
 import com.sv.grupo7.medisuite.model.medical.*;
 import com.sv.grupo7.medisuite.security.TenantContext;
@@ -40,7 +41,7 @@ public class PrescriptionService {
         p.setTenant(mr.getPatient().getTenant());
         p.setMedicalRecord(mr);
         p.setDoctor(d);
-        p.setIssuedOn(java.time.LocalDate.now());
+        p.setIssuedOn(java.time.LocalDate.now(java.time.ZoneId.of("America/El_Salvador")));
         p.setInstructions(instructions);
         items.forEach(it -> it.setPrescription(p));
         p.setItems(items);
@@ -52,5 +53,19 @@ public class PrescriptionService {
         Long tid = TenantContext.currentTenantId();
         return repo.findByIdAndTenantId(id, tid).orElseThrow(() ->
                 new BusinessException("Receta " + id + " no existe"));
+    }
+
+    @Transactional(readOnly = true)
+    public PrescriptionPrintResponse forPrint(Long id) {
+        Prescription p = findById(id);
+        Patient patient = p.getMedicalRecord().getPatient();
+        Doctor doctor = p.getDoctor();
+        return new PrescriptionPrintResponse(p.getId(), p.getIssuedOn(),
+                new PrescriptionPrintResponse.PatientInfo(patient.getId(), patient.getFirstName(),
+                        patient.getLastName(), patient.getDui()),
+                new PrescriptionPrintResponse.DoctorInfo(
+                        doctor.getUser().getFirstName() + " " + doctor.getUser().getLastName(), doctor.getLicenseNumber()),
+                p.getInstructions(), p.getItems().stream().map(i -> new PrescriptionPrintResponse.Item(
+                        i.getMedication(), i.getDose(), i.getFrequency(), i.getDurationDays())).toList());
     }
 }

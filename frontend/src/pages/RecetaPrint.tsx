@@ -1,26 +1,35 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { api } from '../api/client';
-import type { Receta, ExpedientePatient } from '../api/medicalRecords';
+import { formatDateOnly } from '../lib/dates';
+import ErrorAlert from '../components/ErrorAlert';
 
-type RecetaImprimible = Omit<Receta, 'items'> & {
-    patient?: ExpedientePatient;
+type RecetaImprimible = {
+    id: number;
+    issuedOn: string;
+    patient: { firstName: string; lastName: string; dui: string };
+    doctor: { fullName: string; licenseNumber: string };
+    instructions?: string;
     items: {
         medication: string;
         dosage?: string;
         frequency?: string;
+        durationDays?: number;
     }[];
 };
 
 export default function RecetaPrint() {
     const { id } = useParams();
     const [receta, setReceta] = useState<RecetaImprimible | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        api.get<RecetaImprimible>(`/api/prescriptions/${id}`)
-            .then(r => setReceta(r.data));
+        api.get<RecetaImprimible>(`/api/prescriptions/${id}/print`)
+            .then(r => setReceta(r.data))
+            .catch(() => setError('No se pudo cargar la receta. Verifica el enlace y vuelve a intentar.'));
     }, [id]);
 
+    if (error) return <ErrorAlert message={error} />;
     if (!receta) return <p>Cargando...</p>;
 
     return (
@@ -29,15 +38,14 @@ export default function RecetaPrint() {
                 MediSuite · Receta Médica
             </h1>
             <p className="text-sm text-slate-600 mb-4">
-                Fecha: {new Date(receta.issuedOn).toLocaleDateString('es-SV')}
+                Fecha: {formatDateOnly(receta.issuedOn)}
             </p>
             <p>
                 <b>Paciente:</b> {receta.patient?.firstName}{' '}
                 {receta.patient?.lastName} · DUI: {receta.patient?.dui}
             </p>
             <p>
-                <b>Doctor:</b> Dr. {receta.doctor?.user?.firstName}{' '}
-                {receta.doctor?.user?.lastName}
+                <b>Doctor:</b> Dr. {receta.doctor.fullName} · Matrícula: {receta.doctor.licenseNumber}
             </p>
             <hr className="my-4" />
             <table className="w-full text-sm">
@@ -46,6 +54,7 @@ export default function RecetaPrint() {
                         <th className="text-left">Medicamento</th>
                         <th>Dosis</th>
                         <th>Frecuencia</th>
+                        <th>Duración (días)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -54,10 +63,12 @@ export default function RecetaPrint() {
                             <td>{item.medication}</td>
                             <td>{item.dosage}</td>
                             <td>{item.frequency}</td>
+                            <td>{item.durationDays}</td>
                         </tr>
                     ))}
                 </tbody>
             </table>
+            {receta.instructions && <p className="mt-4 whitespace-pre-wrap"><b>Indicaciones:</b> {receta.instructions}</p>}
             <p className="mt-8 text-xs text-slate-500">
                 Firma del médico: ___________________________
             </p>

@@ -22,10 +22,12 @@ export default function OccupancyChart({ slots, loading }: { slots: OccupancySlo
         <>
           <ul className="flex items-end gap-1 h-40" aria-hidden="true">
             {slots.map(s => (
-              <li key={s.hour} className="flex-1 flex flex-col items-center justify-end gap-1 min-w-0">
+              <li key={s.hour} className="flex-1 flex flex-col items-center justify-end gap-1 min-w-0 h-full">
                 <span className="text-xs tabular-nums text-slate-600">{s.appointments || ''}</span>
-                <div className="w-full bg-blue-500 rounded-t"
+                <div className="w-full flex-1 min-h-0 flex items-end">
+                  <div className="w-full bg-blue-500 rounded-t"
                      style={{ height: `${Math.round((s.appointments / max) * 100)}%` }} />
+                </div>
                 <span className="text-[10px] tabular-nums text-slate-400">{s.hour}</span>
               </li>
             ))}

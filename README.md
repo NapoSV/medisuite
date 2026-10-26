@@ -25,128 +25,88 @@ Repositorio: https://github.com/NapoSV/medisuite
 
 ---
 
-## Stack Tecnológico
+## Ejecución local desde cero
 
-| Capa | Tecnología |
-|------|-----------|
-| **Backend** | Java 21 · Spring Boot 3.3 · Spring Security · JWT |
-| **Frontend** | React 19 · Tailwind CSS · Vite |
-| **Base de datos** | PostgreSQL 16 (Neon) |
-| **Infraestructura** | Docker · Docker Compose |
-| **Pruebas** | JUnit 5 · Mockito · MockMvc |
-
----
-
-## Requisitos
-
-- **Docker Desktop** instalado y corriendo (es el único requisito para ejecutar la aplicación).
-- Para correr las pruebas fuera de Docker: **Java 21** y **Maven** (backend), **pnpm** (frontend).
-
----
-
-## Configuración
-
-1. Copia la plantilla de variables de entorno:
+Requiere Docker Desktop activo y Git Bash. La base PostgreSQL es local y contiene
+solo datos sintéticos; no necesita Neon ni las credenciales de otro integrante.
 
 ```bash
-   cp .env.example .env
+cd /c/Users/hlopez/medisuite
+# Crear secretos locales solo si el archivo aún no existe.
+if [ ! -f .env.local ]; then
+  printf 'LOCAL_DB_PASSWORD=%s\nLOCAL_JWT_SECRET=%s\n' "$(openssl rand -hex 24)" "$(openssl rand -hex 32)" > .env.local
+fi
+docker compose --env-file .env.local -f compose.local.yml up --build -d --wait
 ```
 
-2. Abre `.env` y completa los valores. Los nombres de las variables están en `.env.example`.
-3. Usa una base de datos de **desarrollo o QA**, no la base compartida del equipo.
-4. Nunca subas `.env` ni credenciales al repositorio.
-
----
-
-## Cómo correr el proyecto
-
-```bash
-# Desde la carpeta raíz del proyecto
-docker compose up --build
-```
-
-La primera vez tarda ~3–5 minutos (descarga imágenes y compila).
-Las siguientes veces es mucho más rápido.
-
-Una vez levantado:
+`compose.local.yml` crea PostgreSQL 16, ejecuta `schema.sql` y `seed.sql` una sola
+vez en un volumen vacío, y arranca Java 21/Spring Boot y React 19. Flyway aplica
+las migraciones V10–V15. Conserva `.env.local` para reutilizar ese volumen.
 
 | Servicio | URL |
-|---------|-----|
-| Frontend | http://localhost:5173 |
-| Backend API | http://localhost:8097 |
-| Swagger UI | http://localhost:8097/swagger-ui/index.html |
+|---|---|
+| Aplicación | http://localhost:5173 |
+| API / salud | http://localhost:8097/actuator/health |
+| Swagger | http://localhost:8097/swagger-ui/index.html |
 
-Para comprobar que el backend responde:
-
-```bash
-curl http://localhost:8097/actuator/health
-```
-
----
-
-## Cómo correr las pruebas
-
-**Backend** (JUnit + Mockito):
+Usuarios y contraseñas de demostración: [CUENTAS_DEMO.md](CUENTAS_DEMO.md).
 
 ```bash
-cd backend
-mvn test
+# Estado y diagnóstico
+docker compose --env-file .env.local -f compose.local.yml ps
+docker compose --env-file .env.local -f compose.local.yml logs --tail=80 backend
+# Detener conservando todos los datos locales
+docker compose --env-file .env.local -f compose.local.yml down
 ```
 
-Para correr solo las pruebas de recetas:
+No uses `down -v` si necesitas conservar los datos: elimina los volúmenes locales.
+Los puertos 5173 y 8097 deben estar libres. Usa `localhost` en el navegador.
+
+## Conexión a una base externa
+
+El archivo original `docker-compose.yml` continúa disponible para una base ya
+configurada. Copia `.env.example` a `.env` y completa una conexión de desarrollo
+propia antes de ejecutar `docker compose up --build`. El arranque aplica
+migraciones; no apuntes las pruebas a la base compartida del equipo.
+Consulta [database/README.md](database/README.md) para el orden de instalación.
+No publiques `.env`, `.env.local` ni secretos de conexión.
+
+## Validación
+
+Para ejecutar pruebas fuera de los contenedores necesitas Java 21, Maven,
+Node.js 22.18 o superior, pnpm 11.18 y Docker Desktop activo.
 
 ```bash
-cd backend
-mvn -Dtest=PrescriptionServiceTest,PrescriptionControllerTest test
+(cd frontend && pnpm install --frozen-lockfile)
+bash scripts/validate-all.sh
 ```
 
-Si alguna prueba usa Testcontainers, necesita Docker Desktop corriendo.
-
-**Frontend**:
+El script ejecuta pruebas unitarias y de integración contra PostgreSQL desechable,
+TypeScript de ambos proyectos, regresiones de fechas, build y lint del frontend.
+Comandos individuales:
 
 ```bash
-cd frontend
-pnpm build
-pnpm lint
+(cd backend && mvn -B -ntp '-Dtest=*Test,*Tests,*IT' test)
+(cd frontend && pnpm typecheck && pnpm test && pnpm build && pnpm lint)
+(cd frontend && pnpm audit --prod)
 ```
 
----
+`mvn test` sin el filtro no incluye todos los archivos `*IT`.
+Las pruebas de integración no requieren una conexión a Neon.
 
-## Cuentas de acceso
+## Funciones
 
-Ver [CUENTAS_DEMO.md](CUENTAS_DEMO.md) para usuarios de prueba. Las credenciales
-no se repiten en este README.
+- Pacientes, expediente, signos vitales, recetas e impresión.
+- Agenda por doctor, disponibilidad, creación, cancelación y reprogramación de citas.
+- Dashboard y permisos por rol y clínica.
+- Cola de recordatorios y respaldos programados. La cola registra recordatorios
+  pendientes; no incluye entrega real por correo o SMS.
 
----
+## Archivos del proyecto
 
-## Concurrencia
-
-- **Respaldo programado:** existe un scheduler que genera respaldos en archivos `.dat`.
-- **Cola de recordatorios (B3a/B3b):** *pendiente de integración*. Se documentará aquí
-  cuando esté mergeada en `feature/avance3-fase-b`, diferenciando la cola de
-  recordatorios del envío real.
-
----
-
-## Estructura del Proyecto
-
-```
-medisuite/
-├── backend/          ← Spring Boot (Java 21)
-├── frontend/         ← React + Tailwind + Vite
-├── database/         ← Scripts SQL (schema + seed)
-├── docs/             ← Documentación y casos de prueba por fase
-├── docker-compose.yml
-├── .env.example      ← Plantilla de variables de entorno
-└── CUENTAS_DEMO.md   ← Instrucciones de ejecución y credenciales
-```
-
----
-
-## Solución de problemas
-
-| Síntoma | Qué revisar |
-|---------|-------------|
-| Docker dice que falta una variable | Compara los nombres de tu `.env` con `.env.example`. |
-| Falla una prueba con Testcontainers | Verifica que Docker Desktop esté corriendo. |
-| El puerto 5173 u 8097 está ocupado | Cierra el proceso que lo usa o cambia el puerto en `docker-compose.yml`. |
+- `backend/`, `frontend/`: código, configuración y pruebas.
+- `database/`: esquema base, datos demo e instrucciones SQL.
+- `docs/avances/Avance1_Grupo7_medisuit.pdf` y `docs/avances/Avance2_Grupo7_medisuit.pdf`: avances finales.
+- `README.md`, `CUENTAS_DEMO.md`: ejecución y acceso.
+- `compose.local.yml`: instalación local aislada; `docker-compose.yml`: base externa.
+- `.github/workflows/`, `scripts/`: validaciones automatizadas.

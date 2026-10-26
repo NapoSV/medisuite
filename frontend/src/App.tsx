@@ -23,19 +23,25 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/403" element={<Forbidden />} />
-          <Route path="/receta-print/:id" element={<RecetaPrint />} />
           <Route element={<ProtectedRoute />}>
+            <Route path="/receta-print/:id" element={<RecetaPrint />} />
             <Route element={<AppLayout />}>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/pacientes" element={<Pacientes />} />
               <Route path="/citas" element={<Citas />} />
-              <Route path="/citas/nueva" element={<CitaNueva />} />
+              <Route element={<ProtectedRoute roles={['ADMIN', 'RECEPTIONIST', 'NURSE']} />}>
+                <Route path="/citas/nueva" element={<CitaNueva />} />
+              </Route>
               <Route path="/pacientes/:id/expediente" element={<Expediente />} />
               <Route path="/expediente/:id" element={<Expediente />} />
-              <Route path="/triaje" element={<Triaje />} />
+              <Route element={<ProtectedRoute roles={['DOCTOR', 'NURSE']} />}>
+                <Route path="/triaje" element={<Triaje />} />
+              </Route>
               <Route path="/recetas" element={<RecetasInicio />} />
-              <Route path="/recetas/:id" element={<Recetas />} />
+              <Route element={<ProtectedRoute roles={['DOCTOR']} />}>
+                <Route path="/recetas/:id" element={<Recetas />} />
+              </Route>
               <Route path="/perfil" element={<Perfil />} />
             </Route>
           </Route>

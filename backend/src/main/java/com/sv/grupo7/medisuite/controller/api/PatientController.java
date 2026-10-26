@@ -1,8 +1,10 @@
 package com.sv.grupo7.medisuite.controller.api;
 
 import com.sv.grupo7.medisuite.model.medical.Patient;
+import com.sv.grupo7.medisuite.dto.PatientRequest;
 import com.sv.grupo7.medisuite.service.PatientService;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,12 +30,12 @@ public class PatientController {
     }
 
     @PostMapping
-    public ResponseEntity<Patient> create(@RequestBody Patient p) {
-        return ResponseEntity.status(201).body(service.create(p));
+    public ResponseEntity<Patient> create(@Valid @RequestBody PatientRequest p) {
+        return ResponseEntity.status(201).body(service.create(p.toPatient()));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Patient> update(@PathVariable Long id, @RequestBody Patient p) {
-        return ResponseEntity.ok(service.update(id, p));
+    public ResponseEntity<Patient> update(@PathVariable Long id, @Valid @RequestBody PatientRequest p) {
+        return ResponseEntity.ok(service.update(id, p.toPatient()));
     }
 }

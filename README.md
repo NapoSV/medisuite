@@ -31,11 +31,8 @@ Requiere Docker Desktop activo y Git Bash. La base PostgreSQL es local y contien
 solo datos sintéticos; no necesita Neon ni las credenciales de otro integrante.
 
 ```bash
-cd /c/Users/hlopez/medisuite
-# Crear secretos locales solo si el archivo aún no existe.
-if [ ! -f .env.local ]; then
-  printf 'LOCAL_DB_PASSWORD=%s\nLOCAL_JWT_SECRET=%s\n' "$(openssl rand -hex 24)" "$(openssl rand -hex 32)" > .env.local
-fi
+cd medisuite
+bash scripts/setup-local.sh
 docker compose --env-file .env.local -f compose.local.yml up --build -d --wait
 ```
 
